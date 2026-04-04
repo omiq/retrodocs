@@ -70,24 +70,36 @@ nav:
       - platforms/index.md
       - "Commodore 64": platforms/c64.md
       - "VIC-20": platforms/vic20.md
+      - "Commodore PET": platforms/pet.md
       - "BBC Micro": platforms/bbc-micro.md
       - "ZX Spectrum": platforms/zx-spectrum.md
+      - "ZX81": platforms/zx81.md
+      - "Amstrad CPC6128": platforms/cpc.md
+      - "MSX": platforms/msx.md
       - "NES / Famicom": platforms/nes.md
       - "Atari 8-bit": platforms/atari8.md
+      - "Apple II": platforms/apple2.md
+      - "Dragon 32 / CoCo 2": platforms/dragon-coco.md
+      - "Vectrex": platforms/vectrex.md
+      - "Sega Master System / Game Gear": platforms/sega.md
+      - "x86 / DOSBox": platforms/x86.md
   - Assembly:
       - assembly/index.md
       - "6502 assembly": assembly/6502.md
       - "Z80 assembly": assembly/z80.md
+      - "6809 assembly": assembly/6809.md
   - C:
       - c/index.md
       - "cc65 (6502)": c/cc65.md
       - "z88dk (Z80)": c/z88dk.md
+      - "CMOC (6809)": c/cmoc.md
   - BASIC:
       - basic/index.md
       - "Commodore BASIC V2": basic/commodore-basic-v2.md
       - "XC-BASIC 3": basic/xc-basic-3.md
       - "BBC BASIC": basic/bbc-basic.md
       - "ZX BASIC (Boriel)": basic/zx-basic.md
+      - "Color BASIC": basic/color-basic.md
   - TRSE:
       - trse/index.md
       - "Methods (reference)": trse/reference/methods-index.md

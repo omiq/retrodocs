@@ -1,17 +1,16 @@
 # BASIC dialects
 
-BASIC remains one of the fastest ways to get **visible results** on retro machines. The IDE supports many dialects; here we start with two that are common in the community.
+BASIC remains one of the fastest ways to get **visible results** on retro machines. The IDE supports several dialects — pick the one that matches your target platform.
 
-## Starter tracks
+## Dialects in the IDE
 
 | Topic | Description |
 |--------|-------------|
-| **[Commodore BASIC V2](commodore-basic-v2.md)** | ROM BASIC on C64, VIC-20, PET, … |
+| **[Commodore BASIC V2](commodore-basic-v2.md)** | ROM BASIC on C64, VIC-20, PET — line numbers, POKE/PEEK, GOTO |
 | **[XC-BASIC 3](xc-basic-3.md)** | Cross-compiled BASIC-like language for Commodore-class targets |
-
-## More dialects in the IDE
-
-The IDE may also expose **BBC BASIC**, **Color BASIC**, **AppleSoft**, **ugBASIC**, **batari BASIC**, **FastBasic**, and others — add a short page per dialect when you have a **stable preset name** and a **minimal example** to show.
+| **[BBC BASIC](bbc-basic.md)** | BBC Micro's structured BASIC — procedures, functions, inline assembler |
+| **[ZX BASIC (Boriel)](zx-basic.md)** | Compiled BASIC for ZX Spectrum — types, SUB/FUNCTION, fast execution |
+| **[Color BASIC](color-basic.md)** | Dragon 32 and TRS-80 CoCo built-in BASIC — PLAY, PMODE, JOYSTK |
 
 ## See also
 
