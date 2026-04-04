@@ -1,15 +1,18 @@
 # C on retro systems
 
-This section is a **placeholder** for teaching **C** in the context of small machines: fixed-width integers, avoiding undefined behaviour on weird architectures, interfacing with assembly, and toolchain quirks.
+C compilers for 8-bit and 16-bit targets let you write **structured** code while still talking to hardware when needed.
 
-## Suggested topics
+## Starter track
 
-- Standards vs embedded (`stdint.h`, `volatile`, alignment)
-- Calling assembly from C and vice versa
-- Build systems at a minimal level
+| Topic | Description |
+|--------|-------------|
+| **[cc65](cc65.md)** | 6502 C development — common for Commodore, Atari 8-bit, Apple II, … |
 
-Add pages under `retrodocs/docs/c/` and link them from `mkdocs.yml`.
+## Other C toolchains in the IDE
 
----
+Depending on platform, you may also see **z88dk** (many Z80 / 8080 targets), **CMOC** (6809), and others. Add a page per toolchain when you want a **first lesson** and **link to upstream docs**.
 
-*Tailor examples to the compilers and platforms your IDE supports.*
+## See also
+
+- **[6502 assembly](../assembly/6502.md)** — mixing with cc65 (`ca65` / `ld65`)
+- **[Getting started with the IDE](../ide/getting-started.md)**

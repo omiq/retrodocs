@@ -64,13 +64,23 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - IDE:
+      - ide/getting-started.md
   - TRSE:
       - trse/index.md
       - "Methods (reference)": trse/reference/methods-index.md
       - trse/help-import.md
-  - Assembly: assembly/index.md
-  - C: c/index.md
-  - BASIC: basic/index.md
+  - Assembly:
+      - assembly/index.md
+      - assembly/6502.md
+      - assembly/z80.md
+  - C:
+      - c/index.md
+      - c/cc65.md
+  - BASIC:
+      - basic/index.md
+      - basic/commodore-basic-v2.md
+      - basic/xc-basic-3.md
   - Maintaining this site: MAINTAINING.md
 
 extra:

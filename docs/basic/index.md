@@ -1,14 +1,18 @@
 # BASIC dialects
 
-This section is a **placeholder** for **BASIC** variants common in retro computing: line numbers, `PEEK`/`POKE`, graphics and sound keywords, and differences between dialects.
+BASIC remains one of the fastest ways to get **visible results** on retro machines. The IDE supports many dialects; here we start with two that are common in the community.
 
-## Suggested structure
+## Starter tracks
 
-- **Shared concepts**: variables, loops, subroutines
-- **Per dialect**: command cheat-sheets where your IDE supports them
+| Topic | Description |
+|--------|-------------|
+| **[Commodore BASIC V2](commodore-basic-v2.md)** | ROM BASIC on C64, VIC-20, PET, … |
+| **[XC-BASIC 3](xc-basic-3.md)** | Cross-compiled BASIC-like language for Commodore-class targets |
 
-Add Markdown files under `retrodocs/docs/basic/` and update `retrodocs/mkdocs.yml`.
+## More dialects in the IDE
 
----
+The IDE may also expose **BBC BASIC**, **Color BASIC**, **AppleSoft**, **ugBASIC**, **batari BASIC**, **FastBasic**, and others — add a short page per dialect when you have a **stable preset name** and a **minimal example** to show.
 
-*BASIC teaching material is easiest to maintain when each dialect has its own small subsection.*
+## See also
+
+- **[Getting started with the IDE](../ide/getting-started.md)**
