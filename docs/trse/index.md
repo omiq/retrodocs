@@ -1,22 +1,35 @@
 # TRSE (Turbo Rascal)
 
-**TRSE** (Turbo Rascal Syntax error, …) is an IDE and compiler for 8-bit (and more) systems. The main upstream project lives at **[github.com/leuat/TRSE](https://github.com/leuat/TRSE)**.
+**TRSE** (Turbo Rascal Syntax Error) is a desktop IDE and compiler for 8-bit (and more) systems, created by Geir Straume. Programs are written in **Turbo Rascal** — a clean, Pascal-flavoured language that compiles directly to native machine code for your target platform.
 
-## In this repository
+!!! note "Desktop app"
+    This section covers the **TRSE desktop IDE**. The browser-based web IDE at [ide.retrogamecoders.com](https://ide.retrogamecoders.com) is a separate tool — see [Getting started with the IDE](../ide/getting-started.md) for that.
 
-Your fork may include extra tooling (for example under `tools/flf_tool/` and `api/trse_compiler/`). The **in-IDE Help** in TRSE is driven by:
+## In this section
 
-- `resources/text/syntax.txt` — index of methods, constants, etc.
-- `resources/text/help/<type>/<name>.rtf` — HTML fragments (despite the `.rtf` extension)
+- **[The TRSE language](language.md)** — syntax, types, procedures, directives, and a minimal game loop. Start here if you're new to Turbo Rascal.
+- **[Methods (reference)](reference/methods-index.md)** — complete listing of all built-in methods with parameters and platform compatibility, generated from the TRSE source.
+- **[How the reference is generated](help-import.md)** — sources, regeneration script, and maintenance notes.
 
-## On this documentation site
+## Quick overview
 
-- **[Methods (reference)](reference/methods-index.md)** — built-in methods from TRSE’s `syntax.txt` + `resources/text/help/m/*.rtf` (regenerate with `scripts/import_trse_reference.py`).
-- **[How import works](help-import.md)** — sources, maintenance, and options.
+TRSE programs are `.ras` files; reusable libraries are `.tru` unit files. A minimal program looks like:
 
-For day-to-day use inside the app, the IDE **Help** tab is still the primary UI.
+```pascal
+program HelloWorld;
+@use "screen/screen"
+var
+    i : byte;
+begin
+    Screen::Clear(#Screen::screen0, key_space);
+    Screen::PrintString(cstring("HELLO WORLD"), 10, 12, #Screen::screen0);
+    while (true) do
+        Screen::WaitForVerticalBlank();
+end.
+```
 
-## Quick links
+See **[The TRSE language](language.md)** for a full walkthrough.
 
-- [Methods index](reference/methods-index.md)
-- [Import / regenerate reference](help-import.md)
+## Upstream project
+
+The main TRSE project lives at **[github.com/leuat/TRSE](https://github.com/leuat/TRSE)** — tutorials, examples, and the full source are there.

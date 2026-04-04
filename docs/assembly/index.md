@@ -6,8 +6,9 @@ Low-level programming for CPUs used in classic home computers, consoles, and arc
 
 | Topic | Description |
 |--------|-------------|
-| **[6502 assembly](6502.md)** | DASM, KickAss, ACME, ca65 — C64, NES, Atari, … |
-| **[Z80 assembly](z80.md)** | MSX, CPC, arcade presets — platform-specific I/O |
+| **[6502 assembly](6502.md)** | DASM, KickAss, ACME, ca65 — C64, NES, Atari, Apple II, … |
+| **[Z80 assembly](z80.md)** | MSX, CPC, ZX Spectrum, arcade presets — platform-specific I/O |
+| **[6809 assembly](6809.md)** | Dragon 32, TRS-80 CoCo 2, Vectrex — two stacks, MUL, PCR addressing |
 
 ## IDE workflow
 
