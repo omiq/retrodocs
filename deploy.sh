@@ -19,6 +19,7 @@
 #   DEPLOY_KEY=~/.ssh/id_ed25519   Identity file for ssh/rsync
 #   DRY_RUN=1               If set, rsync --dry-run only
 #   SKIP_BUILD=1            If set, skip mkdocs build (use existing ./site)
+#   SKIP_TRSE_IMPORT=1      If set, skip regenerating TRSE method pages from ../resources/text/
 #
 set -euo pipefail
 
@@ -53,6 +54,12 @@ if [[ -z "${SKIP_BUILD:-}" ]]; then
   if ! command -v mkdocs >/dev/null 2>&1; then
     echo "Error: mkdocs not found. Activate your venv: source .venv/bin/activate" >&2
     exit 1
+  fi
+  if [[ -z "${SKIP_TRSE_IMPORT:-}" ]]; then
+    echo "==> import TRSE reference (syntax.txt + help/m/*.rtf)"
+    python3 "$SCRIPT_DIR/scripts/import_trse_reference.py" --skip-init
+  else
+    echo "==> SKIP_TRSE_IMPORT: using existing docs/trse/reference/"
   fi
   echo "==> mkdocs build"
   mkdocs build --strict

@@ -1,36 +1,61 @@
-# Importing TRSE help into MkDocs
+# TRSE reference in these docs
 
-This page explains **how** TRSE stores built-in documentation, **why** we have not fully automated import yet, and **what** you can do next.
+The **method reference** (`TRSE` → **Methods (reference)**) is **generated** from the TRSE repository so it stays aligned with the IDE.
 
-## Where TRSE keeps help (in the main repo)
+## Sources (in TRSE repo root)
 
-| Piece | Path | Role |
-|-------|------|------|
-| Index | `resources/text/syntax.txt` | Semicolon-separated rows: type, name, CPU scope, signatures… |
-| Bodies | `resources/text/help/<letter>/<topic>.rtf` | HTML fragments (e.g. `m/abs.rtf` for method `Abs`) |
+| File | Role |
+|------|------|
+| `resources/text/syntax.txt` | Lines starting with `m;` list each **method**, target systems, and parameter letters |
+| `resources/text/help/m/<name>.rtf` | HTML body for that method (filename = lowercase method name) |
 
-The IDE loads these at runtime (`formhelp.cpp`, `syntax.cpp`). See the discussion in project notes: the `.rtf` files are mostly **HTML**, not Word RTF.
+The `.rtf` extension is historical; content is **HTML** fragments, as in the IDE (`formhelp.cpp`).
 
-## Why not commit 400+ generated pages here?
+## Regenerate
 
-- **Duplication**: The source of truth stays in TRSE; generated Markdown would need **regeneration** on every upstream merge.
-- **Search**: MkDocs Material’s search works on **built** HTML; a CI job can generate Markdown or HTML under `docs/trse/reference/` before `mkdocs build`.
+From the **repository root** (where `resources/text/` exists):
 
-## Recommended pipeline (future)
+```bash
+python3 retrodocs/scripts/import_trse_reference.py --skip-init
+```
 
-1. Add a script (Python) in `retrodocs/scripts/` that:
-   - Parses `syntax.txt`
-   - For each method (`m` rows), reads `resources/text/help/m/<name>.rtf`
-   - Writes one Markdown file per topic (or one big page per section) with front matter `title` / `description`
-2. Run the script **before** `mkdocs build` (locally or in CI).
-3. Optionally **exclude** generated files from manual edits (`<!-- AUTO-GENERATED -->` banner).
+Or from `retrodocs/`:
 
-## What you can do today
+```bash
+python3 scripts/import_trse_reference.py --skip-init
+```
 
-- Hand-write **conceptual** guides under `docs/trse/` (tutorials, “how projects work”).
-- Link to **upstream** or your deployed IDE for live tools.
-- When ready, implement the generator above and add `python retrodocs/scripts/import_trse_help.py` to `deploy.sh` before `mkdocs build`.
+Options:
+
+| Flag | Meaning |
+|------|--------|
+| `--repo-root /path/to/TRSE` | If the script cannot find `resources/text/syntax.txt` by walking upward |
+| `--skip-init` | Omit methods whose names start with `init` (matches the IDE help list more closely) |
+
+Then build the site:
+
+```bash
+cd retrodocs
+mkdocs build
+```
+
+`deploy.sh` runs the import automatically unless **`SKIP_TRSE_IMPORT=1`**.
+
+## What gets written
+
+- `docs/trse/reference/methods-index.md` — table of all methods with links
+- `docs/trse/reference/methods/<slug>.md` — one page per method (HTML body embedded)
+
+Each file starts with `<!-- AUTO-GENERATED ... -->` — **edit the generator**, not the Markdown, or your changes will be overwritten.
+
+## Missing help files
+
+If `syntax.txt` lists a method but `help/m/<name>.rtf` is missing, the page is still created with a short stub. Upstream may add the file later.
+
+## Reserved words / constants / platform topics
+
+Only **`m` (methods)** are imported for now. Extending the script to `r`, `c`, `p` rows is straightforward (same help tree, different `syntax.txt` prefixes and `help/` subfolders).
 
 ---
 
-*Keeping generated docs in CI avoids bloating git history with huge auto-commits unless you choose to vendor them.*
+*Script: `retrodocs/scripts/import_trse_reference.py`*
