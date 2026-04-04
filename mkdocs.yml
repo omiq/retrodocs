@@ -16,8 +16,8 @@ site_author: Retro Game Coders
 # Canonical URL (sitemap, social cards). Production:
 site_url: https://docs.retrogamecoders.com/
 
-repo_url: https://github.com/omiq/TRSE
-repo_name: TRSE (upstream reference)
+#repo_url: https://github.com/omiq/TRSE
+#repo_name: TRSE (upstream reference)
 
 theme:
   name: material

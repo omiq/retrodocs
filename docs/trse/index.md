@@ -30,6 +30,6 @@ end.
 
 See **[The TRSE language](language.md)** for a full walkthrough.
 
-## Upstream project
+
 
 The main TRSE project lives at **[github.com/leuat/TRSE](https://github.com/leuat/TRSE)** — tutorials, examples, and the full source are there.
