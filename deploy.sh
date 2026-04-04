@@ -7,11 +7,11 @@
 #   - rsync installed (usually present on Linux/macOS)
 #
 # Usage:
-#   cd retrodocs
-#   source .venv/bin/activate
-#   export DEPLOY_HOST=ide.example.com
-#   export DEPLOY_USER=deploy
-#   export DEPLOY_PATH=/var/www/retrodocs/html
+   cd ~/github/trse/retrodocs
+   source .venv/bin/activate
+   export DEPLOY_HOST=server
+   export DEPLOY_USER=docs
+   export DEPLOY_PATH=/home/docs/htdocs/docs.retrogamecoders.com/
 #   ./deploy.sh
 #
 # Optional:
