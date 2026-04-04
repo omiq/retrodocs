@@ -72,6 +72,12 @@ TRSE’s IDE help lives in the **parent** repo (`resources/text/...`). This MkDo
 - **Search not updating** — Run a clean build: `rm -rf site && mkdocs build`.
 - **Theme looks wrong** — Check `mkdocs.yml` `theme:` block; upstream Material docs list breaking changes per major version.
 
+### Red “MkDocs 2.0” warning when you run `mkdocs serve`
+
+Material for MkDocs may print a **warning box** about **MkDocs 2.0** (breaking changes, plugins, etc.). That is **not** a failure — your server still starts and the site builds. It is a **heads-up** from the Material maintainers about the future **upstream** MkDocs major release.
+
+**This project** intentionally pins **`mkdocs` to 1.x** in `requirements.txt` (`mkdocs>=1.5,<2`) so you stay on the stable stack until there is a clear upgrade path. You can ignore the banner for day-to-day work, or read their analysis: [MkDocs 2.0 — Material blog](https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/).
+
 ---
 
 *Last expanded when the `retrodocs/` scaffold was added to the repository.*

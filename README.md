@@ -11,6 +11,8 @@ pip install -r requirements.txt
 mkdocs serve    # http://127.0.0.1:8000
 ```
 
+If you see a **MkDocs 2.0** warning banner from Material: it is informational, not an error. This repo pins **MkDocs 1.x** in `requirements.txt`. See **Maintaining this site** → *Red “MkDocs 2.0” warning*.
+
 ## Full maintainer guide
 
 Read **`docs/MAINTAINING.md`** (or view it in the built site under **Maintaining this site**).

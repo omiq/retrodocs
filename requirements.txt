@@ -2,4 +2,8 @@
 # Python 3.10+ recommended.
 #
 # Install:  python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+#
+# Pin MkDocs 1.x: MkDocs 2.0 will be a breaking change (Material prints an info banner about it).
+# This project stays on the MkDocs 1.x + Material 9.x stack until upstream provides a migration path.
+mkdocs>=1.5,<2
 mkdocs-material>=9.5,<10
