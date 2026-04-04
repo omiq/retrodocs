@@ -21,7 +21,7 @@ site_url: https://docs.retrogamecoders.com/
 
 theme:
   name: material
-  logo: https://retrogamecoders.com/images/retrogamecoders-logo-white.png
+  logo: https://retrogamecoders.com/wp-content/uploads/2021/03/cropped-Collect-%E2%80%A2-Play-%E2%80%A2-Refurb-%E2%80%A2-CreateRetro-Game-CodersRetro-Game-CodersRetro-Game-Coders-768x126.png
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
