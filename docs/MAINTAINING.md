@@ -32,8 +32,12 @@ Open **http://127.0.0.1:8000** — edits to `docs/**/*.md` reload automatically.
 ```bash
 cd retrodocs
 source .venv/bin/activate
+# Refresh TRSE method pages from ../resources/text/ (omit if you did not change TRSE sources)
+python3 scripts/import_trse_reference.py --skip-init
 mkdocs build
 ```
+
+`mkdocs build` may **list many pages under `trse/reference/methods/`** as “not in nav” — that is expected: only **[Methods (reference)](trse/reference/methods-index.md)** is in the sidebar; individual methods are linked from that index and searchable.
 
 Upload the contents of **`retrodocs/site/`** to your web server (or use `deploy.sh` — see below).
 

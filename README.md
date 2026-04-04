@@ -13,6 +13,16 @@ mkdocs serve    # http://127.0.0.1:8000
 
 If you see a **MkDocs 2.0** warning banner from Material: it is informational, not an error. This repo pins **MkDocs 1.x** in `requirements.txt`. See **Maintaining this site** → *Red “MkDocs 2.0” warning*.
 
+## TRSE reference (auto-generated)
+
+After cloning, regenerate method pages from the TRSE tree (requires `resources/text/` next to `retrodocs/`):
+
+```bash
+python3 scripts/import_trse_reference.py --skip-init
+```
+
+Committed copies may already be present; run the script when you merge TRSE upstream changes.
+
 ## Full maintainer guide
 
 Read **`docs/MAINTAINING.md`** (or view it in the built site under **Maintaining this site**).

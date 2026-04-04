@@ -11,10 +11,12 @@ Your fork may include extra tooling (for example under `tools/flf_tool/` and `ap
 
 ## On this documentation site
 
-We do **not** auto-import the full TRSE help into these pages yet. See **[Importing TRSE help](help-import.md)** for the planned approach and how you can add generated pages later.
+- **[Methods (reference)](reference/methods-index.md)** — built-in methods from TRSE’s `syntax.txt` + `resources/text/help/m/*.rtf` (regenerate with `scripts/import_trse_reference.py`).
+- **[How import works](help-import.md)** — sources, maintenance, and options.
 
-For day-to-day reference while coding in the IDE, use the built-in **Help** tab inside TRSE or the upstream repository.
+For day-to-day use inside the app, the IDE **Help** tab is still the primary UI.
 
 ## Quick links
 
-- [Importing TRSE help into MkDocs](help-import.md)
+- [Methods index](reference/methods-index.md)
+- [Import / regenerate reference](help-import.md)
