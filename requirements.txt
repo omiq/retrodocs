@@ -1,0 +1,5 @@
+# Retro Game Coders documentation site (MkDocs + Material)
+# Python 3.10+ recommended.
+#
+# Install:  python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+mkdocs-material>=9.5,<10
