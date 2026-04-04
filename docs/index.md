@@ -1,6 +1,6 @@
 # Retro Game Coders — Documentation
 
-Welcome. This site is the documentation companion to **[ide.retrogamecoders.com](https://ide.retrogamecoders.com)** — a browser-based environment for retro programming across multiple platforms and languages.
+Welcome to the ***documentation*** companion to **[ide.retrogamecoders.com](https://ide.retrogamecoders.com)** — a browser-based environment for retro programming across multiple platforms and languages.
 
 ## What you will find here
 
