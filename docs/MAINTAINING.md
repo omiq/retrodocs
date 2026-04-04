@@ -55,6 +55,9 @@ TRSE’s IDE help lives in the **parent** repo (`resources/text/...`). This MkDo
 | **`deploy.sh`** (rsync over SSH) | Good for a VPS you control; see script header for env vars. |
 | **GitHub Actions + Pages** | Build `mkdocs build` in CI, publish `site/`. |
 | **Cloudflare Pages / Netlify** | Point at repo; build command `mkdocs build`, publish directory `retrodocs/site`. |
+| **CloudPanel (VPS) — static site** | Create the site as **Static** / HTML, document root = directory containing **`index.html`** from `mkdocs build`. **Do not** use an application template that **`proxy_pass`**es to a port — MkDocs output has no backend; a proxy causes **502**. Upload/rsync the contents of **`retrodocs/site/`** into that directory. |
+
+`mkdocs.yml` sets **`site_url: https://docs.retrogamecoders.com/`** so the built site knows its public URL (sitemap, etc.).
 
 ## Files worth knowing
 

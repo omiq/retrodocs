@@ -8,8 +8,8 @@ site_name: Retro Game Coders Docs
 site_description: Educational documentation for retro programming — IDE, TRSE, assembly, C, BASIC, and more.
 site_author: Retro Game Coders
 
-# If you later host at a subpath, set e.g. docs_dir trailing path:
-# site_url: https://ide.retrogamecoders.com/docs/
+# Canonical URL (sitemap, social cards). Production:
+site_url: https://docs.retrogamecoders.com/
 
 repo_url: https://github.com/omiq/TRSE
 repo_name: TRSE (upstream reference)
