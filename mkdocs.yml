@@ -66,21 +66,32 @@ nav:
   - Home: index.md
   - IDE:
       - ide/getting-started.md
+  - Platforms:
+      - platforms/index.md
+      - "Commodore 64": platforms/c64.md
+      - "VIC-20": platforms/vic20.md
+      - "BBC Micro": platforms/bbc-micro.md
+      - "ZX Spectrum": platforms/zx-spectrum.md
+      - "NES / Famicom": platforms/nes.md
+      - "Atari 8-bit": platforms/atari8.md
+  - Assembly:
+      - assembly/index.md
+      - "6502 assembly": assembly/6502.md
+      - "Z80 assembly": assembly/z80.md
+  - C:
+      - c/index.md
+      - "cc65 (6502)": c/cc65.md
+      - "z88dk (Z80)": c/z88dk.md
+  - BASIC:
+      - basic/index.md
+      - "Commodore BASIC V2": basic/commodore-basic-v2.md
+      - "XC-BASIC 3": basic/xc-basic-3.md
+      - "BBC BASIC": basic/bbc-basic.md
+      - "ZX BASIC (Boriel)": basic/zx-basic.md
   - TRSE:
       - trse/index.md
       - "Methods (reference)": trse/reference/methods-index.md
       - trse/help-import.md
-  - Assembly:
-      - assembly/index.md
-      - assembly/6502.md
-      - assembly/z80.md
-  - C:
-      - c/index.md
-      - c/cc65.md
-  - BASIC:
-      - basic/index.md
-      - basic/commodore-basic-v2.md
-      - basic/xc-basic-3.md
   - Maintaining this site: MAINTAINING.md
 
 extra:
