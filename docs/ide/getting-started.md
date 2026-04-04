@@ -5,7 +5,7 @@ description: Overview of the Retro Game Coders web IDE — workflow, shortcuts, 
 
 # Getting started with the IDE
 
-The **[Retro Game Coders IDE](https://ide.retrogamecoders.com/)** is a browser-based environment for 8-bit development. It builds on the [8bitworkshop](https://github.com/sehugg/8bitworkshop) foundation with additional platforms, compilers, and quality-of-life features.
+The **[Retro Game Coders IDE](https://ide.retrogamecoders.com/)** is a browser-based environment for 8-bit development.
 
 !!! note "Living product"
     The IDE gains features over time. This page summarizes behaviour described in the public help and common workflows; your running version may include **more** options (platforms, compilers, UI). When in doubt, use the in-app help and the **platform / language** dropdowns.
@@ -16,9 +16,9 @@ The **[Retro Game Coders IDE](https://ide.retrogamecoders.com/)** is a browser-b
 - Edit source in the **editor**; build and run in the **emulator** (or compile-only flows where applicable).
 - Use **auto-compile** for fast feedback, or turn it off for long editing sessions and build manually when ready.
 
-## What’s in this fork (high level)
+## What’s avilable
 
-Compared to a stock 8bitworkshop-style experience, the RGC IDE has added or improved things such as:
+The RGC IDE is contantly being developed or improved with things such as:
 
 - Extra **platforms** (e.g. VIC-20, BBC Micro, enhanced C64 BASIC paths).
 - **Auto-compile** toggle with clear on/off status.
@@ -81,6 +81,7 @@ See also the dedicated docs: **[Commodore BASIC v2](../basic/commodore-basic-v2.
 | Undo / redo | Ctrl+Z / Ctrl+Shift+Z or Ctrl+Y | Cmd+Z / Cmd+Shift+Z |
 | Indent / outdent | Ctrl+] / Ctrl+[ | Cmd+] / Cmd+[ |
 | Find | Ctrl+F | Cmd+F |
+| Replace | Ctrl+Shift+F | Cmd+Shift+F | 
 | Find next / prev | Ctrl+G / Ctrl+Shift+G | Cmd+G / Cmd+Shift+G |
 
 !!! tip
@@ -111,4 +112,4 @@ See also the dedicated docs: **[Commodore BASIC v2](../basic/commodore-basic-v2.
 
 ---
 
-*Derived from the public IDE help at `ide.retrogamecoders.com/help/ide_help.html` and expanded for this documentation site.*
+
