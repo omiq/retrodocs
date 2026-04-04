@@ -1,0 +1,112 @@
+/* Retro Game Coders — docs site branding (family match with retrogamecoders.com)
+   Tweak hues here if you align with exact WP theme CSS later. */
+
+/* Material "custom" palette — required when mkdocs.yml uses primary: custom */
+[data-md-color-primary="custom"] {
+  --md-primary-fg-color: #152238;
+  --md-primary-fg-color--light: #1e3250;
+  --md-primary-fg-color--dark: #0f1828;
+}
+
+[data-md-color-accent="custom"] {
+  --md-accent-fg-color: #e8a317;
+  --md-accent-bg-color: rgba(232, 163, 23, 0.12);
+}
+
+:root {
+  /* Brand: deep navy + warm gold (retro computer / badge feel) */
+  --rgc-navy: #152238;
+  --rgc-navy-light: #1e3250;
+  --rgc-gold: #e8a317;
+  --rgc-gold-muted: #c4890f;
+  --rgc-cream: #f4f0e6;
+  --rgc-ink: #0d1117;
+}
+
+/* ----- Light scheme ----- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: var(--rgc-navy);
+  --md-primary-fg-color--light: var(--rgc-navy-light);
+  --md-primary-fg-color--dark: #0f1828;
+  --md-accent-fg-color: var(--rgc-gold);
+  --md-typeset-a-color: #1565c0;
+  --md-typeset-a-color--hover: var(--rgc-gold-muted);
+}
+
+[data-md-color-scheme="default"] .md-header {
+  background-color: var(--rgc-navy);
+  box-shadow: 0 0.05rem 0.25rem rgba(15, 24, 40, 0.35);
+}
+
+[data-md-color-scheme="default"] .md-tabs {
+  background-color: var(--rgc-navy-light);
+  border-bottom: 1px solid rgba(232, 163, 23, 0.25);
+}
+
+[data-md-color-scheme="default"] .md-search__input {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ----- Dark scheme ----- */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: var(--rgc-navy-light);
+  --md-primary-fg-color--light: #2a4060;
+  --md-primary-fg-color--dark: var(--rgc-navy);
+  --md-accent-fg-color: var(--rgc-gold);
+  --md-typeset-a-color: #7cb9ff;
+  --md-typeset-a-color--hover: var(--rgc-gold);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: var(--rgc-ink);
+  box-shadow: 0 0.05rem 0.25rem rgba(0, 0, 0, 0.45);
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: #161b22;
+  border-bottom: 1px solid rgba(232, 163, 23, 0.2);
+}
+
+/* Accent: search highlight, buttons, focus rings */
+.md-button--primary,
+.md-typeset .md-button--primary {
+  background-color: var(--rgc-gold-muted);
+  color: var(--rgc-ink);
+}
+
+/* Nav: subtle gold focus for accessibility */
+.md-nav__link--active,
+.md-nav__link:focus {
+  font-weight: 600;
+}
+
+/* Footer band (Material 9) */
+.md-footer-meta {
+  background-color: var(--rgc-navy);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-md-color-scheme="slate"] .md-footer-meta {
+  background-color: #0d1117;
+}
+
+.md-footer-meta a {
+  color: var(--rgc-gold);
+}
+
+.md-footer-meta a:hover {
+  color: #ffd063;
+}
+
+/* Home hero strip on index (optional class in markdown) */
+.rgc-family-banner {
+  border-left: 4px solid var(--rgc-gold);
+  background: linear-gradient(90deg, rgba(232, 163, 23, 0.12), transparent);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.rgc-family-banner a {
+  font-weight: 600;
+}

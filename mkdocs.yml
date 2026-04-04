@@ -19,13 +19,15 @@ theme:
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -39,6 +41,9 @@ theme:
 
 plugins:
   - search
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -63,7 +68,17 @@ nav:
   - Maintaining this site: MAINTAINING.md
 
 extra:
+  # Header logo links to main community site (docs canonical URL stays site_url)
+  homepage: https://retrogamecoders.com/
   social:
-    - icon: fontawesome/solid/book
-      link: https://ide.retrogamecoders.com
-      name: IDE
+    - icon: fontawesome/solid/house
+      link: https://retrogamecoders.com/
+      name: Retro Game Coders
+    - icon: fontawesome/solid/laptop-code
+      link: https://ide.retrogamecoders.com/
+      name: Web IDE
+    - icon: fontawesome/solid/users
+      link: https://retrogamecoders.com/community/
+      name: Community
+
+copyright: Copyright &copy; Retro Game Coders

@@ -63,7 +63,8 @@ TRSE’s IDE help lives in the **parent** repo (`resources/text/...`). This MkDo
 
 | Path | Purpose |
 |------|---------|
-| `retrodocs/mkdocs.yml` | Site name, theme, plugins, **nav** |
+| `retrodocs/mkdocs.yml` | Site name, theme, plugins, **nav**, `extra_css`, social links |
+| `retrodocs/docs/stylesheets/extra.css` | **Brand colours** (navy + gold) to match retrogamecoders.com |
 | `retrodocs/docs/` | All Markdown content |
 | `retrodocs/requirements.txt` | Pinned MkDocs Material (adjust upper bound when upgrading) |
 | `retrodocs/deploy.sh` | Optional SSH/rsync deploy |

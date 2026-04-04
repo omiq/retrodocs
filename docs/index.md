@@ -1,5 +1,12 @@
 # Retro Game Coders — Documentation
 
+<div class="rgc-family-banner" markdown="0">
+  <strong>Part of the Retro Game Coders family</strong> —
+  <a href="https://retrogamecoders.com/">Main site</a> ·
+  <a href="https://ide.retrogamecoders.com/">Web IDE</a> ·
+  <a href="https://retrogamecoders.com/community/">Community</a>
+</div>
+
 Welcome. This site is the **educational documentation** companion to **[ide.retrogamecoders.com](https://ide.retrogamecoders.com)** — a browser-based environment for retro programming across multiple platforms and languages.
 
 ## What you will find here
