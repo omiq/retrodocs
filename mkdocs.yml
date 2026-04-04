@@ -102,6 +102,7 @@ nav:
       - "Color BASIC": basic/color-basic.md
   - TRSE:
       - trse/index.md
+      - "The TRSE language": trse/language.md
       - "Methods (reference)": trse/reference/methods-index.md
       - trse/help-import.md
   - Maintaining this site: MAINTAINING.md
