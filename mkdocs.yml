@@ -21,6 +21,7 @@ site_url: https://docs.retrogamecoders.com/
 
 theme:
   name: material
+  logo: https://retrogamecoders.com/images/retrogamecoders-logo-white.png
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
