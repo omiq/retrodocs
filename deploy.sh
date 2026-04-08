@@ -19,7 +19,7 @@
 #   DEPLOY_KEY=~/.ssh/id_ed25519   Identity file for ssh/rsync
 #   DRY_RUN=1               If set, rsync --dry-run only
 #   SKIP_BUILD=1            If set, skip mkdocs build (use existing ./site)
-#   SKIP_TRSE_IMPORT=1      If set, skip regenerating TRSE method pages from ../resources/text/
+#   SKIP_TRSE_IMPORT=1      If set, skip regenerating TRSE method + units pages from ../resources/text/ and ../units/
 #
 set -euo pipefail
 
@@ -58,6 +58,8 @@ if [[ -z "${SKIP_BUILD:-}" ]]; then
   if [[ -z "${SKIP_TRSE_IMPORT:-}" ]]; then
     echo "==> import TRSE reference (syntax.txt + help/m/*.rtf)"
     python3 "$SCRIPT_DIR/scripts/import_trse_reference.py" --skip-init
+    echo "==> import TRSE units catalog (units/**/*.tru)"
+    python3 "$SCRIPT_DIR/scripts/import_trse_units.py"
   else
     echo "==> SKIP_TRSE_IMPORT: using existing docs/trse/reference/"
   fi
