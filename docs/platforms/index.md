@@ -52,7 +52,7 @@ The Motorola 6809 is a more advanced architecture than the 6502 or Z80 — two s
 
 | Platform | Languages in IDE | Notes |
 |----------|-----------------|-------|
-| [RGC BASIC](../basic/rgc-basic.md) | RGC BASIC | WASM interpreter in-browser; [source](https://github.com/omiq/rgc-basic) |
+| [RGC BASIC](../basic/rgc-basic.md) | RGC BASIC | WASM in IDE; native **basic** / **basic-gfx** ([repo](https://github.com/omiq/rgc-basic)) |
 
 ## Choosing a platform to start with
 

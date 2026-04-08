@@ -72,6 +72,7 @@ TRSE’s IDE help lives in the **parent** repo (`resources/text/...`). This MkDo
 | `retrodocs/mkdocs.yml` | Site name, theme, plugins, **nav**, `extra_css`, social links |
 | `retrodocs/docs/stylesheets/extra.css` | **Brand colours** (navy + gold) to match retrogamecoders.com |
 | `retrodocs/docs/` | Markdown: `ide/`, `trse/`, `assembly/`, `c/`, `basic/`, … |
+| `retrodocs/docs/basic/rgc-basic/` | **Hand-written** multi-page guide for [RGC BASIC](https://github.com/omiq/rgc-basic) (not generated) |
 | `retrodocs/requirements.txt` | Pinned MkDocs Material (adjust upper bound when upgrading) |
 | `retrodocs/deploy.sh` | Optional SSH/rsync deploy |
 | `retrodocs/scripts/import_trse_units.py` | Generates `trse/reference/units-index.md` and `trse/reference/units/*.md` from `../units/**/*.tru` (signatures + block-comment notes) |

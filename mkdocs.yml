@@ -103,7 +103,13 @@ nav:
       - "BBC BASIC": basic/bbc-basic.md
       - "ZX BASIC (Boriel)": basic/zx-basic.md
       - "Color BASIC": basic/color-basic.md
-      - "RGC BASIC": basic/rgc-basic.md
+      - "RGC BASIC":
+          - "Overview": basic/rgc-basic.md
+          - "Install & platforms": basic/rgc-basic/install.md
+          - "Web IDE (WASM)": basic/rgc-basic/web-ide.md
+          - "Language reference": basic/rgc-basic/language.md
+          - "Terminal & PETSCII": basic/rgc-basic/terminal-petscii.md
+          - "Graphics (Raylib)": basic/rgc-basic/graphics-raylib.md
   - TRSE:
       - trse/index.md
       - "The TRSE language": trse/language.md
