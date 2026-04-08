@@ -102,14 +102,8 @@ def write_folder_page(
 ) -> None:
     slug = slug_for_folder(folder_title)
     path = out_units / f"{slug}.md"
-    title = f"TRSE units: {folder_title}"
-    meta = (
-        "---\n"
-        f'title: "{title}"\n'
-        "description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE\n"
-        "---\n\n"
-    )
-    body: list[str] = [BANNER, meta, f"# {folder_title}\n\n", intro_extra]
+    # No YAML front matter: MkDocs does not strip --- blocks; they render as visible text.
+    body: list[str] = [BANNER, f"# {folder_title}\n\n", intro_extra]
     if not rel_paths:
         body.append("*No `.tru` files in this folder.*\n")
         path.write_text("".join(body), encoding="utf-8")
@@ -129,15 +123,8 @@ def write_folder_page(
 
 def write_cpu_specific_page(out_units: Path, cpu_root: Path) -> None:
     path = out_units / "cpu_specific.md"
-    meta = (
-        "---\n"
-        'title: "TRSE units: cpu_specific"\n'
-        "description: CPU-specific Turbo Rascal units (6502, Z80, …)\n"
-        "---\n\n"
-    )
     body: list[str] = [
         BANNER,
-        meta,
         "# cpu_specific\n\n",
         "These units live under `units/cpu_specific/<CPU>/`. "
         "TRSE resolves `@use` after system units and before `units/global/`.\n\n"
@@ -169,10 +156,6 @@ def write_index(
 ) -> None:
     lines = [
         BANNER,
-        "---\n",
-        'title: "Included TRSE units"\n',
-        "description: Catalog of bundled .tru library files per platform\n",
-        "---\n\n",
         "# Included TRSE units\n\n",
         "TRSE ships **Turbo Rascal unit** files (`.tru`) under the `units/` directory "
         "in the source tree. They provide graphics helpers, drivers, music players, "

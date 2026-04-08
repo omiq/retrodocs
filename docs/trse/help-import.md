@@ -48,6 +48,8 @@ mkdocs build
 
 Each file starts with `<!-- AUTO-GENERATED ... -->` — **edit the generator**, not the Markdown, or your changes will be overwritten.
 
+**Note:** Generated pages do **not** use YAML `---` front matter. MkDocs does not strip it; a `---` block would render as a horizontal rule plus visible `title:` / `description:` lines. Page titles come from `mkdocs.yml` `nav:` and the first `#` heading.
+
 ## Bundled units (`.tru` libraries)
 
 The **included units** index lists every shipped Turbo Rascal unit under `units/` (by platform folder, plus `global` and `cpu_specific`).

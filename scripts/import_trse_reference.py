@@ -75,8 +75,8 @@ def write_method_page(
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{slug}.md"
-    meta = f'---\ntitle: "{name}"\ndescription: TRSE built-in method (from IDE help)\n---\n\n'
-    sig = f"**Systems:** {esc_md(systems) if systems else '—'}  \n**Parameters:** `{esc_md(params) if params else '—'}`\n\n---\n\n"
+    # No YAML front matter: MkDocs does not strip --- blocks; they render as HR + raw text.
+    sig = f"**Systems:** {esc_md(systems) if systems else '—'}  \n**Parameters:** `{esc_md(params) if params else '—'}`\n\n***\n\n"
     body = ""
     if html:
         body = f'<div markdown="0" class="trse-help-body">\n\n{html}\n\n</div>\n'
@@ -85,7 +85,7 @@ def write_method_page(
             "*No help file found in the repository for this method.* "
             "(Expected `resources/text/help/m/{}.rtf`.)\n".format(name.lower())
         )
-    path.write_text(BANNER + meta + f"# `{name}`\n\n" + sig + body, encoding="utf-8")
+    path.write_text(BANNER + f"# `{name}`\n\n" + sig + body, encoding="utf-8")
 
 
 def parse_methods(lines: list[str], skip_init: bool) -> list[dict]:
@@ -116,11 +116,6 @@ def write_methods_index(
 ) -> None:
     """items: (slug, name, systems, params)"""
     lines = [
-        "---",
-        'title: "TRSE methods (reference)"',
-        "description: Built-in methods from TRSE syntax.txt + IDE help files",
-        "---",
-        "",
         BANNER.strip(),
         "",
         "# TRSE methods (reference)",
