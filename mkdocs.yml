@@ -6,6 +6,8 @@
 #
 # TRSE method pages under trse/reference/methods/ are generated — run:
 #   python3 scripts/import_trse_reference.py
+# TRSE bundled units catalog — run:
+#   python3 scripts/import_trse_units.py
 # before mkdocs build (see deploy.sh).
 
 site_name: Retro Game Coders Docs
@@ -105,6 +107,7 @@ nav:
       - trse/index.md
       - "The TRSE language": trse/language.md
       - "Methods (reference)": trse/reference/methods-index.md
+      - "Included units (.tru)": trse/reference/units-index.md
       - trse/help-import.md
   - Maintaining this site: MAINTAINING.md
 

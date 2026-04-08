@@ -9,6 +9,7 @@
 
 - **[The TRSE language](language.md)** — syntax, types, procedures, directives, and a minimal game loop. Start here if you're new to Turbo Rascal.
 - **[Methods (reference)](reference/methods-index.md)** — complete listing of all built-in methods with parameters and platform compatibility, generated from the TRSE source.
+- **[Included units](reference/units-index.md)** — catalog of bundled `.tru` library files per platform (`units/` in the TRSE tree), with `@use` search order.
 - **[How the reference is generated](help-import.md)** — sources, regeneration script, and maintenance notes.
 
 ## Quick overview

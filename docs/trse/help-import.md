@@ -48,6 +48,36 @@ mkdocs build
 
 Each file starts with `<!-- AUTO-GENERATED ... -->` — **edit the generator**, not the Markdown, or your changes will be overwritten.
 
+## Bundled units (`.tru` libraries)
+
+The **included units** index lists every shipped Turbo Rascal unit under `units/` (by platform folder, plus `global` and `cpu_specific`).
+
+### Regenerate
+
+From the **repository root**:
+
+```bash
+python3 retrodocs/scripts/import_trse_units.py
+```
+
+Or from `retrodocs/`:
+
+```bash
+python3 scripts/import_trse_units.py
+```
+
+| Flag | Meaning |
+|------|--------|
+| `--repo-root /path/to/TRSE` | If the script cannot find `units/` by walking upward |
+
+### What gets written
+
+- `docs/trse/reference/units-index.md` — summary table with links to per-folder lists
+- `docs/trse/reference/units/<folder>.md` — file list for each top-level `units/<FOLDER>/` tree
+- `docs/trse/reference/units/cpu_specific.md` — units grouped by CPU subfolder
+
+`deploy.sh` runs this import together with the method reference unless **`SKIP_TRSE_IMPORT=1`**.
+
 ## Missing help files
 
 If `syntax.txt` lists a method but `help/m/<name>.rtf` is missing, the page is still created with a short stub. Upstream may add the file later.
@@ -58,4 +88,4 @@ Only **`m` (methods)** are imported for now. Extending the script to `r`, `c`, `
 
 ---
 
-*Script: `retrodocs/scripts/import_trse_reference.py`*
+*Scripts: `retrodocs/scripts/import_trse_reference.py`, `retrodocs/scripts/import_trse_units.py`*

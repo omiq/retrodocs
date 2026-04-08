@@ -34,6 +34,8 @@ cd retrodocs
 source .venv/bin/activate
 # Refresh TRSE method pages from ../resources/text/ (omit if you did not change TRSE sources)
 python3 scripts/import_trse_reference.py --skip-init
+# Refresh bundled units list from ../units/
+python3 scripts/import_trse_units.py
 mkdocs build
 ```
 
@@ -72,6 +74,7 @@ TRSE’s IDE help lives in the **parent** repo (`resources/text/...`). This MkDo
 | `retrodocs/docs/` | Markdown: `ide/`, `trse/`, `assembly/`, `c/`, `basic/`, … |
 | `retrodocs/requirements.txt` | Pinned MkDocs Material (adjust upper bound when upgrading) |
 | `retrodocs/deploy.sh` | Optional SSH/rsync deploy |
+| `retrodocs/scripts/import_trse_units.py` | Generates `trse/reference/units-index.md` and `trse/reference/units/*.md` from `../units/**/*.tru` |
 | `retrodocs/README.md` | Short pointer (duplicate of this file in spirit) |
 
 ## Troubleshooting
