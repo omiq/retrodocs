@@ -8,6 +8,16 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/TIKI100/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `system/system`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `system/system`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetMode` | `procedure SetMode(mode : global byte);` | — |
+| `procedure` | `SetSingleColor` | `procedure SetSingleColor(i : global byte);` | — |
+| `procedure` | `SetColor` | `procedure SetColor(c,r,g,b : global byte);` | — |
+| `procedure` | `Init` | `procedure Init() inline;` | — |
+

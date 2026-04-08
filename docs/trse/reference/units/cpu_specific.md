@@ -8,58 +8,319 @@ description: CPU-specific Turbo Rascal units (6502, Z80, …)
 
 These units live under `units/cpu_specific/<CPU>/`. TRSE resolves `@use` after system units and before `units/global/`.
 
-Paths below are relative to `units/cpu_specific/` (include the CPU folder in the `@use` string).
+Paths in headings are relative to `units/cpu_specific/<CPU>/`.
+
+## Units
+
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from block comments above each declaration.
 
 ## `M68000`
 
-- `M68000/compression`
+### `M68000/compression`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Decompress` | `procedure Decompress(in, out : global pointer of integer);` | — |
 
 ## `M6809`
 
-- `M6809/compression/compression`
-- `M6809/memory`
+### `M6809/compression/compression`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Decompress` | `procedure Decompress(src, dst : global pointer);` | — |
+
+### `M6809/memory`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Copy` | `procedure Copy(src, dst: global pointer; len : global byte);` | — |
+| `procedure` | `Copy16` | `procedure Copy16(src, dst: global pointer; ilen2 : integer);` | — |
+| `procedure` | `Fill` | `procedure Fill( dst:global pointer; b: global byte; len: global byte ) inline;` | — |
+| `procedure` | `Fill16` | `procedure Fill16( dst:global pointer; b: global byte; ilen: global integer );` | — |
 
 ## `MOS6502`
 
-- `MOS6502/compression/compression`
-- `MOS6502/gfx/Levels`
-- `MOS6502/math/math`
-- `MOS6502/math/signedmath`
-- `MOS6502/system/memory`
-- `MOS6502/system/sparkle`
-- `MOS6502/text/txt`
-- `MOS6502/unittests/common`
+### `MOS6502/compression/compression`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Decompress` | `procedure Decompress(src, dst : global pointer of integer);` | This method will decompress the LZW-compressed source data to the target destination. Example: ` // Deflates to $4000 var myCompressedData : incbin("somedata.bin") compressed; begin Compression::Decompress( #myCompressedData, ^$4000); ... ` |
+
+### `MOS6502/gfx/Levels`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `ReadHeader` | `procedure ReadHeader(orgLevelPos:global integer);` | — |
+| `procedure` | `RenderColorLevel` | `procedure RenderColorLevel(m_li, m_lj, m_screen: byte);` | — |
+| `procedure` | `RenderCharsetColorLevel` | `procedure RenderCharsetColorLevel(m_li2, m_lj2, m_screen2: byte);` | — |
+
+### `MOS6502/math/math`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `sqrTest` | `procedure sqrTest(math_v : byte);` | — |
+
+### `MOS6502/math/signedmath`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init();` | — |
+| `procedure` | `Muls8x8` | `procedure Muls8x8(T1,T2 : global byte);` | — |
+| `procedure` | `Divs16x8` | `procedure Divs16x8(PRODUCT:global integer; T1 : global byte);` | — |
+
+### `MOS6502/system/memory`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Poke` | `procedure Poke( i1: global integer pure_number, v: global byte pure_number) inline;` | — |
+| `procedure` | `Poke` | `procedure Poke( i1: global integer pure_number, v: global byte pure_variable) inline;` | — |
+| `procedure` | `Poke` | `procedure Poke( p: global pointer pure , v: global byte pure_variable) inline;` | — |
+| `procedure` | `Poke` | `procedure Poke( p: global pointer pure , v: global byte pure_number) inline;` | — |
+| `procedure` | `Poke` | `procedure Poke( p: global pointer, v: global byte);` | Sets a value at memory address. Usage: ` poke($400, $54); // puts value $54 at address $400 ` |
+| `procedure` | `Copy` | `procedure Copy( i1 : global integer pure, i2 : global integer pure, v: global byte pure ) inline;` | — |
+| `procedure` | `Copy` | `procedure Copy( p : global pointer pure, p2 : global pointer pure, v: global byte pure ) inline;` | — |
+| `procedure` | `Copy` | `procedure Copy( p : global pointer, p2 : global pointer, v: global byte);` | Copies v bytes of data from p1 to p2. Note that the count must be a byte, ie <256. use "0" for 256 bytes. Usage: ` Memory::Copy($400, $4400, 128); // copies 128 bytes from $400 to $4400 ` |
+| `procedure` | `Fill` | `procedure Fill( i1: global integer pure_number, v,v2: global byte pure_number) inline;` | — |
+| `procedure` | `Fill` | `procedure Fill( i1: global integer pure_number, v: global byte pure_variable, v2: global byte pure_variable) inline;` | — |
+| `procedure` | `Fill` | `procedure Fill( p: global pointer, v,v2: global byte);` | — |
+| `procedure` | `FillChunks` | `procedure FillChunks(p : global pointer; v3, v4 : global byte);` | fills p3*256 bytes of memory |
+
+### `MOS6502/system/sparkle`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `LoadBundle` | `procedure LoadBundle(val:global byte);` | — |
+| `procedure` | `SetBank` | `procedure SetBank(val:global byte);` | — |
+| `procedure` | `LoadBundleIndex` | `procedure LoadBundleIndex(DirIndex:byte);` | — |
+
+### `MOS6502/text/txt`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `cls` | `procedure cls();` | Clear screen and initialise pointers Required for move_to etc |
+| `procedure` | `cursor_home` | `procedure cursor_home();` | Place the cursor at 0,0 top left of screen |
+| `procedure` | `move_to` | `procedure move_to(_text_x: byte, _text_y: byte);` | Place the cursor at X, Y screen position |
+| `procedure` | `wait_vsync` | `procedure wait_vsync();` | Wait for vertical blank (not yet implemented) |
+| `procedure` | `text_colour` | `procedure text_colour(_chosen_text_colour: byte);` | Set the text colour (not available on all platforms) |
+| `procedure` | `print_string` | `procedure print_string(in_str: global pointer, CRLF: global byte);` | Output a string at the current cursor location. Set Carriage Return on/off |
+| `procedure` | `print_string_centered` | `procedure print_string_centered(in_str: global pointer, CRLF: global byte, _sc_w: byte);` | Output a string at the current cursor location but centered. Set Carriage Return on/off Set the screen width Set reverse on/off |
+| `function` | `get_key` | `function get_key():byte;` | Get a character input from the keyboard |
+| `procedure` | `wait_key` | `procedure wait_key();` | Wait for a key press |
+| `procedure` | `clear_buffer` | `procedure clear_buffer();` | Clear the keyboard buffer |
+| `procedure` | `beep` | `procedure beep();` | Make a beep sound (not available on all platforms) |
+| `procedure` | `DefineScreen` | `procedure DefineScreen();` | Helper to set up screen pointers etc |
+| `procedure` | `put_char_at` | `procedure put_char_at(_atx,_aty,_atchar:byte);` | Put a character at a X, Y screen coordinate |
+| `procedure` | `put_ch` | `procedure put_ch(CH:byte);` | Put a character at current cursor position |
+| `function` | `get_char_at` | `function get_char_at(_col,_row:byte):byte;` | Return the character at chosen screen position |
+| `function` | `str_compare` | `function str_compare(str1,str2:pointer):byte;` | Compare two strings for equality |
+| `procedure` | `put_dec_at` | `procedure put_dec_at(_natx,_naty,_nat:byte);` | Output a string representation of a decimal number at chosen position |
+| `procedure` | `print_dec` | `procedure print_dec(_in_n:byte, _add_cr:byte);` | Output a string representation of a decimal number at current cursor position Set if you want carriage return true/false |
+| `function` | `str_to_dec` | `function str_to_dec(_in_str:pointer):byte;` | Convert string to decimal number |
+| `function` | `get_dec` | `function get_dec():integer;` | Get numeric input from keyboard |
+| `procedure` | `cursor_on` | `procedure cursor_on();` | Show flashing cursor |
+| `procedure` | `cursor_off` | `procedure cursor_off();` | Hide flashing cursor |
+| `function` | `str_compare` | `function str_compare(str1,str2:pointer):byte;` | — |
+| `procedure` | `put_dec_at` | `procedure put_dec_at(_natx,_naty,_nat:byte);` | — |
+| `function` | `str_len` | `function str_len(in_str: global pointer):byte;` | — |
+| `procedure` | `print_space` | `procedure print_space(max_digits: global integer);` | — |
+| `procedure` | `print_string_centered` | `procedure print_string_centered(in_str: global pointer, CRLF: global byte, _sc_w: byte);` | — |
+| `procedure` | `print_dec` | `procedure print_dec(_in_n:byte, _add_cr:byte);` | — |
+| `procedure` | `print_dec` | `procedure print_dec(_in_n:byte, _add_cr:byte);` | — |
+| `function` | `str_to_dec` | `function str_to_dec(_in_str:pointer):byte;` | — |
+| `function` | `get_dec` | `function get_dec():integer;` | — |
+
+### `MOS6502/unittests/common`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `TestInit` | `procedure TestInit();` | — |
+| `procedure` | `CR` | `procedure CR() inline;` | — |
+| `procedure` | `TestSuiteInit` | `procedure TestSuiteInit();` | — |
+| `procedure` | `Initialise` | `procedure Initialise(zp:pointer);` | — |
 
 ## `PCHIP8`
 
-- `PCHIP8/text`
-- `PCHIP8/unittests/common`
+### `PCHIP8/text`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `DrawChar` | `procedure DrawChar(x, y, c: global byte);` | — |
+| `procedure` | `Reset` | `procedure Reset();` | — |
+| `procedure` | `PrintXY` | `procedure PrintXY(src:global ^byte, x,y : global byte);` | — |
+| `procedure` | `Print` | `procedure Print(src : global ^byte);` | — |
+
+### `PCHIP8/unittests/common`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `TestInit` | `procedure TestInit();` | — |
+| `procedure` | `CR` | `procedure CR() inline;` | — |
+| `procedure` | `TestSuiteInit` | `procedure TestSuiteInit();` | — |
+| `procedure` | `Initialise` | `procedure Initialise(zp:pointer);` | — |
+| `function` | `Status` | `function Status() : byte;` | — |
+| `procedure` | `PASS` | `procedure PASS();` | — |
+| `procedure` | `FAIL` | `procedure FAIL();` | — |
+| `procedure` | `WaitABit` | `procedure WaitABit();` | — |
+| `procedure` | `DebugValue` | `procedure DebugValue(v:integer);` | — |
 
 ## `PX86`
 
-- `PX86/math/math`
-- `PX86/math/matrix`
-- `PX86/math/random`
-- `PX86/math/vector`
-- `PX86/system/compression`
-- `PX86/system/memory`
+### `PX86/math/math`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `fixedDiv` | `function fixedDiv(d1, d2 : long) : long;` | — |
+
+### `PX86/math/matrix`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `MatMul4` | `procedure MatMul4( aa,bb,cc : matp );` | Multiply two 4x4 matrices aa and bb, result in cc |
+| `procedure` | `Print` | `procedure Print(m:global matp);` | Prints the conents of a 4x4 matrix to screen. For debugging purposes. |
+| `procedure` | `PrintVec` | `procedure PrintVec(m:global matp);` | Prints a 3D vector to screen. For debugging purposes |
+| `procedure` | `MatMulVec3` | `procedure MatMulVec3( a : global matp; vec, res: Vector::vecp );` | Multiplies a matrix 'a' with a vector3 'vec' with result in 'res'. |
+| `procedure` | `Normalize3` | `procedure Normalize3(a : global matp);` | — |
+| `procedure` | `Identity` | `procedure Identity(m:global matp);` | — |
+| `procedure` | `RotateX` | `procedure RotateX(m:global matp; angle:global integer);` | — |
+| `procedure` | `RotateY` | `procedure RotateY(m:global matp; angle:global integer);` | — |
+| `procedure` | `RotateZ` | `procedure RotateZ(m:global matp; angle:global integer);` | — |
+
+### `PX86/math/random`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init(Seed:global integer);` | — |
+| `function` | `Random` | `function Random(): integer;` | — |
+
+### `PX86/math/vector`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+
+### `PX86/system/compression`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `blz_getbit` | `function blz_getbit():integer;` | — |
+| `function` | `blz_getgamma` | `function blz_getgamma():integer;` | — |
+| `procedure` | `DecompressAgh` | `procedure DecompressAgh(src, dst : global pointer; size:integer);` | — |
+| `procedure` | `Decompress` | `procedure Decompress(inb,outb:global pointer);` | — |
+
+### `PX86/system/memory`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Poke8` | `procedure Poke8(_bx:integer; _di:integer;_ah:byte) inline;` | — |
+| `procedure` | `SetTimer` | `procedure SetTimer(ticks : integer);` | — |
+| `procedure` | `Init` | `procedure Init();` | — |
+| `function` | `GetBlockMem` | `function GetBlockMem(blocks: integer):long;` | — |
+| `function` | `GetMem` | `function GetMem(blocks: global integer):long;` | — |
+| `procedure` | `Release` | `procedure Release(rp: pointer);` | — |
+| `procedure` | `Quit` | `procedure Quit() inline;` | — |
+| `procedure` | `CopyData16` | `procedure CopyData16(source,dest:global pointer of integer;i1:global integer);` | — |
 
 ## `WDC65C02`
 
-- `WDC65C02/gfx/lib3d`
-- `WDC65C02/math/math`
-- `WDC65C02/math/matrix`
-- `WDC65C02/math/signedmath`
-- `WDC65C02/math/vector`
+### `WDC65C02/gfx/lib3d`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `FlipPointPointers` | `procedure FlipPointPointers(i : global byte);` | — |
+| `procedure` | `InitializeData` | `procedure InitializeData(startPos: global integer);` | — |
+| `procedure` | `AllocateWireframe` | `procedure AllocateWireframe(i,f,v : global byte);` | — |
+| `procedure` | `RenderWireframe` | `procedure RenderWireframe(i:global byte);` | — |
+| `procedure` | `FillColors` | `procedure FillColors(i,f:global byte);` | — |
+| `procedure` | `LoadObject` | `procedure LoadObject(i:global byte; fp: global pointer);` | — |
+| `procedure` | `RotateVertices` | `procedure RotateVertices(i:global byte);` | — |
+| `procedure` | `ProjectSimple` | `procedure ProjectSimple(i,cx,cy,cz,zdiv: global integer);` | — |
+
+### `WDC65C02/math/math`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `sqrTest` | `procedure sqrTest(math_v : byte);` | — |
+
+### `WDC65C02/math/matrix`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `MatMul3` | `procedure MatMul3( p1,pb : global pointer of byte; m : global matp );` | Multiply two 4x4 matrices aa and bb, result in cc |
+| `procedure` | `MatMulVec3` | `procedure MatMulVec3( pb: global pointer of byte; p1:global pointer of byte;res:global pointer of integer );` | Multiplies a matrix 'a' with a vector3 'vec' with result in 'res'. |
+| `procedure` | `Identity` | `procedure Identity(m:global matp);` | — |
+| `procedure` | `RotateX` | `procedure RotateX(m:global matp; angle:global byte);` | — |
+| `procedure` | `RotateY` | `procedure RotateY(m:global matp; angle:global byte);` | — |
+| `procedure` | `RotateZ` | `procedure RotateZ(m:global matp; angle:global byte);` | — |
+
+### `WDC65C02/math/signedmath`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init();` | — |
+| `procedure` | `Muls8x8` | `procedure Muls8x8(T1,T2 : global byte);` | — |
+| `procedure` | `Divs16x8` | `procedure Divs16x8(PRODUCT:global integer; T1 : global byte);` | — |
+
+### `WDC65C02/math/vector`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
 
 ## `Z80`
 
-- `Z80/compression`
-- `Z80/format`
-- `Z80/gfx/gfx`
-- `Z80/math/signedmath`
-- `Z80/math`
-- `Z80/memory`
-- `Z80/random`
-- `Z80/smallfloat`
+### `Z80/compression`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Decompress` | `procedure Decompress(in, out : global pointer of integer);` | — |
+| `procedure` | `DecompressToPort` | `procedure DecompressToPort(in, out : global pointer of integer);` | — |
+
+### `Z80/format`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `Strcpy` | `function Strcpy(s, s2 : global pointer):byte;` | Copy the string s at the location pointed by s2. The result will be null-terminated. There must be enough space in the target for the copy to be done. Returns the number of byte written to s2. |
+| `function` | `Append` | `function Append(s, s2 : global pointer):byte;` | Copy the string s at the end of the string pointed to by s2. The result will be null-terminated. The existing string in the target must be null-terminated before calling. There must be enough space in the target for the copy to be done. Returns the number of byte written to s2. |
+| `function` | `Itos` | `function Itos(i : global integer, s : global pointer):byte;` | Format the 16 bits unsigned integer i as a string in decimal and put the result in the buffer in s. You must plan for at least 6 chars in s. The resulting string is null-terminated. Returns the number of non-null bytes written (between 1 and 5). |
+
+### `Z80/gfx/gfx`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+
+### `Z80/math/signedmath`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init();` | — |
+| `function` | `Muls8x8` | `function Muls8x8(T1,T2 : global byte):integer;` | — |
+| `function` | `Divs16x8` | `function Divs16x8(PRODUCT:global integer; T1 : global byte):integer;` | — |
+
+### `Z80/math`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `ToggleBit` | `procedure ToggleBit(zp : global pointer; i,j : global byte);` | — |
+| `procedure` | `GetBit` | `procedure GetBit(zp:global pointer; i : global byte);` | — |
+
+### `Z80/memory`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Out` | `procedure Out(ga,gb:global byte);` | — |
+| `procedure` | `DisableInterrupts` | `procedure DisableInterrupts() inline;` | — |
+| `procedure` | `MemCpyLDDR` | `procedure MemCpyLDDR(source, destination, count: global integer);` | — |
+| `procedure` | `MemCpyOut` | `procedure MemCpyOut(source, destination, count: global integer);` | — |
+| `procedure` | `MemCpyLDIR` | `procedure MemCpyLDIR(source, destination, count: global integer);` | — |
+
+### `Z80/random`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `Random1` | `function Random1() : integer;` | Generates 16-bit random number |
+| `function` | `RandomByte` | `function RandomByte(): byte;` | Generates 8-bit random number |
+| `procedure` | `SetSeed` | `procedure SetSeed(seed: integer);` | Sets seed for random number generator |
+| `procedure` | `SetRSeed` | `procedure SetRSeed();` | Sets seed for random number generator from R register |
+
+### `Z80/smallfloat`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `FromString` | `procedure FromString(fromstring_f, s: global pointer);` | Create a 2 bytes floating point number from a string. First argument: float to create Second argument: string representing the initial value (null-terminated) Stops on the first invalid char (valid char are digits + a single . and optionally a - as first char). BUG: This produces suboptimal values (e.g 65500 will give 64768, because it'll try to add 500 to 65000 which is lower than the rounding error of 512) |
 

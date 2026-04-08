@@ -73,8 +73,10 @@ python3 scripts/import_trse_units.py
 ### What gets written
 
 - `docs/trse/reference/units-index.md` — summary table with links to per-folder lists
-- `docs/trse/reference/units/<folder>.md` — file list for each top-level `units/<FOLDER>/` tree
-- `docs/trse/reference/units/cpu_specific.md` — units grouped by CPU subfolder
+- `docs/trse/reference/units/<folder>.md` — for each `.tru` file: **procedure/function** declarations (name + full signature), plus **Notes** from the **block comment** directly above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not used as notes.
+- `docs/trse/reference/units/cpu_specific.md` — same layout, grouped by CPU
+
+Parsing is implemented in **`retrodocs/scripts/tru_extract.py`**. It ignores commented-out code inside `/* */`, `asm("…")` bodies, and strings. Declarations pulled in via **`@include`** are not expanded (see the included `.ras` file in TRSE for those APIs).
 
 `deploy.sh` runs this import together with the method reference unless **`SKIP_TRSE_IMPORT=1`**.
 

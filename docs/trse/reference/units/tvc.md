@@ -8,11 +8,166 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/TVC/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `GE`
-- `TVC`
-- `crtc`
-- `music`
-- `system`
-- `text`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `GE`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `RestoreBackground` | `procedure RestoreBackground;` | Restore the background of the sprite Copy the sprite's saved background back to the screen. |
+| `procedure` | `SaveBackground` | `procedure SaveBackground;` | Saves the background of the sprite to the background buffer. |
+| `procedure` | `Put` | `procedure Put;` | Put sprite to screen by overwrite mode Example: var Player : GE::Sprite; begin Player.Init(#TestSprite, 4, 20, False); Player.X := 30; Player.Y := 100; Player.SetPosition(); Player.Put(); |
+| `procedure` | `CopyToScreen` | `procedure CopyToScreen;` | Sprite.Put |
+| `procedure` | `SetPosition` | `procedure SetPosition();` | Adjust the sprite's screen position using the sprite's X and Y values. Example: var Player : GE::Sprite; begin Player.Init(#TestSprite, 4, 20, False); Player.X := 30; Player.Y := 100; Player.SetPosition(); |
+| `procedure` | `UpdateLastPos` | `procedure UpdateLastPos;` | Updates the last position with the current position. It should be called when you manually copy the sprite from the Back Screen to the screen instead of using the CopyAllSpritesToScreen statement. It does this: LastPosition := Position; LastX := X; LastY := Y; |
+| `procedure` | `MoveLeft` | `procedure MoveLeft();` | Move the sprite position to LEFT by one byte. Faster than SetSpritePos. Example: Player.MoveLeft(); |
+| `procedure` | `MoveRight` | `procedure MoveRight();` | Move the sprite position to RIGHT by one byte. Faster than SetSpritePos. Example: Player.MoveRight(); |
+| `procedure` | `MoveUp` | `procedure MoveUp();` | Move the sprite position UP by one line. Faster than SetSpritePos. Example: Player.MoveUp(); |
+| `procedure` | `MoveUpBy2` | `procedure MoveUpBy2();` | Move the sprite position UP by 2 lines. Faster than SetSpritePos. Example: Player.MoveUpBy2(); |
+| `procedure` | `MoveUpBy4` | `procedure MoveUpBy4();` | Move the sprite position UP by 4 lines. Faster than SetSpritePos. Example: Player.MoveUpBy4(); |
+| `procedure` | `MoveDown` | `procedure MoveDown();` | Move the sprite position DOWN by one line. Faster than SetSpritePos. Example: Player.MoveDown(); |
+| `procedure` | `MoveDownBy2` | `procedure MoveDownBy2();` | Move the sprite position DOWN by 2 lines. Faster than SetSpritePos. Example: Player.MoveDownBy2(); |
+| `procedure` | `MoveDownBy4` | `procedure MoveDownBy4();` | Move the sprite position DOWN by 4 lines. Faster than SetSpritePos. Example: Player.MoveDownBy4(); |
+| `procedure` | `InitAnimation` | `procedure InitAnimation(GE::AnimPhaseCount, GE::AnimDelay : global byte);` | — |
+| `procedure` | `Animation` | `procedure Animation();` | Sets the next phase of the sprite animation. The animation is set to the beginning if it has reached the end. Example: PlayerSprite.Animating(); |
+| `procedure` | `Init` | `procedure Init(GE::ImagePtr : global pointer; GE::Width, GE::Height : global byte);` | — |
+| `procedure` | `Put` | `procedure Put;` | Put image to screen Example: var Img : GE::image; begin Img.Init(#MyImage, 4, 20); Img.X := 30; Img.Y := 100; Img.Put(); |
+| `procedure` | `SetMemory` | `procedure SetMemory(Mode : global byte);` | Set memory mapping Params: MEM_DEFAULT : U0, U1, U2, SYS MEM_VID_ON : U0, U1, VID, SYS MEM_FULL_64K: U0, U1, U2, U3 MEM_48K_VID : U0, U1, VID, U3 or any other value 16K pages: U0-U3: user memory; VID: video RAM; SYS: sysem ROM Example: GE::SetMemory(GE::MEM_VID_ON); |
+| `procedure` | `Init` | `procedure Init(UseBackScreen : global boolean);` | Init game engine Param: USE_BACK_SCREEN - drawing to the back-screen on memory Page 3 (64K memory required) DIRECT_TO_SCREEN - drawing to the screen Example: GE::Init(GE::DIRECT_TO_SCREEN); |
+| `procedure` | `DrawAllSprites` | `procedure DrawAllSprites;` | Draws all sprites It doesn't restore sprite backgrounds; it just draws all sprites Example: GE::DrawAllSprites; |
+
+### `TVC`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetGraphicsMode` | `procedure SetGraphicsMode(Mode : global byte);` | Sets graphics mode. GRAPHICS_2: 512x240 2 color mode (code: 0) GRAPHICS_4: 256x240 4 color mode (code: 1) GRAPHICS_16: 128x240 16 color mode (code: 2). Example: SetGraphicsMode(TVC::GRAPHICS_16); Uses the System ROM (firmware) function. |
+| `function` | `GetGraphicsMode` | `function GetGraphicsMode() : byte;` | Gets graphics mode. Result: 0: GRAPHICS 2 1: GRAPHICS 4 2: GRAPHICS 16 Example: if (TVC::GetGraphicsMode() <> TVC::GRAPHICS_4) then TVC::SetGraphicsMode(TVC::GRAPHICS_4); |
+| `procedure` | `ClearScreen` | `procedure ClearScreen();` | Clear screen using the background color Example: TVC::TextBackground(0); TVC::ClearScreen(); |
+| `procedure` | `Cls` | `procedure Cls();` | Clear screen by BASIC CLS routin Uses the System ROM (firmware) function. |
+| `procedure` | `SetPalette` | `procedure SetPalette(Nr, Color : global byte);` | Sets 2-color or 4-color palette using hardware ports. Params: Nr: Palette index (Graph.2: 0 - 1 or Graph.4: 0 - 3) Color: Color code Example: SetPalette(1, TVC::BORDER_RED); Color codes (decimal code: Crt const): 0: PALETTE_BLACK 1: PALETTE_DARKBLUE 4: PALETTE_DARKRED 5: PALETTE_DARKMAGENTA 16: PALETTE_DARKGREEN 17: PALETTE_DARKCYAN 20: PALETTE_DARKYELLOW 21: PALETTE_GRAY 64: PALETTE_BLACK2 65: PALETTE_BLUE 68: PALETTE_RED 69: PALETTE_MAGENTA 80: PALETTE_GREEN 81: PALETTE_CYAN 84: PALETTE_YELLOW 85: PALETTE_WHITE Uses the System ROM (firmware) function. |
+| `procedure` | `SetBorder` | `procedure SetBorder(Color : global byte);` | Sets the border color Example: TVC::SetBorder(TVC::BORDER_BLUE); Border colors: BORDER_BLACK BORDER_DARKBLUE BORDER_DARKRED BORDER_DARKMAGENTA BORDER_DARKGREEN BORDER_DARKCYAN BORDER_DARKYELLOW BORDER_GRAY BORDER_BLACK2 BORDER_BLUE BORDER_RED BORDER_MAGENTA BORDER_GREEN BORDER_CYAN BORDER_YELLOW BORDER_WHITE Uses the System ROM (firmware) function. |
+| `procedure` | `WaitForSync` | `procedure WaitForSync();` | Waits until a vertical sync (raster-interrupt) has been performed. |
+| `procedure` | `SetRasterInterruptPos` | `procedure SetRasterInterruptPos(LineNr : global byte);` | Set the raster-interrupt position on the screen Params: LineNr: 0-239 Example: SetRasterInterruptPos(200); |
+| `procedure` | `SetMemory` | `procedure SetMemory(Mode : global byte);` | Set memory mapping Params: MEM_DEFAULT (0): U0, U1, U2, SYS MEM_VID_ON (1): U0, U1, VID, SYS MEM_64K (2): U0, U1, U2, U3 MEM_32K_VID_16K (3): U0, U1, VID, U3 16K pages: U0-U3: user memory; VID: video RAM; SYS: sysem ROM Example: SetMemory(TVC::MEM_VID_ON); |
+| `procedure` | `MemCopy` | `procedure MemCopy(SourcePtr, DestPtr: global pointer; Size: global integer);` | Copy data from the source memory address to the destination memory address. SourcePtr: pointer to the source memory address DestPtr: pointer to destination memory address Size: number of bytes to copy Example: TVC::MemCopy(#TitlePicture, $8000, 15360); |
+| `procedure` | `GotoXY` | `procedure GotoXY(X, Y : global byte);` | Sets text X (horizontal) and Y (vertical) position. X: 1 - 64 in Graphics 2 mode X: 1 - 32 in Graphics 4 mode X: 1 - 16 in Graphics 16 mode Y: 1 - 24 in all graphics modes Left top position: 1, 1 Example: TVC::GotoXY(1, 23); Uses the System ROM (firmware) function. |
+| `procedure` | `Write` | `procedure Write(Text : global ^byte);` | Writes the text specified in the param to the current position. Example: Write("TRSE CRT Tutorial"); Uses the System ROM (firmware) function. |
+| `procedure` | `WriteAt` | `procedure WriteAt(X, Y : global byte; Text : global ^byte);` | Writes the Text param to the specified character position. Params: X: horizontal character pos. 1 - 16 / 32 / 64 Y: vertical character pos. 1 - 24 Text: text to write. Text length: 1 - 254 Left top position: 1, 1 Example: WriteAt(10, 7, "TRSE Tutorial"); Uses the System ROM (firmware) function. |
+| `procedure` | `SetColor` | `procedure SetColor(Color : global byte);` | Sets text or line ink color. Params: Graphics2: 0 - 1 Graphics2: 0 - 3 Graphics16: 1 - 15 Example: SetColor(1); Uses the System ROM (firmware) variable. |
+| `procedure` | `TextBackground` | `procedure TextBackground(Color : global byte);` | Sets text background color Params: Graphics2: 0 - 1 Graphics2: 0 - 3 Graphics16: 1 - 15 Example: TextBackground(3); Uses the System ROM (firmware) variable. |
+| `procedure` | `TextStyle` | `procedure TextStyle(Style : global byte);` | Sets text overwrite style. Params: 0: TEXT_STYLE_DEFAULT - overwrite 1: TEXT_STYLE_NO_INK - no ink 2: TEXT_STYLE_TRANSPARENT - transparent background 3: TEXT_STYLE_INVISIBLE - transparent background and no ink Example: TVC::TextStyle(TVC::TEXT_STYLE_TRANSPARENT); Uses the System ROM (firmware) variable. |
+| `procedure` | `DefChar` | `procedure DefChar(CharCode : global byte; CharDataPtr : global pointer);` | (Re)Define character Params: CharCode: the code of the character to be redefined (128 - 223) CharDataPtr: pointer to 10 bytes of character - 1 byte/char-line, 1 bit/pixel Example: TVC::DefChar(128, #ChrData); var ChrData: array[10] of byte = (85,254,103,202,79,206,75,230,127,170); Uses the System ROM (firmware) function. |
+| `procedure` | `CreateCharImage` | `procedure CreateCharImage(CharCode, Count, Background, Color : global byte);` | Create an image from a redefined character. The created images can be used by the FastPutChar procedure. It currently only works in Graphics 4 mode. Params: CharCode: the redefined character code(154 - 223) Count: the number of characters to convert to an image (1 - 80) Background: the image background color Graphics2: 0-1 Graphics4: 0-3 Graphics2: 0-15 Color: the image ink color Graphics2: 0-1 Graphics4: 0-3 Graphics2: 0-15 Example: TVC::CreateCharImage(158, 0, 1); |
+| `procedure` | `PutCharImage` | `procedure PutCharImage(X, Y, CharCode, Count : global byte);` | Put created image from defined character to the specified position. Before using it, call the CreateCharImage procudure to create the char-image. Params: X: horizontal char. pos. (0 - 63) Y: vertical char. pos. (0 - 240) CharCode: first char image code (154 - 223) Count: number of characters to display (1 - 80) Example: TVC::PutCharImage(0, 0, 154, 1); |
+| `procedure` | `PutTransparentCharImage` | `procedure PutTransparentCharImage(X, Y, CharCode, Count : global byte);` | Put created image from defined character to the specified position. The character background is transparent Before using it, call the CreateCharImage procudure to create the char-image. Params: X: horizontal char. pos. (0 - 63) Y: vertical char. pos. (0 - 240) CharCode: first char image code (154 - 223) Count: number of characters to display (1 - 80) Example: TVC::PutCharImage(0, 0, 154, 1); |
+| `procedure` | `PutPixel` | `procedure PutPixel(X1, Y1 : global integer);` | Put a pixel to the X1 and Y1 coordinates. The left bottom corner coordinates are X: 0, Y: 0, and the right top is X: 1023, Y: 959. X1 - point horizontal position: 0 - 1023 Y1 - point vertical position: 0 - 959 Example: TVC::PutPixel(512, 480); Uses the System ROM (firmware) function. |
+| `procedure` | `Line` | `procedure Line(X1, Y1, X2, Y2 : global integer);` | Draw a line between two points. The X and Y coordinates of the two points passed in params. The left bottom corner coordinates are X: 0, Y: 0, and the right top is X: 1023, Y: 959. Params: X1 - point #1 horizontal position: 0 - 1023 Y1 - point #1 vertical position: 0 - 959 X2 - point #2 horizontal position: 0 - 1023 Y2 - point #2 vertical position: 0 - 959 Example: TVC::Line(0, 0, 1023, 959); Uses the System ROM (firmware) function. |
+| `procedure` | `LineRel` | `procedure LineRel(X1, Y1 : global integer);` | Draw a line from the current pen position to reletive position. Params: X1: horizontal displacement Y1: vertical displacement Example: TVC::LineRel(200, 100); Uses the System ROM (firmware) function. |
+| `procedure` | `MoveTo` | `procedure MoveTo(X1, Y1 : global integer);` | Move pen to X1, Y1 position. The left bottom corner coordinates are X: 0, Y: 0, and the right top is X: 1023, Y: 959. Params: X1 - horizontal position: 0 - 1023 Y1 - vertical position: 0 - 959 Example: TVC::MoveTo(512, 480); Uses the System ROM (firmware) function. |
+| `procedure` | `MoveRel` | `procedure MoveRel(X1, Y1 : global integer);` | Move pen to relative position. Params: X1: horizontal displacement Y1: vertical displacement Example: TVC::MoveTo(100, 50); Uses the System ROM (firmware) function. |
+| `procedure` | `Rectangle` | `procedure Rectangle(X1, Y1, X2, Y2 : global integer);` | Draw a rectangle. The opposite corners coordinates passed in the params. The screen left bottom coordinates are X: 0, Y: 0, and the right top is X: 1023, Y: 959. Params: X1 - left top corner X position: 0 - 1023 Y1 - left top corner Y position: 0 - 959 X2 - right bottom corner X position: 0 - 1023 Y2 - right bottom corner Y position: 0 - 959 Example: TVC::Rectangle (10, 280, 160, 130); Uses the System ROM (firmware) functions (BABS: move to pos., and BON: pen ON). |
+| `procedure` | `VerticalBytes` | `procedure VerticalBytes(X, Y, Count, Pattern : global byte);` | Drawing a vertical line to the byte border. Use the color set by SetColor procedure Coordinates of the upper left corner x: 0, y: 0, and the right lower X: 64, Y: 239. Params: X: horizontal line start position (0 - 64) Y: vertical line start position (0 - 239) Count: 1-240 Pattern: byte pattern for put Example: TVC::VerticalBytes(20, 100, 100, 128); |
+| `procedure` | `Fill` | `procedure Fill();` | Fill area from the current pen position. Uses the System ROM (firmware) function. |
+| `procedure` | `SetLineStyle` | `procedure SetLineStyle(Style : global byte);` | Sets line style to specified param. Uses the System ROM (firmware) variable. Allowed values: 1 - 14 Example: TVC::SetLineStyle(4); |
+| `procedure` | `SetLineMode` | `procedure SetLineMode(Mode : global byte);` | Sets line mode by param Param: LINE_MODE_DEFAULT (0) - overwrite LINE_MODE_OR (1) - OR LINE_MODE_AND (2) - AND LINE_MODE_XOR (3) - XOR Example: TVC::SetLineMode(TVC::LINE_MODE_XOR); Uses the System ROM (firmware) function. |
+| `procedure` | `FillRect` | `procedure FillRect(X, Y, Width, Height : global byte);` | Draw a filed rectangle uses the current TextBackground color Screen width is 64 characters and screen height is 240 pixels Left top corner: 0, 0; right bottom corner: 63, 239 Params: X: left position: 0 - 63 Y: top position: 0 - 239 Width : 1- 64 Height: 1-240 Example: TVC::FillRect(10, 100, 30, 80); |
+| `function` | `ReadKey` | `function ReadKey() : byte;` | Waiting for any key pressing. Return to pressed key code. Example: if (TVC::ReadKey() = 13) then Start(); Uses the System ROM (firmware) function. |
+| `function` | `IsPressed` | `function IsPressed() : byte;` | Returns whether any key has been pressed. Result: TRUE: any key is pressed; False: not Uses the Keyboard matrix system variables. |
+| `function` | `SpacePressed` | `function SpacePressed() : boolean;` | Returns whether the "Space" button is pressed. Result: TRUE: Space key is pressed; False: not Uses the Keyboard matrix system variables. |
+| `function` | `ReturnPressed` | `function ReturnPressed() : boolean;` | Returns whether the "Return" button is pressed. Result: TRUE: Return key is pressed; False: not Uses the Keyboard matrix system variables. |
+| `function` | `EscPressed` | `function EscPressed() : boolean;` | Returns whether the "Esc" button is pressed. Result: TRUE: Esc key is pressed; False: not Uses the Keyboard matrix system variables. |
+| `function` | `CtrlPressed` | `function CtrlPressed() : boolean;` | Returns whether the "Ctrl" button is pressed. Result: TRUE: Ctrl key is pressed; False: not Uses the Keyboard matrix system variables. |
+| `function` | `AltPressed` | `function AltPressed() : boolean;` | Returns whether the "Alt" button is pressed. Result: TRUE: Alt key is pressed; False: not Uses the Keyboard matrix system variables. |
+| `function` | `ShiftPressed` | `function ShiftPressed() : boolean;` | Returns whether the "Shift" button is pressed. Result: TRUE: Shift key is pressed; False: not Uses the Keyboard matrix system variables. |
+| `function` | `Joystick` | `function Joystick(Nr, KeyCode : global byte) : boolean;` | Get the status of joystick directions or fire button. Params: 1. JoyNr: &nbsp;1: joystick #1 or internal &nbsp;2: joystick #2 2. KeyCode: &nbsp;JOY_LEFT &nbsp;JOY_RIGHT &nbsp;JOY_UP &nbsp;JOY_DOWN &nbsp;JOY_FIRE Result true: the specified direction or fire button is pressed false: not pressed Example: if (TVC::Joystick(1, TVC::JOY_FIRE)) then PlayerFire(); WARNING! It only works if you have not changed the system Interrupt Handler (default) or you set the Keyboard Matrix in your program. |
+| `function` | `In` | `function In(PortNr : global byte) : byte;` | Input value from a hardware port Params: PortNr: the hardware port number (0 - 255) Example: Value := TVC::In(0); |
+| `procedure` | `Out` | `procedure Out(PortNr, Value : global byte);` | Output a value to a hardware port Params: PortNr: the hardware port number (0 - 255) Value: the value to send to the port (0 - 255) Example: TVC::Out(0, 130); |
+| `function` | `Rnd` | `function Rnd() : byte;` | Get random number between 0-255 |
+| `procedure` | `Delay` | `procedure Delay(DelayTicks : global integer);` | Waiting for param DelayTicks * 20 ms The accurate value: 20.096 ms - the default Raster-interrupt frequency Example: TVC::Delay(10); WARNING! The delay duration changes by the Sound-interrupt frequency when Sound-interrupt is set. |
+| `procedure` | `IntToStr` | `procedure IntToStr(X1 : global integer);` | Convert an integer to a string The result is placed in the NumStr variable. Example: TVC::IntToStr(Number); TVC::Write(#TVC_NumStr); |
+| `procedure` | `ByteToStr` | `procedure ByteToStr(Nr : global byte);` | Convert a byte to a string The result is placed in the NumStr variable. Example: TVC::IntToStr(Number); TVC::Write(#TVC_NumStr); |
+| `function` | `Odd` | `function Odd (Nr : global byte) : boolean;` | — |
+| `procedure` | `Volume` | `procedure Volume(SoundVolume : global byte);` | Sets sound volume to specified value Params: Volume: 0 - 15 Example: TVC::Volume(15); |
+| `procedure` | `SoundOn` | `procedure SoundOn();` | Firmware sound sign initialization. Example: TVC::SoundOn(); Not necessary to use before calls Sound or SoundEx procedures. You are only used if you have previously called SoundOff and want to turn the sound on again. |
+| `procedure` | `SoundOff` | `procedure SoundOff();` | Disable firmware sound sign. Example: TVC::SoundOff(); |
+| `procedure` | `Sound` | `procedure Sound(Pitch : global integer);` | Plays the sound specified in Pitch param. Params: Pitch (sound value): 0 - 4095 (4095: silent) Example: TVC::Sound(3677); The sound plays until calls NoSound() procedure. Calculation sound Hz: 195312.5 / (4096 - Pitch) For example, the octave 4, #A sound (466.16 Hz) value is $E5D (decimal: 3677) |
+| `procedure` | `SoundEx` | `procedure SoundEx(Pitch : global integer, Duration, SoundVolume : global byte);` | Play sound for a specified duration and volume. Params: Pitch (sound value): 0 - 4095 (4095: silent) Duration: in 20 ms; values: 1-255 Volume: 0 - 15 (0: silent) Example: TVC::SoundEx(3377, 10, 15); Calculation sound Hz -> 195312.5 / (4096 - sound value) For example, the octave 4, #A sound (466.16 Hz) value is $E5D (decimal: 3677) Uses the System ROM (firmware) function. |
+| `procedure` | `NoSound` | `procedure NoSound();` | Stops the currently played sound. |
+| `procedure` | `CreateFile` | `procedure CreateFile(FileName : global ^byte);` | Create file or open file for writing Params: FileName: name of the file (max length: 16 chars) Example: CreateFile("NewFile.txt"); Uses the System ROM (firmware) function. |
+| `function` | `OpenFile` | `function OpenFile(FileName : global ^byte) : boolean;` | Open file for reading Params: FileName: name of the file (max length: 16 chars) Result: true: success false: failed Example: OpenFile("Picture.bin"); Uses the System ROM (firmware) function. |
+| `procedure` | `CloseFile` | `procedure CloseFile();` | Close file Example: CloseFile(); Uses the System ROM (firmware) function. |
+| `function` | `ByteRead` | `function ByteRead() : byte;` | Read a byte from the opened file Example: DataByte := ReadByte(); Uses the System ROM (firmware) function. |
+| `function` | `BlockRead` | `function BlockRead(BlockData : global ^byte; BlockLength : global integer) : integer;` | Read a data block from file Params: BlockData: buffer for reading data BlockLength: number of bytes to read Result: 0: success otherwise: the number of bytes not readed from the file, in case of any error Example: BlockRead(#Data, 16384); Uses the System ROM (firmware) function. |
+| `function` | `BlockWrite` | `function BlockWrite(BlockData : global ^byte; BlockLength : global integer) : integer;` | Write a data block to created file Params: BlockData: data address BlockLength: number of bytes to write Result: 0: success otherwise: the number of bytes not written to the file, in case of any error Example: BlockWrite(#Data, 16384); ATTENTION! It can only be called once to write the data to a file; it is impossible to save the data in several parts with several calls. Uses the System ROM (firmware) function. |
+
+### `crtc`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `EnableVRAM` | `procedure EnableVRAM() inline;` | Enables video ram at $8000 |
+| `procedure` | `WaitForSync` | `procedure WaitForSync();` | Waits until a vertical sync has been performed. |
+| `procedure` | `WaitForHSync` | `procedure WaitForHSync();` | Waits until a horizontal sync has been performed |
+| `procedure` | `SetMode` | `procedure SetMode(ga: global byte);` | Sets the CRTC resolution mode. 2: 128x240 16 color mode. 1: 256x240 4 color mode. 0: 512x240 2 color mode. |
+| `procedure` | `Synchronize` | `procedure Synchronize();` | Synchronizes timing with VSYNC |
+| `procedure` | `SetInk` | `procedure SetInk(ga,gb : global byte);` | Sets ink to a given color. Parameter 0: ink value (0-15) Parameter 1: color value (0-31) |
+| `procedure` | `SetPalette` | `procedure SetPalette(ga, gb : global byte);` | Sets a 16-color palette using hardware ports. Parameter 1 points to a list of 16 bytes. |
+| `procedure` | `SetBorder` | `procedure SetBorder(ga: global byte);` | Sets the border color to [ parameter 1 ] using firmware. |
+| `procedure` | `SetWidth256` | `procedure SetWidth256();` | Sets the width of the screen to 256 bytes. Screen hack! |
+| `procedure` | `InitDefault` | `procedure InitDefault(ga:global byte);` | — |
+
+### `music`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init(interrupt_freq: global byte; );` | Init the Music Library with the Sound Generator frequency. Frequency can be 8491Hz or 5008 Hz This procedure does not change any interrupt only prepares frequency tables of sound generator Following constants could be used: for interrupt_freq: INTERRUPT_FREQ_8491, INTERRUPT_FREQ_5008 Params: interrupt_freq: $E9, $D9 (only this two value allowed) Example 1: Music::Init(Music::INTERRUPT_FREQ_8491); Example 2: Music::Init(Music::INTERRUPT_FREQ_5008); |
+| `procedure` | `Play` | `procedure Play(data_pointer: global pointer; bpm: global integer; graphics_mode : global byte; );` | Play Music from binary data with given speed and graphics mode Warning: During playing the CRTC cursor interrupt is disabled During playing HALT isntruction can be used but the frequency is 8491Hz or 5008Hz instead of 50Hz During playing the shadow registers (BC', DE', HL', AF') and IX and IY registers are used by interrupt so could not be used in main program During Playing Stack pointer could not be used as a register directly BPM is a playing speed value between 60 and 6000 BPM actualy is a frame playing frequency calculated as: SoundItFrequency/6/(14153/BPM) For example at 8491 Hz interrupt a SID converted music needs 50Hz frame playing frequency BPM value for 8491Hz is: BPM = 14153/(8491Hz/6/50Hz) = 500 Following constants could be used: for graphics_mode: GRAPHICS_MODE_2, GRAPHICS_MODE_4, GRAPHICS_MODE_16 for bpm value: BPM_SID_5008, BPM_SID_8491 Params: data_pointer: points to the binary music data bpm: 60-6000 graphics_mode: 0,1,2 Example: Music::Play(#music_data, Music::BPM_SID_5008, Music::GRAPHICS_MODE_4); |
+| `procedure` | `Stop` | `procedure Stop();` | Stops the music playing and restore the original TVC interrupt Example: Music::Stop(); |
+| `function` | `IsMusicFinished` | `function IsMusicFinished() : byte;` | Returns the status of music playing. 0 = playing, 255 = music is finished When music is finished, the sound generator is muted, but the interrupt still works if this function returns with 255 then the Stop() procedure must be called to stop and restore interrupt Example: while (Music::IsMusicFinished() = 0) do; |
+
+### `system`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SaveFirmware` | `procedure SaveFirmware();` | Saves the firmware interrupt handler for future use. |
+| `procedure` | `DisableFirmware` | `procedure DisableFirmware();` | Disables firmware by setting the firmware interrupt handler to RET. Remember to save the original handler with "SaveFirmware" if you plan to restore it at a later point. |
+| `procedure` | `EnableFirmware` | `procedure EnableFirmware();` | Enables firmware handling by restoring the firmware interrupt. |
+| `procedure` | `RequireFirmware` | `procedure RequireFirmware();` | — |
+| `procedure` | `RestoreFirmwareState` | `procedure RestoreFirmwareState();` | — |
+| `procedure` | `PushAll` | `procedure PushAll() inline;` | Pushes all registers (both pairs) onto the stack. Typically used in interrupts. |
+| `procedure` | `PopAll` | `procedure PopAll() inline;` | Pops all registers (both pairs) from the stack. Typically used in interrupts. |
+| `procedure` | `EnableInterrupts` | `procedure EnableInterrupts() inline;` | Turns on interrupts. Same as "ei" |
+| `procedure` | `DisableInterrupts` | `procedure DisableInterrupts() inline;` | Turns off interrupts. Same as "di" |
+| `procedure` | `EnableRom` | `procedure EnableRom();` | Enables access to ROM, both upper ($C000-$FFFF) and lower ($0000-$4000) |
+| `procedure` | `DisableRom` | `procedure DisableRom();` | Disables access to ROM, both upper ($C000-$FFFF) and lower ($0000-$4000) |
+| `procedure` | `EnableLRom` | `procedure EnableLRom();` | Disables access to lower ROM ($0000-$4000) |
+| `procedure` | `DisableLRom` | `procedure DisableLRom();` | Disables access to lower ROM ($0000-$4000) |
+| `procedure` | `VSync` | `procedure VSync();` | — |
+
+### `text`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Reset` | `procedure Reset(c: global byte);` | Resets the text VDU. If c = 0, do a partial reset (text VDU indirections and control code table) If c != 0, do a full reset (same + select stream 0, reset paper and pen colors, move cursor to top left, ...) |
+| `procedure` | `Enable` | `procedure Enable(c: global byte);` | — |
+| `procedure` | `PutChar` | `procedure PutChar(c: global byte);` | — |
+| `procedure` | `PutControlChar` | `procedure PutControlChar(c: global byte);` | — |
+| `function` | `GetChar` | `function GetChar():byte;` | — |
+| `procedure` | `Print` | `procedure Print(p: global pointer);` | — |
+| `procedure` | `PrintControl` | `procedure PrintControl(p: global pointer);` | — |
+| `procedure` | `EnableCursor` | `procedure EnableCursor(c: global byte);` | — |
+| `procedure` | `MoveCursorTo` | `procedure MoveCursorTo(x: global byte, y: global byte);` | — |
+| `function` | `GetPen` | `function GetPen():byte;` | — |
+| `procedure` | `SetPen` | `procedure SetPen(c: global byte);` | — |
+| `function` | `GetPaper` | `function GetPaper():byte;` | — |
+| `procedure` | `SetPaper` | `procedure SetPaper(c: global byte);` | — |
+| `procedure` | `SwapPenPaper` | `procedure SwapPenPaper();` | — |
+| `procedure` | `SetTransparent` | `procedure SetTransparent(c: global byte);` | — |
+| `function` | `GetTransparent` | `function GetTransparent():byte;` | — |
+| `procedure` | `EnableUserDefinedChar` | `procedure EnableUserDefinedChar();` | — |
+| `procedure` | `SetCharMatrix` | `procedure SetCharMatrix(c: global byte, p: global pointer);` | — |
+| `procedure` | `SelectWindow` | `procedure SelectWindow(c: global byte);` | — |
+| `procedure` | `SetWindow` | `procedure SetWindow(x: global byte, y: global byte, x2: global byte, y2: global byte);` | — |
+| `procedure` | `ClearWindow` | `procedure ClearWindow();` | — |
+

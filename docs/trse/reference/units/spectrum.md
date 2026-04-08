@@ -8,11 +8,87 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/SPECTRUM/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `gfx`
-- `memory`
-- `music`
-- `screen`
-- `sound`
-- `text/txt`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `gfx`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Circle` | `procedure Circle(xc,yc,rc : global byte);` | — |
+
+### `memory`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `PushAll` | `procedure PushAll() inline;` | Pushes all registers (both pairs) onto the stack. Typically used in interrupts. |
+| `procedure` | `PopAll` | `procedure PopAll() inline;` | Pops all registers (both pairs) from the stack. Typically used in interrupts. |
+| `procedure` | `EnableInterrupts` | `procedure EnableInterrupts() inline;` | Turns on interrupts. Same as "ei" |
+| `procedure` | `DisableInterrupts` | `procedure DisableInterrupts() inline;` | Turns off interrupts. Same as "di" |
+| `procedure` | `EnableBank` | `procedure EnableBank(b:byte);` | — |
+| `procedure` | `VSync` | `procedure VSync() inline;` | — |
+| `procedure` | `Wait` | `procedure Wait() inline;` | — |
+
+### `music`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `InitMusic` | `procedure InitMusic(p:global pointer;val:global byte);` | — |
+| `procedure` | `PlayMusic` | `procedure PlayMusic() inline;` | — |
+| `procedure` | `StopMusic` | `procedure StopMusic() inline;` | — |
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `BorderColor` | `procedure BorderColor(_a:byte);` | — |
+| `procedure` | `ClearScreen` | `procedure ClearScreen(x,y : global byte);` | — |
+| `procedure` | `FillScreen` | `procedure FillScreen(x,y,x2 : global byte);` | — |
+| `procedure` | `SetColor` | `procedure SetColor(x,y,i : global byte);` | — |
+| `procedure` | `PutPixel` | `procedure PutPixel(x,y : global byte);` | — |
+| `procedure` | `ClearDefaultIRQ` | `procedure ClearDefaultIRQ(pos:pointer;intPos:pointer);` | — |
+
+### `sound`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Zap` | `procedure Zap();` | — |
+
+### `text/txt`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `put_ch` | `procedure put_ch(CH:global byte);` | Put a character at current cursor position |
+| `procedure` | `DefineScreen` | `procedure DefineScreen();` | Helper to set up screen pointers etc |
+| `procedure` | `esc` | `procedure esc();` | Escape sequence |
+| `procedure` | `move_to` | `procedure move_to(_text_x: byte, _text_y: byte);` | Place the cursor at X, Y screen position |
+| `procedure` | `cursor_home` | `procedure cursor_home();` | Place the cursor at 0,0 top left of screen |
+| `procedure` | `wait_vsync` | `procedure wait_vsync();` | Wait for vertical blank (not yet implemented) |
+| `procedure` | `text_colour` | `procedure text_colour(_chosen_text_colour: byte);` | Set the text colour (not available on all platforms) |
+| `function` | `read_keyboard` | `function read_keyboard():byte;` | — |
+| `function` | `get_key` | `function get_key():byte;` | Get a character input from the keyboard |
+| `function` | `get_scancode` | `function get_scancode():byte;` | Get a character input from the keyboard |
+| `procedure` | `wait_key` | `procedure wait_key();` | Wait for a key press |
+| `procedure` | `clear_buffer` | `procedure clear_buffer();` | Clear the keyboard buffer |
+| `procedure` | `get_cursor_position` | `procedure get_cursor_position();` | Get current cursor position to o_cx,o_cy |
+| `procedure` | `put_char_at` | `procedure put_char_at(_atx,_aty,_atchar:byte);` | Put a character at a X, Y screen coordinate |
+| `procedure` | `print_string` | `procedure print_string(the_str: pointer, out_CRLF: byte);` | Output a string at the current cursor location. Set Carriage Return on/off |
+| `function` | `get_char_at` | `function get_char_at(ch_col,ch_row: global byte):byte;` | Return the character at chosen screen position |
+| `procedure` | `push_registers` | `procedure push_registers();` | — |
+| `procedure` | `pop_registers` | `procedure pop_registers();` | — |
+| `procedure` | `beep` | `procedure beep();` | — |
+| `procedure` | `get_page` | `procedure get_page();` | Get screen page |
+| `procedure` | `cursor_off` | `procedure cursor_off();` | Hide flashing cursor |
+| `procedure` | `cursor_on` | `procedure cursor_on();` | Show flashing cursor |
+| `function` | `str_compare` | `function str_compare(str1: global pointer,str2: global pointer):byte;` | Compare two strings for equality |
+| `function` | `str_len` | `function str_len(in_str: global pointer):byte;` | — |
+| `procedure` | `print_space` | `procedure print_space(max_digits: global integer);` | — |
+| `procedure` | `print_string_centered` | `procedure print_string_centered(in_str: global pointer, CRLF: global byte, _sc_w: byte);` | Output a string at the current cursor location but centered. Set Carriage Return on/off Set the screen width Set reverse on/off |
+| `procedure` | `crlf` | `procedure crlf();` | — |
+| `function` | `get_string` | `function get_string():integer;` | String input |
+| `procedure` | `print_dec` | `procedure print_dec(_in_n:integer, _add_cr:byte);` | Output a string representation of a decimal number at current cursor position Set if you want carriage return true/false |
+| `function` | `get_dec` | `function get_dec():integer;` | Get numeric input from keyboard |
+| `procedure` | `put_dec_at` | `procedure put_dec_at(_natx,_naty,_nat:byte);` | Output a string representation of a decimal number at chosen position |
+| `procedure` | `cls` | `procedure cls();` | Clear screen and initialise pointers Required for move_to etc |
+

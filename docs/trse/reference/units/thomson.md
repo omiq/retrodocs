@@ -8,7 +8,21 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/THOMSON/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `system/screen`
-- `system/system`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `system/screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `MO6Init4ColorMode` | `procedure MO6Init4ColorMode();` | — |
+
+### `system/system`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init() inline;` | — |
+| `procedure` | `SetColors` | `procedure SetColors() inline;` | — |
+| `procedure` | `SetPixels` | `procedure SetPixels();` | — |
+

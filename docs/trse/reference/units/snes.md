@@ -8,10 +8,71 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/SNES/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `input`
-- `levels`
-- `memory`
-- `music`
-- `screen`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `input`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Read` | `procedure Read();` | — |
+| `function` | `Movement` | `function Movement(i:global byte pure):byte;` | — |
+| `function` | `Right` | `function Right(i:global byte pure):byte;` | — |
+| `function` | `Left` | `function Left(i:global byte pure):byte;` | — |
+| `function` | `Up` | `function Up(i:global byte pure):byte;` | — |
+| `function` | `Down` | `function Down(i:global byte pure):byte;` | — |
+| `function` | `Start` | `function Start(i:global byte pure) : byte;` | — |
+| `function` | `Select` | `function Select(i:global byte pure):byte;` | — |
+| `function` | `B` | `function B(i:global byte pure):byte;` | — |
+
+### `levels`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `ReadHeader` | `procedure ReadHeader(Levels::zp:global lpointer);` | — |
+| `procedure` | `RenderLevelMetaTiles` | `procedure RenderLevelMetaTiles(Levels::x, Levels::y : global byte;Levels::i1:global integer;Levels::p1 : global pointer);` | — |
+| `procedure` | `RenderLevel` | `procedure RenderLevel(Levels::x,Levels::y : global byte;Levels::i1:global integer);` | — |
+
+### `memory`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetBank` | `procedure SetBank(b1:global byte);` | — |
+| `procedure` | `Copy` | `procedure Copy(i1:global integer; b1:global byte;i2:global integer;b2:global byte;i3:global integer);` | — |
+
+### `music`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `InitializeMusicCode` | `procedure InitializeMusicCode();` | — |
+| `procedure` | `Init` | `procedure Init(addr,code:global integer; bnk,bnkCode: global byte);` | — |
+| `procedure` | `InitializeMusicCode` | `procedure InitializeMusicCode();` | — |
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetPalette` | `procedure SetPalette(zp:global lpointer;x:global byte;i1:global integer);` | Copies [param 3] bytes from [param 1] to the palette register starting with color [param 2] |
+| `procedure` | `EnableGFX` | `procedure EnableGFX(x:global byte);` | — |
+| `procedure` | `EnableDisplay` | `procedure EnableDisplay() inline;` | — |
+| `procedure` | `DisableDisplay` | `procedure DisableDisplay() inline;` | — |
+| `procedure` | `CopyToVRAMNoDMA` | `procedure CopyToVRAMNoDMA(zp:global lpointer;i1,i2 : global integer);` | — |
+| `procedure` | `CopyToVRAM` | `procedure CopyToVRAM(zp:global lpointer;i1,i2 : global integer);` | — |
+| `procedure` | `Init` | `procedure Init();` | — |
+| `procedure` | `MoveToXY` | `procedure MoveToXY(x,y:global byte,i1:global integer);` | — |
+| `procedure` | `MoveToCRAM` | `procedure MoveToCRAM(i1:global integer) inline;` | — |
+| `procedure` | `CopyToScreen` | `procedure CopyToScreen(zp:global pointer;i1:global integer;x:global byte);` | — |
+| `procedure` | `PokeVRAM` | `procedure PokeVRAM(x,y:global byte);` | Tile data attribute organisation (y,x): vhopppcc cccccccc |
+| `procedure` | `FillToVRAM` | `procedure FillToVRAM(x,y:global byte;i1:global integer);` | — |
+| `procedure` | `PokeCRAM` | `procedure PokeCRAM(x:global byte) inline;` | — |
+| `procedure` | `SetBGScreenLocation` | `procedure SetBGScreenLocation(x,y:global byte);` | — |
+| `procedure` | `SetVRAMDataPosition` | `procedure SetVRAMDataPosition(x:global byte;i1,i2:global integer);` | — |
+| `procedure` | `SetGraphicsMode` | `procedure SetGraphicsMode(y:global byte;i1:global integer);` | — |
+| `procedure` | `SetBGMode` | `procedure SetBGMode(x:global byte);` | — |
+| `procedure` | `WaitForVerticalBlank` | `procedure WaitForVerticalBlank() inline;` | — |
+| `procedure` | `Scroll` | `procedure Scroll(i1,i2:global integer;i3 : global integer);` | — |
+| `procedure` | `WriteSingleSprite` | `procedure WriteSingleSprite(x,y,id,att:global byte);` | — |
+| `procedure` | `PointToSprite` | `procedure PointToSprite(x:global byte);` | — |
+| `procedure` | `CopySprites` | `procedure CopySprites(i1:global integer);` | — |
+

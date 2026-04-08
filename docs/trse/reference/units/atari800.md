@@ -8,6 +8,14 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/ATARI800/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `screen`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `getScreenPointer` | `function getScreenPointer() inline: integer;` | Returns the screen pointer |
+| `procedure` | `PrintString` | `procedure PrintString(x,y : global byte;tp: global pointer);` | Prints |
+

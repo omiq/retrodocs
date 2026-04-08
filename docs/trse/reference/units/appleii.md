@@ -8,6 +8,17 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/APPLEII/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `screen`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Clear` | `procedure Clear(x:global byte; zp:global pointer);` | — |
+| `procedure` | `MoveTo` | `procedure MoveTo(x,y : global byte);` | — |
+| `procedure` | `MoveToY` | `procedure MoveToY(y : global byte) inline;` | — |
+| `procedure` | `WaitForVBlank` | `procedure WaitForVBlank();` | — |
+| `procedure` | `PrintText` | `procedure PrintText(x,y : global byte; zp: global pointer; i:global byte);` | — |
+

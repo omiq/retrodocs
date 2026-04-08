@@ -8,14 +8,158 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/AMSTRADCPC/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `cpcfloat`
-- `crtc`
-- `input`
-- `memory`
-- `music`
-- `sound`
-- `text/txt`
-- `text`
-- `unittests/common`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `cpcfloat`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init();` | Initializes the floating point unit (initializes addresses). |
+| `procedure` | `Assign` | `procedure Assign(f1, f2: global pointer);` | Copy the value of f2 to f1. |
+| `procedure` | `FromU8` | `procedure FromU8(f1: global pointer, b: global byte);` | Create a floating point number from a byte. First argument: float to create Second argument: unsigned integer value byte |
+| `procedure` | `FromU16` | `procedure FromU16(f1: global pointer, i: global integer);` | Create a floating point number from an integer. First argument: float to create Second argument: unsigned integer |
+| `procedure` | `Neg` | `procedure Neg(f1: global pointer);` | Switch the sign of a float number. First argument: float to negate |
+| `function` | `Compare` | `function Compare(f1, f2: global pointer):byte;` | Compare f1 with f2 and returns: - -1 if f1 f2 |
+| `procedure` | `Add` | `procedure Add(add_result, add_f1, add_f2: pointer);` | Add two floats f1 and f2 and put the result in the first argument. |
+| `procedure` | `Substract` | `procedure Substract(substract_result, substract_f1, substract_f2: pointer);` | Substract the float f2 from f1 and put the result in the first argument. |
+| `procedure` | `Multiply` | `procedure Multiply(multiply_result, multiply_f1, multiply_f2: pointer);` | Multiply two floats f1 and f2 and put the result in the first argument. |
+| `procedure` | `Divide` | `procedure Divide(divide_result, divide_f1, divide_f2: pointer);` | Divide a float f1 by another f2 and put the result in the first argument. |
+| `procedure` | `FromString` | `procedure FromString(fromstring_f, s: global pointer);` | Create a 5 bytes floating point number from a string. First argument: float to create Second argument: string representing the initial value (null-terminated) Stops on the first invalid char (valid char are digits + a single . and optionally a - as first char). BUG: This produces suboptimal values due to the lost precision when adding small values to large ones. It would be better to handle digits from right to left. |
+
+### `crtc`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `PointToY` | `procedure PointToY(y : global byte);` | Points the internal pointer Crtc::sp to the correcy y-line in 160x200 mode 0 using [parameter 1]. The VRAM of the CPC isn't stored linearly. In mode 0 (160x200 16 colour), a line of 160 pixels takes up 80 bytes of data. However, the next 80 bytes are located 8 rows down. In order to get 1 row down, you need to add $800 to the pointer etc. Needless to say, this becomes tedious - unless you use a lookup table. With this method, you can easily point to a specific line in vram. ` // points cp to line 16 Crtc::PointToY(16); // Fills 80 bytes of zero fill(cp,0,80); ` |
+| `procedure` | `PutPixelMode0` | `procedure PutPixelMode0(x,y,col : global byte);` | Sets a pixel in mode 0 at position (x,y) with color c. |
+| `procedure` | `PutPixelMode1` | `procedure PutPixelMode1(xi: global integer, y,col : global byte);` | Sets a pixel in mode 1 at position (x,y) with color c. |
+| `procedure` | `PutPixelMode2` | `procedure PutPixelMode2(xi: global integer, y,col : global byte);` | Sets a pixel in mode 2 at position (x,y) with color c. |
+
+### `input`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Reset` | `procedure Reset(c: global byte);` | — |
+| `function` | `WaitChar` | `function WaitChar():byte;` | — |
+| `function` | `ReadChar` | `function ReadChar(p: global pointer):byte;` | — |
+| `function` | `WaitKey` | `function WaitKey():byte;` | — |
+| `function` | `ReadKey` | `function ReadKey(p: global pointer):byte;` | — |
+| `function` | `TestKey` | `function TestKey(c: global byte):byte;` | — |
+| `procedure` | `SetRepeatDelay` | `procedure SetRepeatDelay(c: global byte, d: global byte);` | — |
+| `procedure` | `GetJoysticks` | `procedure GetJoysticks(p: global pointer, q: global pointer);` | — |
+
+### `memory`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SaveFirmware` | `procedure SaveFirmware();` | Saves the firmware interrupt handler for future use. |
+| `procedure` | `DisableFirmware` | `procedure DisableFirmware();` | Disables firmware by setting the firmware interrupt handler to RET. Remember to save the original handler with "SaveFirmware" if you plan to restore it at a later point. |
+| `procedure` | `EnableFirmware` | `procedure EnableFirmware();` | Enables firmware handling by restoring the firmware interrupt. |
+| `procedure` | `RequireFirmware` | `procedure RequireFirmware();` | — |
+| `procedure` | `RestoreFirmwareState` | `procedure RestoreFirmwareState();` | — |
+| `procedure` | `PushAll` | `procedure PushAll() inline;` | Pushes all registers (both pairs) onto the stack. Typically used in interrupts. |
+| `procedure` | `PopAll` | `procedure PopAll() inline;` | Pops all registers (both pairs) from the stack. Typically used in interrupts. |
+| `procedure` | `EnableInterrupts` | `procedure EnableInterrupts() inline;` | Turns on interrupts. Same as "ei" |
+| `procedure` | `DisableInterrupts` | `procedure DisableInterrupts() inline;` | Turns off interrupts. Same as "di" |
+| `procedure` | `EnableRom` | `procedure EnableRom();` | Enables access to ROM, both upper ($C000-$FFFF) and lower ($0000-$4000) |
+| `procedure` | `DisableRom` | `procedure DisableRom();` | Disables access to ROM, both upper ($C000-$FFFF) and lower ($0000-$4000) |
+| `procedure` | `EnableLRom` | `procedure EnableLRom();` | Disables access to lower ROM ($0000-$4000) |
+| `procedure` | `DisableLRom` | `procedure DisableLRom();` | Disables access to lower ROM ($0000-$4000) |
+| `procedure` | `VSync` | `procedure VSync();` | — |
+
+### `music`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `InitMusic` | `procedure InitMusic(p:global pointer;val:global byte);` | — |
+| `procedure` | `PlayMusic` | `procedure PlayMusic();` | — |
+| `procedure` | `StopMusic` | `procedure StopMusic();` | — |
+
+### `sound`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Reset` | `procedure Reset();` | — |
+| `procedure` | `Play` | `procedure Play(ptr: global pointer);` | — |
+| `procedure` | `SetEnv` | `procedure SetEnv(n: global byte, ptr: global pointer);` | — |
+| `procedure` | `SetEnt` | `procedure SetEnt(n: global byte, ptr: global pointer);` | — |
+
+### `text/txt`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `put_ch` | `procedure put_ch(CH:global byte);` | Put a character at current cursor position |
+| `procedure` | `DefineScreen` | `procedure DefineScreen();` | Helper to set up screen pointers etc |
+| `procedure` | `esc` | `procedure esc();` | Escape sequence |
+| `procedure` | `cursor_home` | `procedure cursor_home();` | Place the cursor at 0,0 top left of screen |
+| `procedure` | `move_to` | `procedure move_to(_text_x: byte, _text_y: byte);` | Place the cursor at X, Y screen position |
+| `procedure` | `wait_vsync` | `procedure wait_vsync();` | Wait for vertical blank (not yet implemented) |
+| `procedure` | `text_colour` | `procedure text_colour(_chosen_text_colour: byte);` | Set the text colour (not available on all platforms) |
+| `function` | `get_key` | `function get_key():byte;` | Get a character input from the keyboard |
+| `function` | `get_scancode` | `function get_scancode():byte;` | Get a character input from the keyboard |
+| `procedure` | `wait_key` | `procedure wait_key();` | Wait for a key press |
+| `procedure` | `clear_buffer` | `procedure clear_buffer();` | Clear the keyboard buffer |
+| `procedure` | `get_cursor_position` | `procedure get_cursor_position();` | Get current cursor position to o_cx,o_cy |
+| `procedure` | `put_char_at` | `procedure put_char_at(_atx,_aty,_atchar:byte);` | Put a character at a X, Y screen coordinate |
+| `procedure` | `print_string` | `procedure print_string(the_str: pointer, out_CRLF: byte);` | Output a string at the current cursor location. Set Carriage Return on/off |
+| `function` | `get_char_at` | `function get_char_at(_col,_row: global byte):byte;` | Return the character at chosen screen position |
+| `procedure` | `beep` | `procedure beep();` | — |
+| `function` | `str_to_dec` | `function str_to_dec(_in_str:pointer):byte;` | Convert string to decimal number |
+| `function` | `get_dec` | `function get_dec():integer;` | Get numeric input from keyboard |
+| `procedure` | `get_page` | `procedure get_page();` | Get screen page |
+| `procedure` | `cursor_off` | `procedure cursor_off();` | Hide flashing cursor |
+| `procedure` | `cursor_on` | `procedure cursor_on();` | Show flashing cursor |
+| `function` | `str_compare` | `function str_compare(str1:pointer,str2:pointer):byte;` | Compare two strings for equality |
+| `procedure` | `put_dec_at` | `procedure put_dec_at(_natx,_naty,_nat:byte);` | Output a string representation of a decimal number at chosen position |
+| `function` | `str_len` | `function str_len(in_str: global pointer):byte;` | — |
+| `procedure` | `print_space` | `procedure print_space(max_digits: global integer);` | — |
+| `procedure` | `print_string_centered` | `procedure print_string_centered(in_str: global pointer, CRLF: global byte, _sc_w: byte);` | Output a string at the current cursor location but centered. Set Carriage Return on/off Set the screen width Set reverse on/off |
+| `procedure` | `crlf` | `procedure crlf();` | — |
+| `function` | `get_string` | `function get_string():byte;` | — |
+| `function` | `str_to_dec` | `function str_to_dec(_in_str:pointer):byte;` | — |
+| `function` | `get_dec` | `function get_dec():integer;` | — |
+| `procedure` | `print_dec` | `procedure print_dec(_in_n:byte, _add_cr:byte);` | Output a string representation of a decimal number at current cursor position Set if you want carriage return true/false |
+| `procedure` | `cls` | `procedure cls();` | Clear screen and initialise pointers Required for move_to etc |
+
+### `text`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Reset` | `procedure Reset(c: global byte);` | Resets the text VDU. If c = 0, do a partial reset (text VDU indirections and control code table) If c != 0, do a full reset (same + select stream 0, reset paper and pen colors, move cursor to top left, ...) |
+| `procedure` | `Enable` | `procedure Enable(c: global byte);` | — |
+| `procedure` | `PutChar` | `procedure PutChar(c: global byte);` | — |
+| `procedure` | `PutControlChar` | `procedure PutControlChar(c: global byte);` | — |
+| `function` | `GetChar` | `function GetChar():byte;` | — |
+| `procedure` | `Print` | `procedure Print(p: global pointer);` | — |
+| `procedure` | `PrintControl` | `procedure PrintControl(p: global pointer);` | — |
+| `procedure` | `EnableCursor` | `procedure EnableCursor(c: global byte);` | — |
+| `procedure` | `MoveCursorTo` | `procedure MoveCursorTo(x: global byte, y: global byte);` | — |
+| `function` | `GetPen` | `function GetPen():byte;` | — |
+| `procedure` | `SetPen` | `procedure SetPen(c: global byte);` | — |
+| `function` | `GetPaper` | `function GetPaper():byte;` | — |
+| `procedure` | `SetPaper` | `procedure SetPaper(c: global byte);` | — |
+| `procedure` | `SwapPenPaper` | `procedure SwapPenPaper();` | — |
+| `procedure` | `SetTransparent` | `procedure SetTransparent(c: global byte);` | — |
+| `function` | `GetTransparent` | `function GetTransparent():byte;` | — |
+| `procedure` | `EnableUserDefinedChar` | `procedure EnableUserDefinedChar();` | — |
+| `procedure` | `SetCharMatrix` | `procedure SetCharMatrix(c: global byte, p: global pointer);` | — |
+| `procedure` | `SelectWindow` | `procedure SelectWindow(c: global byte);` | — |
+| `procedure` | `SetWindow` | `procedure SetWindow(x: global byte, y: global byte, x2: global byte, y2: global byte);` | — |
+| `procedure` | `ClearWindow` | `procedure ClearWindow();` | — |
+
+### `unittests/common`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `TestInit` | `procedure TestInit();` | — |
+| `procedure` | `TestSuiteInit` | `procedure TestSuiteInit();` | — |
+| `procedure` | `CR` | `procedure CR() inline;` | — |
+| `procedure` | `Initialise` | `procedure Initialise(zp:pointer);` | — |
+| `function` | `Status` | `function Status() : byte;` | — |
+| `procedure` | `PASS` | `procedure PASS();` | — |
+| `procedure` | `FAIL` | `procedure FAIL();` | — |
+| `procedure` | `WaitABit` | `procedure WaitABit();` | — |
+| `procedure` | `DebugValue` | `procedure DebugValue(v:integer);` | — |
+

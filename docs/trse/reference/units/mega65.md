@@ -8,9 +8,44 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/MEGA65/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `gfx/gfx`
-- `memory`
-- `screen`
-- `tables/luminosities`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `gfx/gfx`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `putpixel3` | `procedure putpixel3();` | — |
+| `procedure` | `putpixel2` | `procedure putpixel2();` | — |
+| `procedure` | `SetupPixelTables` | `procedure SetupPixelTables();` | — |
+| `procedure` | `InitBitmapGraphics` | `procedure InitBitmapGraphics(pi:byte; bsta:integer);` | Initializes bitmap graphics mode, putpixel type, pixel tables and clears the screen at bank 1 and 2. |
+| `procedure` | `Line` | `procedure Line ( x1, y1, x2, y2, color : global byte);` | — |
+
+### `memory`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetCurrentMemoryBank` | `procedure SetCurrentMemoryBank(pi : global integer);` | — |
+| `procedure` | `Poke32` | `procedure Poke32(pa, pb:global byte);` | Pokes the value [ pb ] to the 32-bit address Memory::zpLo[pa] with high 16-bit address stored in zpHi. In other words. zpHi represents the current 65536-byte bank, while zpLo is a regular zeropage pointer. |
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Set16bitSpritePointer` | `procedure Set16bitSpritePointer(zp:^byte global;j,x,y:byte global);` | Sets a 16-bit sprite pointer to sprite [j] at [x /64 + y*$4000]. For instance, if you have sprites located at $8000, set the frame by calling ` Screen::Set16bitSpritePointer( myFrame, 0, 2); // Sprite 0 at $4000*2 + myFrame ` |
+| `procedure` | `SetCharsetLocation` | `procedure SetCharsetLocation(addr: global integer; bbank:global byte);` | Sets the character data address at the 16-bit location given in parameter 1 with bbank from parameter 2. |
+| `procedure` | `Set40ColumnMode` | `procedure Set40ColumnMode() inline;` | Sets the column mode to 40 (320x200) |
+| `procedure` | `Set80ColumnMode` | `procedure Set80ColumnMode() inline;` | Sets the column mode to 80 (640x200) |
+| `procedure` | `SetScreenLocation` | `procedure SetScreenLocation(addr: global integer; bbank:global byte);` | Sets the screen location address at the 16-bit location given in parameter 1 with bbank from parameter 2. |
+| `procedure` | `SetBank` | `procedure SetBank(bbank : global byte);` | Sets the current screen bbank on the VIC4 |
+| `procedure` | `FillColorRam80` | `procedure FillColorRam80(val: global byte);` | While regular 40-colum mode color (40x25 bytes) ram is located at $D800, color ram for 80-column mode is located at $0001 F800. This method uses the memory unit to fill the 32-bit color ram at this location with the value provided from parameter 1. |
+| `procedure` | `EnableVIC4` | `procedure EnableVIC4();` | The VIC4 is hidden by default on the mega65. Use this method to make it visible for regular pokes. |
+| `procedure` | `SetFastMode` | `procedure SetFastMode();` | Enables FAST mode on the Mega65 |
+| `procedure` | `Init` | `procedure Init();` | Initializes the screen of the mega65 |
+| `procedure` | `EnableSeamMode` | `procedure EnableSeamMode();` | Enables Super-extended attribute mode (SEAM) |
+
+### `tables/luminosities`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+

@@ -8,10 +8,63 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/TRS80COCO/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `gfx/tiles`
-- `screen`
-- `system`
-- `text`
-- `unittests/common`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `gfx/tiles`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetTileLoc` | `procedure SetTileLoc(tile: global ^byte);` | — |
+| `procedure` | `WriteToScreen` | `procedure WriteToScreen(xx,yy,val,wx,wy : byte);` | — |
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetBitmapMode` | `procedure SetBitmapMode(b,c:global byte);` | First parameter is bytes per line, second is number of colours SetbitmapMode(Screen::BPL_40, 1); // will set 4-colour 320x224 mode |
+| `procedure` | `PutPixel320` | `procedure PutPixel320(x,y:global integer;color:global byte);` | — |
+| `procedure` | `PutPixel640` | `procedure PutPixel640(x,y:global integer;color:global byte);` | — |
+| `procedure` | `SetColor` | `procedure SetColor(b,c : global byte);` | — |
+| `procedure` | `SetColorRGB` | `procedure SetColorRGB(c,r,g,b : global byte);` | — |
+| `procedure` | `EnableVsync` | `procedure EnableVsync();` | — |
+| `procedure` | `WaitForVsync` | `procedure WaitForVsync();` | — |
+| `procedure` | `SetPalette` | `procedure SetPalette(p : global ^byte, c : global byte);` | — |
+
+### `system`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetFast` | `procedure SetFast() inline;` | — |
+| `procedure` | `SetSlow` | `procedure SetSlow() inline;` | — |
+| `procedure` | `DisableInterrupts` | `procedure DisableInterrupts() inline;` | — |
+| `procedure` | `DisableROM` | `procedure DisableROM() inline;` | — |
+| `procedure` | `Init` | `procedure Init() inline;` | — |
+
+### `text`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Reset` | `procedure Reset();` | ORIGINALLY FROM THE AMSTRAD CPC. NOT DONE! |
+| `procedure` | `MoveDown` | `procedure MoveDown();` | — |
+| `procedure` | `itohexstring` | `procedure itohexstring( num:global integer; p1: global ^byte);` | — |
+| `procedure` | `PutChar` | `procedure PutChar(c: global byte);` | — |
+| `procedure` | `Print` | `procedure Print(p: global pointer);` | — |
+| `procedure` | `Println` | `procedure Println(p: global pointer);` | — |
+| `procedure` | `PrintIntegerHex` | `procedure PrintIntegerHex(t:global integer);` | — |
+
+### `unittests/common`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `TestInit` | `procedure TestInit();` | — |
+| `procedure` | `CR` | `procedure CR() inline;` | — |
+| `procedure` | `TestSuiteInit` | `procedure TestSuiteInit();` | — |
+| `procedure` | `Initialise` | `procedure Initialise(zp:pointer);` | — |
+| `function` | `Status` | `function Status() : byte;` | — |
+| `procedure` | `PASS` | `procedure PASS();` | — |
+| `procedure` | `FAIL` | `procedure FAIL();` | — |
+| `procedure` | `WaitABit` | `procedure WaitABit();` | — |
+| `procedure` | `DebugValue` | `procedure DebugValue(v:integer);` | — |
+

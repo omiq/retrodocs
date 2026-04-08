@@ -8,11 +8,78 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/BBCM/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `demotools`
-- `files`
-- `gfx/gfx`
-- `gfx/text`
-- `player`
-- `screen`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `demotools`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `WaitABit` | `procedure WaitABit(k:global byte);` | — |
+| `procedure` | `InitEffect` | `procedure InitEffect(maxTime : global byte);` | — |
+| `procedure` | `IncreaseTimer` | `procedure IncreaseTimer();` | — |
+| `procedure` | `EndEffect` | `procedure EndEffect() inline;` | — |
+
+### `files`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `LoadFile` | `procedure LoadFile(addr_file:integer; addr_load : integer);` | — |
+
+### `gfx/gfx`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `PutPixelMode5` | `procedure PutPixelMode5();` | — |
+| `procedure` | `PutPixelMode5Clear` | `procedure PutPixelMode5Clear();` | — |
+| `procedure` | `PutPixelRaw` | `procedure PutPixelRaw();` | — |
+| `procedure` | `CleanPixelRaw` | `procedure CleanPixelRaw();` | — |
+| `procedure` | `HlineUnrolled` | `procedure HlineUnrolled();` | — |
+| `procedure` | `ClearLineFast` | `procedure ClearLineFast(y1, color : global byte);` | — |
+| `procedure` | `ClearLineSlow` | `procedure ClearLineSlow(y1,color : global byte);` | — |
+| `procedure` | `ClearChunkFast` | `procedure ClearChunkFast(y1, color : global byte);` | — |
+| `procedure` | `Hline` | `procedure Hline( x1, x2, y1,color: global byte);` | — |
+| `procedure` | `Hline2` | `procedure Hline2( x1, x2, y1,color: global byte);` | — |
+| `procedure` | `Line` | `procedure Line ( x1, y1, x2, y2, color : global byte);` | — |
+
+### `gfx/text`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+
+### `player`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `PlayMusic` | `procedure PlayMusic();` | — |
+| `procedure` | `InitMusic` | `procedure InitMusic(zp:integer);` | — |
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Nada` | `procedure Nada();` | .crtcregs EQUB 127 ; R0 horizontal total EQUB 64 ; R1 horizontal displayed - shrunk a little EQUB 91 ; R2 horizontal position EQUB 40 ; R3 sync width EQUB 38 ; R4 vertical total EQUB 0 ; R5 vertical total adjust EQUB 32 ; R6 vertical displayed EQUB 34 ; R7 vertical position EQUB 0 ; R8 interlace EQUB 7 ; R9 scanlines per row EQUB 32 ; R10 cursor start EQUB 8 ; R11 cursor end EQUB HI(&4000/8) ; R12 screen start address, high EQUB LO(&4000/8) ; R13 screen start address, low |
+| `procedure` | `ResetStack` | `procedure ResetStack() inline;` | — |
+| `procedure` | `ScrollY` | `procedure ScrollY(y:global byte);` | Sets the Y-scroll register (0-16) |
+| `procedure` | `ScrollToY` | `procedure ScrollToY(y:global byte);` | Sets the Y scroll-register (mod 7) and moves the screen to the corresponding line. |
+| `procedure` | `SetScreenColumns` | `procedure SetScreenColumns(x:global byte);` | Set number of columns on the screen. Default $28 |
+| `procedure` | `SetWindowHeight` | `procedure SetWindowHeight(y: global byte);` | — |
+| `procedure` | `PointToY` | `procedure PointToY(zp:global pointer;y:global byte);` | — |
+| `procedure` | `PointToXY` | `procedure PointToXY(zp:global pointer;px,py:byte) inline;` | — |
+| `procedure` | `SetMode` | `procedure SetMode(zp:global pointer);` | — |
+| `procedure` | `FillBanks` | `procedure FillBanks(zp:global pointer; x,y : global byte);` | Fill memory address at [zp] with $100*[y] of value [x] |
+| `procedure` | `SetMode2` | `procedure SetMode2();` | — |
+| `procedure` | `SetMode5` | `procedure SetMode5();` | Sets mode 5 |
+| `procedure` | `SetMode4` | `procedure SetMode4();` | — |
+| `procedure` | `PutPixelMode2` | `procedure PutPixelMode2(ppx, ppy, ppc : global byte);` | Puts a pixel with color [ppc] at position [ppx,ppy] in mode 2 (160x256 16 colors) |
+| `procedure` | `PutPixelMode5` | `procedure PutPixelMode5(ppx, ppy, ppc : global byte);` | WARNING NOT IMPLEMENTED YET |
+| `procedure` | `Init` | `procedure Init();` | — |
+| `procedure` | `StartInterrupts` | `procedure StartInterrupts() inline;` | — |
+| `procedure` | `SetPalette` | `procedure SetPalette(zp:global pointer);` | — |
+| `procedure` | `SetMode5Palette` | `procedure SetMode5Palette(zp:global pointer);` | — |
+| `procedure` | `SetPalette4` | `procedure SetPalette4(x,y:global byte);` | — |
+| `procedure` | `SetBackgroundColor` | `procedure SetBackgroundColor(x:global byte);` | — |
+| `procedure` | `SetBorderColor` | `procedure SetBorderColor(x:global byte);` | — |
+| `procedure` | `WaitForVerticalSync` | `procedure WaitForVerticalSync();` | — |
+| `procedure` | `InitStandardScreenAndIRQ` | `procedure InitStandardScreenAndIRQ() inline;` | — |
+

@@ -8,10 +8,72 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/ATARI520ST/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `gfx/tiles`
-- `graphics`
-- `system/keys`
-- `system/screen`
-- `text/text`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `gfx/tiles`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetTileLoc` | `procedure SetTileLoc(tile: global ^byte);` | — |
+| `procedure` | `SetScreen` | `procedure SetScreen(screen: global ^byte);` | — |
+| `procedure` | `WriteToScreen` | `procedure WriteToScreen(xx:integer,yy,val,wx,wy : integer);` | — |
+
+### `graphics`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetScreenBuffer` | `procedure SetScreenBuffer(buff : pointer of long);` | — |
+| `procedure` | `SetupMultab` | `procedure SetupMultab(sm_screen,sm_t1:pointer of long);` | — |
+| `procedure` | `SingleBuffer` | `procedure SingleBuffer();` | — |
+| `procedure` | `FlipBuffers` | `procedure FlipBuffers();` | — |
+| `procedure` | `Init` | `procedure Init();` | — |
+| `procedure` | `Putpixel` | `procedure Putpixel(addr:global ^integer; x,y,col:global integer);` | — |
+| `procedure` | `PutpixelDirect` | `procedure PutpixelDirect();` | — |
+| `procedure` | `InitHTabs` | `procedure InitHTabs();` | — |
+| `procedure` | `LHLine` | `procedure LHLine(hx, hy, hl,hc:global integer);` | — |
+| `procedure` | `LHLineSingle` | `procedure LHLineSingle(hx, hy, hl,hc:global integer);` | — |
+| `procedure` | `ClearScreenFast` | `procedure ClearScreenFast(cls_buf:pointer of long);` | — |
+| `procedure` | `BlitSetup` | `procedure BlitSetup();` | — |
+| `procedure` | `Blit` | `procedure Blit(bsrc, bdst: global pointer of integer; bdx, bdy,bw,bh : global integer;badd:global long);` | — |
+| `procedure` | `BlitChar` | `procedure BlitChar(bsrc,bdst: global pointer of integer; bdx, bdy,bw,bh : global integer;badd,badd2:global long);` | — |
+| `procedure` | `BlitSingle` | `procedure BlitSingle(bsrc,bdst: global pointer of integer; bdx, bdy,bw,bh : global integer; badd:global long);` | — |
+| `procedure` | `Clear8pixelBorder` | `procedure Clear8pixelBorder(badd: global long);` | — |
+| `procedure` | `BlitMaskSingle` | `procedure BlitMaskSingle(bsrc,bdst: global pointer of integer; bdx, bdy,bw,bh : global integer; badd:global long);` | — |
+| `procedure` | `BlitMaskSingleOR` | `procedure BlitMaskSingleOR(bsrc,bdst: global pointer of integer; bdx, bdy,bw,bh : global integer; badd:global long);` | — |
+| `procedure` | `CopyGraphics` | `procedure CopyGraphics(bsrc,bdst: global pointer of integer; bdx, bdy, bw,bh : global integer; badd:global long);` | — |
+| `procedure` | `CopyGraphicsFast2` | `procedure CopyGraphicsFast2(bsrc,bdst: global pointer of integer; bdx, bdy, bh : global integer);` | — |
+| `procedure` | `BlitMaskSingle2` | `procedure BlitMaskSingle2(bsrc,bdst: global pointer of integer; bdx, bdy,bw,bh : global integer; badd:global long);` | — |
+| `procedure` | `RandomizeArray` | `procedure RandomizeArray(ra_p:pointer of integer; ra_len:integer);` | — |
+| `procedure` | `FillPoly` | `procedure FillPoly(pol_target: pointer of long);` | — |
+| `procedure` | `CopyMask` | `procedure CopyMask(p1,p2 : global pointer of integer; i : global integer);` | — |
+| `procedure` | `EorBuffer` | `procedure EorBuffer(p1 : global pointer of integer; il: global long);` | — |
+| `procedure` | `WaitForVBL` | `procedure WaitForVBL();` | — |
+
+### `system/keys`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+
+### `system/screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Print` | `procedure Print(zp:global pointer);` | — |
+| `procedure` | `NewLine` | `procedure NewLine();` | — |
+| `procedure` | `PrintInt` | `procedure PrintInt(it:integer);` | — |
+
+### `text/text`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init(fontPtr: global ^byte; screenWidth:global integer; asciiStart : global byte; fontWidth: global integer, fontHeight : global integer; lookup: global ^long);` | Initialises a new font. Please note that the only supported formats right now are 1-bitplane 8x8 and 16x16 fonts Parameters are: [ 320x256 1-bpl font data ] [ width of the current screen ] (160 on the atari st) [ start of ascii chars ] [ width of the font in pixels ] [ height of the font in pixels ] [ start of the ascii conversion - if "A" is your first char, then the value is 65 ] [ pointer to font lookup data ] Example: ` // Initializes a PETSCII 8x8 font Text::Init( #fontData, 160, 65, 8, 8, #Text::lookup8x8 ); ` |
+| `procedure` | `DrawFont8` | `procedure DrawFont8();` | — |
+| `procedure` | `DrawFont16` | `procedure DrawFont16();` | — |
+| `procedure` | `DrawSingleChar` | `procedure DrawSingleChar(char: byte);` | — |
+| `procedure` | `Advance` | `procedure Advance();` | — |
+| `procedure` | `InitPrinter` | `procedure InitPrinter(textP: global ^byte; x,y : global integer; target : global ^byte, speed: global integer);` | Sets up a "printer" routine to constantly output a given text to the screen. Use in tandem with "AdvancePrinter" in order to perform the actual printing. Example: ` var // the value "10" implies newline text: string =("HELLO",10,10, "WORLD"); .. begin // Will initialise the printer to position (x,y)=(4*8,64) on the "screen" buffer. Higher printspeed // number means slower output. Text::InitPrinter(#text, 4,64, #screen, printSpeed); while (true) do begin waitverticalblank(); Text::AdvancePrinter(); end; ` |
+| `procedure` | `AdvancePrinter` | `procedure AdvancePrinter();` | — |
+| `procedure` | `Draw` | `procedure Draw(textP: global ^byte; x,y : global integer; target : global ^byte);` | Draws a text based on the current font to a buffer. Note that the x parameter is the actual byte position on screen, so you can only draw text on every 8th pixel. Example: ` // Draws "hello world" to position (x,y) = (8*8,32) to the "screen" buffer Text::Draw("HELLO WORLD", 8, 32, #screen); ` |
+| `procedure` | `DrawChar` | `procedure DrawChar(val: global byte; x,y : global integer; target : global ^byte);` | — |
+

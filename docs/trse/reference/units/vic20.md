@@ -8,14 +8,89 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/VIC20/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `cart/cart`
-- `cart/crtcompression`
-- `gfx/gfx`
-- `input/key`
-- `output/csp`
-- `output/lbm8`
-- `output/pbm`
-- `screen`
-- `trtplayer`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `cart/cart`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init() inline;` | — |
+| `procedure` | `Autostart` | `procedure Autostart() inline;` | Creates the magic bytes needed for a Cartridge to autostart when your program is built into a cartridge ROM. This needs to go into address $a000 and a startblock can be used to achieve this. See cart::init for a full explanation and instructions on setting up. |
+
+### `cart/crtcompression`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Decompress` | `procedure Decompress(src, dst : global pointer of integer);` | — |
+
+### `gfx/gfx`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `PutPixel` | `procedure PutPixel();` | — |
+
+### `input/key`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Read` | `procedure Read();` | Read the full 10 row keyboard matrix and populate the keyboard flags |
+| `procedure` | `Held` | `procedure Held( _xy: integer );` | Returns true if the key is being held. Works with multiple keys held at the same time. |
+| `procedure` | `Pressed` | `procedure Pressed( _xy: integer );` | Returns true if the key has just been pressed. Works with multiple keys pressed at the same time. |
+| `procedure` | `GetHeld` | `procedure GetHeld();` | Gets a key being held. If multiple keys are pressed, returns the first key found. |
+
+### `output/csp`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `CalcScreen` | `procedure CalcScreen();` | — |
+| `procedure` | `DrawAt` | `procedure DrawAt(xx, yy: global byte, _ax: integer);` | — |
+| `procedure` | `DrawAtT` | `procedure DrawAtT(xx, yy: global byte, _ax: integer);` | — |
+| `procedure` | `ClearAt` | `procedure ClearAt(xx, yy: global byte, _ax: integer);` | — |
+
+### `output/lbm8`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `_AddBG` | `procedure _AddBG();` | Store the character on the screen (pointed to by screenmemory) into the buffer. The buffer records all screen locations that will need to be restored before redrawing sprites. |
+| `procedure` | `_RenderBG` | `procedure _RenderBG();` | Copy the bitmap / character definition for a background character on the screen to the character used to display a sprite. The sprite will later be merged with this. The procedure takes no paramters but requires the followinf pointers to be set: s - the source pointer set to the BG characters bitmap address d - the destination pointer set to the sprite characters bitmap address |
+| `procedure` | `DrawAt` | `procedure DrawAt( pa, x, y: global byte, sp: global integer);` | Draw an LBM8 sprite to the screen pa - the character number to start rendering a sprite to. See notes. x - the horizontal position in pixels to display the sprite y - the vertical position in pixels to display the sprite sp - the sprite lookup table. See notes. Example lbm8::DrawAt( 0, xp, yp, #playerLookup ); Notes The number of characters required to render a sprite depends upon how the sprite will move across the screen. If it is free moving in all directions you will need to reserve 4 characters to render the sprite. If you limit the sprite to only move on one axis (x or y) and the other axis is aligned completely to a character cell then you will only need to reserve 2 characters to render the sprite. Think of pac-man style of movement, where it can move up and down, or left and right, but one axis is always fixed in position due to the shape of the maze. IE: pac-man cannot move in disagonals. Use @DEFINE BGBUFFERS [number] to set the number of buffers you need The sprite lookup table tells the routine where to find in memory each of the 8 pre-shifted sprite bitmap data. An example of the command you can use // address where our pre-shifted bitmaps will be stored const ADRPLAYER: address = $1a00; // export a sprite - pre-shifted in 8 positions (16 characters are need to pre-shift 8 times) @vbmexport "chr\lbm8.flf" "chr\lbm8player.bin" 0 16 1 0 // include the bitmap at the specified address lbm8player: incbin( "chr\lbm8player.bin", ADRPLAYER ); // build the look up table playerLookup: array[8] of integer = buildtable( " ADRPLAYER + (i*16)" ); |
+| `procedure` | `DrawCAt` | `procedure DrawCAt( pa, x, y: global byte, sp: global integer);` | Draw an LBM8 sprite to the screen using the code generated data (see @vbmCompileChunk) pa - the character number to start rendering a sprite to. See notes. x - the horizontal position in pixels to display the sprite y - the vertical position in pixels to display the sprite sp - the generated sprite lookup table. See notes. Example lbm8::DrawAt( 0, xp, yp, #MySprite ); Notes The number of characters required to render a sprite depends upon how the sprite will move across the screen. If it is free moving in all directions you will need to reserve 4 characters to render the sprite. If you limit the sprite to only move on one axis (x or y) and the other axis is aligned completely to a character cell then you will only need to reserve 2 characters to render the sprite. Think of pac-man style of movement, where it can move up and down, or left and right, but one axis is always fixed in position due to the shape of the maze. IE: pac-man cannot move in disagonals. Use @DEFINE BGBUFFERS [number] to set the number of buffers you need The generated sprite lookup table tells the routine where to find each of the 8 pre-shifted sprite procedures. |
+| `procedure` | `RestoreBG` | `procedure RestoreBG();` | Restores the original characters that sprites covered back to the screen. This must be done every screen refresh before sprites are drawn. Typically: Wait for the raster line to reach the bottom border, or the last vertical position on screen where you will be drawing sprites to Call lbm8::RestoreBG(); Then call lbm8:DrawAt( ... ) for each sprite you wish to display |
+
+### `output/pbm`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Initialise` | `procedure Initialise();` | Initialise PBM. Clears the buffer and sets up address tables. |
+| `procedure` | `Refresh` | `procedure Refresh( x, y, h: global byte );` | Refresh a portion of the screen from the back buffer. Call this each time you wish to refresh the screen. Note that Refresh draws from the top downwards. Param x - the column in the buffer to start drawing from, eg: 0 (can be used for simple scrolling) y - the line on the screen to start drawing from h - the number of lines to draw |
+| `procedure` | `RefreshUnroll_36x22` | `procedure RefreshUnroll_36x22();` | Fast unrolled screen refresh in a fixed dimension of 36 columns by 22 rows. Is faster than the other Refresh commands at expense of using a lot of memory. Leaves a border of 1 char at top, 2 at left/right, 2 at bottom for use with border graphics, status icons and scores etc. |
+| `procedure` | `RefreshUnroll` | `procedure RefreshUnroll();` | Fast unrolled screen refresh for the whole screen. Is faster than the other Refresh commands at expense of using a lot of memory. |
+| `procedure` | `RefreshUnrollVic_24x22` | `procedure RefreshUnrollVic_24x22( _y: byte );` | Fast unrolled screen refresh in a fixed dimension of 24 columns by 22 rows on a Vic 20. Is faster than the other Refresh commands at expense of using a lot of memory. Vic 20 equivalent of RefreshUnroll_36x22, this takes the x starting offset in the _y register. Leaves a border of 1 char at top, 2 at bottom for use with border graphics, status icons and scores etc. |
+| `procedure` | `DrawSprite` | `procedure DrawSprite( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw uncompressed PBM data (mode 1) with replace ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (one char per byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteE` | `procedure DrawSpriteE( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw uncompressed PBM data (mode 1) with EOR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (one char per byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteO` | `procedure DrawSpriteO( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw uncompressed PBM data (mode 1) with OR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (one char per byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteME` | `procedure DrawSpriteME( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw uncompressed PBM data (mode 1) Mirrored with EOR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (one char per byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteC` | `procedure DrawSpriteC( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw compressed PBM data (mode 2) with replace ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (two chars in one byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteCE` | `procedure DrawSpriteCE( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw compressed PBM data (mode 2) with EOR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (two chars in one byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteCO` | `procedure DrawSpriteCO( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw compressed PBM data (mode 2) with OR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (two chars in one byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSprite8E` | `procedure DrawSprite8E( x, y: global byte, _y:byte, _ax: integer );` | Draw fixed 8x8 sized uncompressed PBM data (mode 1) with EOR ink. A little faster as the drawing code is unrolled (no loop) x - Block position to draw at horizontally y - Block position to draw at vertically _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSprite8ME` | `procedure DrawSprite8ME( x, y: global byte, _y:byte, _ax: integer );` | Draw fixed 8x8 sized uncompressed PBM data (mode 1) Mirrored with EOR ink. A little faster as the drawing code is unrolled (no loop) x - Block position to draw at horizontally y - Block position to draw at vertically _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `PDraw` | `procedure PDraw( w, h: global byte, _ax: integer );` | Draw PETSCII screen codes (mode 0) from the supplied address in the width and height specified directly to the screen. w - Width of source object in characters h - Height of source object in characters _ax - #address of binary data containing PETSCII characters |
+| `procedure` | `PDrawT` | `procedure PDrawT( w, h: global byte, _ax: integer );` | Draw PETSCII screen codes (mode 0) from the supplied address in the width and height specified directly to the screen. Space characters (32) are not drawn and act as transparent w - Width of source object in characters h - Height of source object in characters _ax - #address of binary data containing PETSCII characters |
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetScreenCharAddress` | `procedure SetScreenCharAddress( pa, pb: global pure_number byte ) inline;` | — |
+| `procedure` | `PrintChar` | `procedure PrintChar( pa, pb, pc: global pure byte ) inline;` | — |
+
+### `trtplayer`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Initialize` | `procedure Initialize( zp : global pointer );` | — |
+| `procedure` | `Play` | `procedure Play();` | — |
+

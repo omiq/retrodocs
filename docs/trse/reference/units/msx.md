@@ -8,7 +8,55 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/MSX/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `screen`
-- `text/txt`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetColors` | `procedure SetColors( a,b,c : global byte );` | — |
+| `procedure` | `PrintString` | `procedure PrintString(p1:global pointer);` | — |
+| `procedure` | `WriteVDP` | `procedure WriteVDP(a,b: global byte);` | — |
+| `procedure` | `ClearScreen` | `procedure ClearScreen() inline;` | — |
+| `procedure` | `Wait` | `procedure Wait(a: global byte);` | — |
+| `procedure` | `SetMode4` | `procedure SetMode4();` | — |
+
+### `text/txt`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `put_ch` | `procedure put_ch(CH:global byte);` | Put a character at current cursor position |
+| `procedure` | `DefineScreen` | `procedure DefineScreen();` | Helper to set up screen pointers etc |
+| `procedure` | `esc` | `procedure esc();` | Escape sequence |
+| `procedure` | `cursor_home` | `procedure cursor_home();` | Place the cursor at 0,0 top left of screen |
+| `procedure` | `move_to` | `procedure move_to(_text_x: byte, _text_y: byte);` | Place the cursor at X, Y screen position |
+| `procedure` | `wait_vsync` | `procedure wait_vsync();` | Wait for vertical blank (not yet implemented) |
+| `procedure` | `text_colour` | `procedure text_colour(_chosen_text_colour: byte);` | Set the text colour (not available on all platforms) |
+| `function` | `get_key` | `function get_key():byte;` | Get a character input from the keyboard |
+| `function` | `get_scancode` | `function get_scancode():byte;` | Get a character input from the keyboard |
+| `procedure` | `wait_key` | `procedure wait_key();` | Wait for a key press |
+| `procedure` | `clear_buffer` | `procedure clear_buffer();` | Clear the keyboard buffer |
+| `procedure` | `get_cursor_position` | `procedure get_cursor_position();` | Get current cursor position to o_cx,o_cy |
+| `procedure` | `put_char_at` | `procedure put_char_at(_atx,_aty,_atchar:byte);` | Put a character at a X, Y screen coordinate |
+| `procedure` | `print_string` | `procedure print_string(in_str: global pointer, CRLF: global byte);` | Output a string at the current cursor location. Set Carriage Return on/off |
+| `function` | `get_char_at` | `function get_char_at(_col,_row:byte):byte;` | Return the character at chosen screen position |
+| `procedure` | `beep` | `procedure beep();` | — |
+| `procedure` | `print_dec` | `procedure print_dec(_in_n:byte, _add_cr:byte);` | Output a string representation of a decimal number at current cursor position Set if you want carriage return true/false |
+| `function` | `str_to_dec` | `function str_to_dec(_in_str:pointer):byte;` | Convert string to decimal number |
+| `function` | `get_dec` | `function get_dec():integer;` | Get numeric input from keyboard |
+| `procedure` | `get_page` | `procedure get_page();` | Get screen page |
+| `procedure` | `cursor_off` | `procedure cursor_off();` | Hide flashing cursor |
+| `procedure` | `cursor_on` | `procedure cursor_on();` | Show flashing cursor |
+| `function` | `str_compare` | `function str_compare(str1:pointer,str2:pointer):byte;` | Compare two strings for equality |
+| `procedure` | `put_dec_at` | `procedure put_dec_at(_natx,_naty,_nat:byte);` | Output a string representation of a decimal number at chosen position |
+| `function` | `str_len` | `function str_len(in_str: global pointer):byte;` | — |
+| `procedure` | `print_space` | `procedure print_space(max_digits: global integer);` | — |
+| `procedure` | `print_string_centered` | `procedure print_string_centered(in_str: global pointer, CRLF: global byte, _sc_w: byte);` | Output a string at the current cursor location but centered. Set Carriage Return on/off Set the screen width Set reverse on/off |
+| `procedure` | `crlf` | `procedure crlf();` | — |
+| `function` | `get_string` | `function get_string():byte;` | — |
+| `function` | `str_to_dec` | `function str_to_dec(_in_str:pointer):byte;` | — |
+| `function` | `get_dec` | `function get_dec():integer;` | — |
+| `procedure` | `cls` | `procedure cls();` | Clear screen and initialise pointers Required for move_to etc |
+
