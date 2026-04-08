@@ -48,6 +48,12 @@ The Motorola 6809 is a more advanced architecture than the 6502 or Z80 — two s
 |----------|-----------------|-------|
 | [x86 / DOSBox](x86.md) | NASM assembly | DOS 6.22 environment; COM programs; Mode 13h VGA |
 
+## Web interpreter (BASIC)
+
+| Platform | Languages in IDE | Notes |
+|----------|-----------------|-------|
+| [RGC BASIC](../basic/rgc-basic.md) | RGC BASIC | WASM interpreter in-browser; [source](https://github.com/omiq/rgc-basic) |
+
 ## Choosing a platform to start with
 
 If you're new to retro programming, the **Commodore 64** is a great first machine — huge community, multiple language options, and well-documented hardware.

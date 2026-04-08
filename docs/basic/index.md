@@ -11,6 +11,7 @@ BASIC remains one of the fastest ways to get **visible results** on retro machin
 | **[BBC BASIC](bbc-basic.md)** | BBC Micro's structured BASIC — procedures, functions, inline assembler |
 | **[ZX BASIC (Boriel)](zx-basic.md)** | Compiled BASIC for ZX Spectrum — types, SUB/FUNCTION, fast execution |
 | **[Color BASIC](color-basic.md)** | Dragon 32 and TRS-80 CoCo built-in BASIC — PLAY, PMODE, JOYSTK |
+| **[RGC BASIC](rgc-basic.md)** | WebAssembly BASIC interpreter — runs in the browser in the IDE ([repo](https://github.com/omiq/rgc-basic)) |
 
 ## See also
 

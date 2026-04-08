@@ -33,11 +33,11 @@ Exact availability depends on **platform + toolchain**.
 | Area | Examples in the IDE |
 |------|---------------------|
 | **C** | cc65, z88dk, CMOC, and platform-specific C runtimes |
-| **BASIC** | Commodore BASIC (C64, VIC, PET), BBC BASIC, Color BASIC, AppleSoft, ugBASIC, batari BASIC, FastBasic, **XC-BASIC 3**, … |
+| **BASIC** | Commodore BASIC (C64, VIC, PET), BBC BASIC, Color BASIC, AppleSoft, ugBASIC, batari BASIC, FastBasic, **XC-BASIC 3**, **[RGC BASIC](../basic/rgc-basic.md)** (WASM), … |
 | **Assembly** | 6502 family: DASM, KickAss, ACME, cc65’s assembler; **Z80** / **6809** / **ARM** via dedicated tool modules |
 | **Other** | Verilog flows, remote/external tools, Markdown/BASIC-only “notebook” style platforms |
 
-See also the dedicated docs: **[Commodore BASIC v2](../basic/commodore-basic-v2.md)**, **[XC-BASIC 3](../basic/xc-basic-3.md)**, **[6502 assembly](../assembly/6502.md)**, **[Z80 assembly](../assembly/z80.md)**, **[cc65 / C](../c/cc65.md)**.
+See also the dedicated docs: **[Commodore BASIC v2](../basic/commodore-basic-v2.md)**, **[XC-BASIC 3](../basic/xc-basic-3.md)**, **[RGC BASIC](../basic/rgc-basic.md)**, **[6502 assembly](../assembly/6502.md)**, **[Z80 assembly](../assembly/z80.md)**, **[cc65 / C](../c/cc65.md)**.
 
 ## Auto-compile
 

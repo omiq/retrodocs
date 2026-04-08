@@ -103,6 +103,7 @@ nav:
       - "BBC BASIC": basic/bbc-basic.md
       - "ZX BASIC (Boriel)": basic/zx-basic.md
       - "Color BASIC": basic/color-basic.md
+      - "RGC BASIC": basic/rgc-basic.md
   - TRSE:
       - trse/index.md
       - "The TRSE language": trse/language.md
