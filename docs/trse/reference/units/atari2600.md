@@ -8,6 +8,16 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/ATARI2600/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `screen`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `WaitForVerticalSync` | `procedure WaitForVerticalSync();` | — |
+| `procedure` | `WaitForVerticalBlank` | `procedure WaitForVerticalBlank() inline;` | — |
+| `procedure` | `TurnOnDisplay` | `procedure TurnOnDisplay();` | — |
+| `procedure` | `TurnOffDisplay` | `procedure TurnOffDisplay();` | — |
+

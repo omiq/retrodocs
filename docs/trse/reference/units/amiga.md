@@ -8,13 +8,79 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/AMIGA/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `demounit`
-- `gfx/tiles`
-- `graphics`
-- `lsplayer`
-- `players/ptplayer`
-- `sprites`
-- `system/keys`
-- `text/text`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `demounit`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `InitEffect` | `procedure InitEffect(maxTime:global integer);` | — |
+| `procedure` | `Update` | `procedure Update();` | — |
+| `procedure` | `UpdateMainEmpty` | `procedure UpdateMainEmpty();` | — |
+| `procedure` | `FadeToColor` | `procedure FadeToColor(from, too:global integer);` | — |
+
+### `gfx/tiles`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetTileLoc` | `procedure SetTileLoc(tile: global ^byte);` | — |
+| `procedure` | `SetNoBitplanes` | `procedure SetNoBitplanes(noBitplanes: global integer);` | — |
+| `procedure` | `SetScreen` | `procedure SetScreen(screen: global ^byte);` | — |
+| `procedure` | `WriteToScreen` | `procedure WriteToScreen(xx,yy,val,wx,wy : integer);` | — |
+
+### `graphics`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `putpixel` | `procedure putpixel(pa:global pointer of integer;i,j : global integer);` | Putpixel: Slow AF. - parameter 1 : pointer to screen - parameter 2,3 : x,y coordinates |
+| `procedure` | `AddCopperCommandBitplane` | `procedure AddCopperCommandBitplane(bpl:global integer; pa: global pointer of integer);` | — |
+| `procedure` | `SetupDefaultScreen` | `procedure SetupDefaultScreen(pa:global pointer of integer; bpl : global integer);` | Sets up the copper list to point to a 320x256 buffer. Note that the screen will be set up interlaced, with 40 bytes per line per bitplane. Usage: SetupDefaultScreen( [ data buffer ], [ number of bitplanes ] ) Note that the data buffer must reside in chipmem Example: ` var const noBitPlanes = 2; // 2 bitplanes = 4 colors buf : array[40*256*noBitPlanes] chipmem; // data buffer stored in chipmem ... begin Graphics::SetupDefaultScreen(#buf, noBitPlanes); ` |
+| `procedure` | `SetupNonInterlacedScreen` | `procedure SetupNonInterlacedScreen(pa:global pointer of integer; bpl : global integer);` | Sets up the copper list to point to a 320x256 buffer. Note that the screen will be set up non-interlaced, with 40*256 bytes per bitplane. Usage: SetupNonInterlacedScreen( [ data buffer ], [ number of bitplanes ] ) Note that the data buffer must reside in chipmem Example: ` var const noBitPlanes = 4; // 4 bitplanes = 16 colors buf : array[40*256*noBitPlanes] chipmem; // data buffer stored in chipmem ... begin Graphics::SetupNonInterlacedScreen(#buf, noBitPlanes); ` |
+| `procedure` | `HlineI` | `procedure HlineI(hx, hy, hl:global integer;pa:global pointer);` | — |
+| `procedure` | `HlineOR` | `procedure HlineOR(hx, hy, hl:global integer;pa:global pointer);` | — |
+| `procedure` | `Blit16pix` | `procedure Blit16pix(pa,pl : global pointer of integer;i,j: global integer);` | — |
+| `procedure` | `Blit16pixMask` | `procedure Blit16pixMask(pa,pl : global pointer of integer;i,j: global integer);` | — |
+
+### `lsplayer`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init( music, bank : pointer of integer );` | — |
+| `procedure` | `Play` | `procedure Play();` | — |
+
+### `players/ptplayer`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init(song:pointer);` | — |
+| `procedure` | `Start` | `procedure Start();` | — |
+| `procedure` | `ptMain` | `procedure ptMain();` | — |
+
+### `sprites`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetPos` | `procedure SetPos(spo : ^byte; u_cx, u_cy, u_height:byte);` | Updates the X/Y position and height of a sprite Usage: SetPos(#sprite1, 160,160, 32); (sets a sprite at pos 160,160 with height 32) |
+| `procedure` | `SetSpriteColors` | `procedure SetSpriteColors(pos, a,b,c,d : integer);` | — |
+
+### `system/keys`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Read` | `procedure Read();` | — |
+
+### `text/text`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init(fontPtr: global ^byte; screenWidth:global integer; asciiStart : global byte; fontWidth: global integer, fontHeight : global integer; noBitPlanes : global integer; lookup: global ^long, isInterlaced:global boolean);` | Initialises a new font. Please note that the only supported formats right now are 1-bitplane 8x8 and 16x16 fonts Parameters are: [ 320x256 1-bpl font data ] [ width of the current screen ] [ start of ascii chars ] [ width of the font in pixels ] [ height of the font in pixels ] [ start of the ascii conversion - if "A" is your first char, then the value is 65 ] [ number of bitplanes on your current setup ] [ pointer to font lookup data ] [ is the screen interlaced or not? ] Example: ` // Initializes a PETSCII 8x8 font Text::Init( #fontData, 320, 65, 8, 8, noBitPlanes, #Text::lookup8x8 ); ` |
+| `procedure` | `DrawFont8` | `procedure DrawFont8();` | — |
+| `procedure` | `DrawSingleChar` | `procedure DrawSingleChar(char: byte);` | — |
+| `procedure` | `Advance` | `procedure Advance();` | — |
+| `procedure` | `InitPrinter` | `procedure InitPrinter(textP: global ^byte; x,y : global integer; target : global ^byte, speed: global integer);` | Sets up a "printer" routine to constantly output a given text to the screen. Use in tandem with "AdvancePrinter" in order to perform the actual printing. Example: ` var // the value "10" implies newline text: string =("HELLO",10,10, "WORLD"); .. begin // Will initialise the printer to position (x,y)=(4*8,64) on the "screen" buffer. Higher printspeed // number means slower output. Text::InitPrinter(#text, 4,64, #screen, printSpeed); while (true) do begin waitverticalblank(); Text::AdvancePrinter(); end; ` |
+| `procedure` | `AdvancePrinter` | `procedure AdvancePrinter();` | — |
+| `procedure` | `Draw` | `procedure Draw(textP: global ^byte; x,y : global integer; target : global ^byte);` | Draws a text based on the current font to a buffer. Note that the x parameter is the actual byte position on screen, so you can only draw text on every 8th pixel. Example: ` // Draws "hello world" to position (x,y) = (8*8,32) to the "screen" buffer Text::Draw("HELLO WORLD", 8, 32, #screen); ` |
+| `procedure` | `DrawChar` | `procedure DrawChar(val: global byte; x,y : global integer; target : global ^byte);` | — |
+

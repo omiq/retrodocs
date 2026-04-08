@@ -8,11 +8,67 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/PET/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `input/key`
-- `input/textbox`
-- `os/interrupts`
-- `os/model`
-- `output/pbm`
-- `output/screen`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `input/key`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Read` | `procedure Read();` | Read the full 10 row keyboard matrix and populate the keyboard flags |
+| `procedure` | `Held` | `procedure Held( _xy: integer );` | Returns true if the key is being held. Works with multiple keys held at the same time. |
+| `procedure` | `Pressed` | `procedure Pressed( _xy: integer );` | Returns true if the key has just been pressed. Works with multiple keys pressed at the same time. |
+| `procedure` | `GetHeld` | `procedure GetHeld();` | Gets a key being held. If multiple keys are pressed, returns the first key found. |
+
+### `input/textbox`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetInputString` | `procedure SetInputString( tp: global pointer, len: global byte );` | Set the input string to use and define the maximum length. Use before Input::Read(); and Input::Write(); |
+| `procedure` | `ClearInputString` | `procedure ClearInputString();` | Clear the input string with spaces. |
+| `procedure` | `_FlashCursor` | `procedure _FlashCursor();` | — |
+| `procedure` | `Write` | `procedure Write();` | Draw input string at current screenmemory pointer location. |
+| `procedure` | `Read` | `procedure Read();` | Execute a Key::Read() and populate the input string with the charaacters set to be allowed in the Flags. |
+
+### `os/interrupts`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+
+### `os/model`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Detect` | `procedure Detect();` | Run tests to detect what model of Pet the program is running on. Model::Flags will be set and can be tested with Model::ISROM4 and Model::IS40COL. Alternatively, Is_ROM4(); and Is_40Col(); procedures will return TRUE or FALSE. |
+| `procedure` | `Is_40Col` | `procedure Is_40Col();` | Returns TRUE if 40 column display mode, otherwise false if 80 column display mode. |
+| `procedure` | `Is_ROM4` | `procedure Is_ROM4();` | Returns TRUE if BASIC ROM version 4 is present, otherwise false unknown. |
+
+### `output/pbm`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Initialise` | `procedure Initialise();` | Initialise PBM. Clears the buffer and sets up address tables. |
+| `procedure` | `Refresh` | `procedure Refresh( x, y, h: global byte );` | Refresh a portion of the screen from the back buffer. Call this each time you wish to refresh the screen. Note that Refresh draws from the top downwards. Param x - the column in the buffer to start drawing from, eg: 0 (can be used for simple scrolling) y - the line on the screen to start drawing from h - the number of lines to draw |
+| `procedure` | `RefreshUnroll_36x22` | `procedure RefreshUnroll_36x22();` | Fast unrolled screen refresh in a fixed dimension of 36 columns by 22 rows. Is faster than the other Refresh commands at expense of using a lot of memory. Leaves a border of 1 char at top, 2 at left/right, 2 at bottom for use with border graphics, status icons and scores etc. |
+| `procedure` | `RefreshUnroll` | `procedure RefreshUnroll();` | Fast unrolled screen refresh for the whole screen. Is faster than the other Refresh commands at expense of using a lot of memory. |
+| `procedure` | `RefreshUnrollVic_24x22` | `procedure RefreshUnrollVic_24x22( _y: byte );` | Fast unrolled screen refresh in a fixed dimension of 24 columns by 22 rows on a Vic 20. Is faster than the other Refresh commands at expense of using a lot of memory. Vic 20 equivalent of RefreshUnroll_36x22, this takes the x starting offset in the _y register. Leaves a border of 1 char at top, 2 at bottom for use with border graphics, status icons and scores etc. |
+| `procedure` | `DrawSprite` | `procedure DrawSprite( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw uncompressed PBM data (mode 1) with replace ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (one char per byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteE` | `procedure DrawSpriteE( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw uncompressed PBM data (mode 1) with EOR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (one char per byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteO` | `procedure DrawSpriteO( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw uncompressed PBM data (mode 1) with OR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (one char per byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteME` | `procedure DrawSpriteME( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw uncompressed PBM data (mode 1) Mirrored with EOR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (one char per byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteC` | `procedure DrawSpriteC( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw compressed PBM data (mode 2) with replace ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (two chars in one byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteCE` | `procedure DrawSpriteCE( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw compressed PBM data (mode 2) with EOR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (two chars in one byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSpriteCO` | `procedure DrawSpriteCO( x, y, w, h: global byte, _y:byte, _ax: integer );` | Draw compressed PBM data (mode 2) with OR ink x - Block position to draw at horizontally y - Block position to draw at vertically w - Width of source object in character pairs (two chars in one byte) h - Height of source object in characters _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSprite8E` | `procedure DrawSprite8E( x, y: global byte, _y:byte, _ax: integer );` | Draw fixed 8x8 sized uncompressed PBM data (mode 1) with EOR ink. A little faster as the drawing code is unrolled (no loop) x - Block position to draw at horizontally y - Block position to draw at vertically _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `DrawSprite8ME` | `procedure DrawSprite8ME( x, y: global byte, _y:byte, _ax: integer );` | Draw fixed 8x8 sized uncompressed PBM data (mode 1) Mirrored with EOR ink. A little faster as the drawing code is unrolled (no loop) x - Block position to draw at horizontally y - Block position to draw at vertically _y - Animation frame _ax - #address array of integers containing the addresses of PBM data in four postions - NW, NE, SW, SE |
+| `procedure` | `PDraw` | `procedure PDraw( w, h: global byte, _ax: integer );` | Draw PETSCII screen codes (mode 0) from the supplied address in the width and height specified directly to the screen. w - Width of source object in characters h - Height of source object in characters _ax - #address of binary data containing PETSCII characters |
+| `procedure` | `PDrawT` | `procedure PDrawT( w, h: global byte, _ax: integer );` | Draw PETSCII screen codes (mode 0) from the supplied address in the width and height specified directly to the screen. Space characters (32) are not drawn and act as transparent w - Width of source object in characters h - Height of source object in characters _ax - #address of binary data containing PETSCII characters |
+
+### `output/screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `WaitVblStart` | `procedure WaitVblStart();` | Wait for the Vertical Blank to start. This is when the raster beam has reached the bottom of the screen and is returning to the top left. |
+| `procedure` | `WaitVblEnd` | `procedure WaitVblEnd();` | Wait for the Vertical Blank to end. This is after the raster beam has returned to the top of the screen. This procedure will be true and no wait while the screen is being redrawn. Use WaitVblEnd after a WaitVblStart when needing to ensure that the vertical blank has completed before waiting for the next VBL. This is important when your game loop takes less time than the time for the raster to return to the top of the screen. |
+| `procedure` | `Clear` | `procedure Clear();` | Clear the screen |
+

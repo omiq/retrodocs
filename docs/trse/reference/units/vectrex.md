@@ -8,6 +8,22 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/VECTREX/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `system`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `system`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetScale` | `procedure SetScale() inline;` | — |
+| `procedure` | `SetIntensity5` | `procedure SetIntensity5() inline;` | — |
+| `procedure` | `SetLargeFont` | `procedure SetLargeFont() inline;` | — |
+| `procedure` | `SetSmallFont` | `procedure SetSmallFont() inline;` | — |
+| `procedure` | `WaitFrameBoundary` | `procedure WaitFrameBoundary() inline;` | — |
+| `procedure` | `SetDpD0` | `procedure SetDpD0() inline;` | — |
+| `procedure` | `SetDpC8` | `procedure SetDpC8() inline;` | — |
+| `procedure` | `DisplayTextList` | `procedure DisplayTextList(p1:global pointer);` | — |
+| `procedure` | `DrawLine` | `procedure DrawLine(x1,y1,x2,y2:global byte);` | — |
+| `procedure` | `ResetPenPos` | `procedure ResetPenPos();` | — |
+

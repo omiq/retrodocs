@@ -8,8 +8,39 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/CHIP8/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `system/schip`
-- `system/system`
-- `system/xo_chip`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `system/schip`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `HiRes` | `procedure HiRes() inline;` | — |
+| `procedure` | `LowRes` | `procedure LowRes() inline;` | — |
+| `procedure` | `ScrollDown4` | `procedure ScrollDown4(n : global byte);` | — |
+| `procedure` | `ScrollLeft` | `procedure ScrollLeft() inline;` | — |
+| `procedure` | `ScrollRight` | `procedure ScrollRight() inline;` | — |
+
+### `system/system`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Clear` | `procedure Clear() inline;` | — |
+| `function` | `Random` | `function Random() inline : byte;` | — |
+| `procedure` | `DrawLine` | `procedure DrawLine(x,y:global byte ; line : byte);` | — |
+| `function` | `DrawSprite` | `function DrawSprite(ptr: global pointer; x,y,c : global byte) : boolean;` | — |
+| `procedure` | `PutPixel` | `procedure PutPixel(x,y:global byte) inline;` | — |
+| `procedure` | `Beep` | `procedure Beep(x : global byte);` | — |
+| `procedure` | `Wait` | `procedure Wait(word : global Integer);` | — |
+| `procedure` | `PrintHexChar` | `procedure PrintHexChar(x,y,c : global byte);` | — |
+| `procedure` | `PrintByte` | `procedure PrintByte(n,x,y:global byte);` | — |
+| `function` | `WaitForKey` | `function WaitForKey() inline : byte;` | — |
+| `procedure` | `setDT` | `procedure setDT(x : global byte);` | — |
+| `function` | `getDT` | `function getDT() inline : byte;` | — |
+| `function` | `isKeydown` | `function isKeydown(c : global byte) : boolean;` | — |
+
+### `system/xo_chip`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+

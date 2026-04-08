@@ -8,7 +8,20 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/GAMEBOY/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `levels`
-- `screens`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `levels`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `ReadHeader` | `procedure ReadHeader(lp:global pointer);` | Reads the header of level file and fills the various internal properties. Must be called before rendering. |
+| `procedure` | `RenderLevel2x2MetaTiles` | `procedure RenderLevel2x2MetaTiles(m_li2, m_lj2: byte);` | Renders a full level screen with 2x2 meta tiles to memory position "temp". Level position in (x,y) is provided by parameter 1 and 2. |
+
+### `screens`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Set9800` | `procedure Set9800();` | This method turns the lcd ON and sets the screen data pointer to $9800. Windows are off, objects are on. |
+

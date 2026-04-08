@@ -8,7 +8,19 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/JDH8/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `system/memory`
-- `system/screen`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `system/memory`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Init` | `procedure Init() inline;` | — |
+| `procedure` | `Copy16` | `procedure Copy16(src,dst:global pointer; i1:global integer);` | — |
+| `procedure` | `Copy` | `procedure Copy(src,dst:global pointer; bb:global byte);` | — |
+
+### `system/screen`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+

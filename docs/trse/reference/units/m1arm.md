@@ -8,6 +8,18 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/M1ARM/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `console`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `console`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `Read` | `function Read():integer;` | — |
+| `procedure` | `PrintChar` | `procedure PrintChar(c:integer);` | — |
+| `procedure` | `Print` | `procedure Print(p : pointer of byte);` | — |
+| `procedure` | `ClearScreen` | `procedure ClearScreen();` | — |
+| `procedure` | `GetWindowSize` | `procedure GetWindowSize();` | — |
+| `procedure` | `Sleep` | `procedure Sleep(time:long);` | — |
+

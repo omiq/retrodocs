@@ -8,7 +8,33 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/AGON/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `system/graphics`
-- `system/screen`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `system/graphics`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Line` | `procedure Line(x1,y1,x2,y2 : global integer; col: global byte);` | — |
+
+### `system/screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetMode` | `procedure SetMode( i : global byte) inline;` | Sets graphics mode [i] |
+| `procedure` | `out` | `procedure out(i : global byte pure_variable) inline;` | — |
+| `procedure` | `out` | `procedure out(i : global byte pure_number) inline;` | — |
+| `procedure` | `out` | `procedure out(i : global byte);` | — |
+| `procedure` | `LoadSingleChar` | `procedure LoadSingleChar(src: global ^byte, m : global byte);` | — |
+| `procedure` | `LoadCharset` | `procedure LoadCharset(p: global ^byte, k,l : global byte);` | — |
+| `procedure` | `PrintString` | `procedure PrintString(src : global ^byte);` | — |
+| `procedure` | `DisableCursor` | `procedure DisableCursor() inline;` | — |
+| `procedure` | `EnableCursor` | `procedure EnableCursor() inline;` | — |
+| `procedure` | `SetTextCol` | `procedure SetTextCol(i : global byte);` | — |
+| `procedure` | `SetPCol` | `procedure SetPCol(i : global byte);` | — |
+| `procedure` | `Plot` | `procedure Plot(ix,iy : global integer,k : global byte);` | — |
+| `procedure` | `LoadBitmap` | `procedure LoadBitmap(p : global ^byte, ix:global integer , j: global byte);` | Loads a TRSE-exported image from 'p' into id 'j' |
+| `procedure` | `DrawBitmap` | `procedure DrawBitmap(j : global byte, ix,iy : integer);` | — |
+| `procedure` | `ClearScreen` | `procedure ClearScreen();` | — |
+

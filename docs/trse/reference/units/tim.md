@@ -8,14 +8,99 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/TIM/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `misc`
-- `system/ascii`
-- `system/file`
-- `system/graphics`
-- `system/screen`
-- `system/system`
-- `system/tiles`
-- `system/z80cpm`
-- `unittests/common`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `misc`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `InitKeyboardCheck` | `procedure InitKeyboardCheck(maxkbTest : global byte);` | Check for any keypress and toggle a value if true. Used in the internal TIM TRSE tutorials. |
+| `procedure` | `KeyboardCheck` | `procedure KeyboardCheck();` | — |
+
+### `system/ascii`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+
+### `system/file`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `Open` | `function Open(File::cpmfName: global pointer, cpmfMode: byte): boolean;` | Opens a file with read or write access (ModeREad or ModeWrite) After opening, ReadChunk is called to load first 128 bytes from file. Fot text files, CP/M assumes that line endings are [CR][LF]. Be aware that many CP/M systems do not have information about exact nuber of bytes in the last file chunk. That means that every file's length is a multiple of 128 bytes. If you need exact file length, be sure to somehow put that information in the file itself, for example first two bytes can be number of chunks and number of bytes in the last chunk. |
+| `function` | `WriteByte` | `function WriteByte(File::cpmfByt: global byte): byte;` | Writes one byte to file's buffer. |
+| `function` | `Close` | `function Close(): boolean;` | Closes the file |
+| `function` | `ReadBytes` | `function ReadBytes(File::cpmfBuffer: global pointer, File::cpmfVal: global byte): byte;` | Reads cpmfVal bytes from file and fills provieded buffer with them. Returns number of read bytes. Sets handle's ReadPos to EOF if end of file is encountered. |
+| `procedure` | `ReadAll` | `procedure ReadAll(File::cpmfBuffer: global pointer);` | Reads all the data from a file marked with the 2-byte cpm header to a memory location . Usage: ` @copyfile "d1.bin" "copy_to_img/d1.bin" @addcpmheader "copy_to_img/d1.bin" .. f.ReadAll(...); ` |
+| `procedure` | `LoadCompressedFile` | `procedure LoadCompressedFile(File::cpmfName: global pointer, File::dst, File::ptmp : global ^byte);` | Loads the contents of a compressed file to temporary buffer, then extracts it to a destination. Usage: ` @copyfile "d1.bin" "copy_to_img/d1.bin" @addcpmheader "copy_to_img/d1.bin" .. // Loads the file to $7000, then extracts data to $4000 f.LoadCompressedFile(d1.bin",$4000, $7000); ` |
+| `procedure` | `ShowPic` | `procedure ShowPic(x, y: global byte, tpcName: global pointer);` | — |
+| `function` | `PreparePic` | `function PreparePic(x, y: global byte, tpcName: global pointer): boolean;` | Prepares picture displaying using incremental display, on coordinates (x,y) Coordinates are the same as tile cooridinates [0..127, 0..63]. |
+| `function` | `ShowIncrementalPic` | `function ShowIncrementalPic(): boolean;` | Shows part of prepared TPC image, returns true if there is more to show, otherwise false |
+
+### `system/graphics`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Plot` | `procedure Plot(x, y: global integer, col: global integer);` | Plots a pixel at coordinates x,y with color col, where x = 0..511, y = 0..255, col = 0 ..3 |
+| `procedure` | `Plot256` | `procedure Plot256(x, y: global integer, col: global integer);` | — |
+| `procedure` | `CopyBuffer128ToScreen` | `procedure CopyBuffer128ToScreen(src, dst : global pointer);` | — |
+| `procedure` | `Line` | `procedure Line(x1,y1,x2,y2: global integer, col: global integer);` | Draws a line from x1,y1 to x2,y2 with color col, where x1,x2 = 0..511, y1,y2 = 0..255, col = 0 ..3 |
+| `procedure` | `Circle` | `procedure Circle(x1, y1: global integer, radius: integer, col: global integer);` | Draws a circle with center at x1,y1, where x1 = 0..511, y1 = 0..255, col = 0 ..3 and radius should be within screen limits |
+| `procedure` | `Box` | `procedure Box(xb1,yb1,xb2,yb2: integer, col: global integer);` | Draws a box from x1,y1 to x2,y2 with color col, where x1,x2 = 0..511, y1,y2 = 0..255, col = 0 ..3 |
+| `procedure` | `BLine` | `procedure BLine( bx1, by1, bx2, by2, color : byte);` | — |
+
+### `system/screen`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+
+### `system/system`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `CursorOff` | `procedure CursorOff();` | Turns off CP/M terminal cursor. |
+| `procedure` | `MegaWait` | `procedure MegaWait(value: global byte);` | — |
+| `procedure` | `CursorOn` | `procedure CursorOn();` | Turns on CP/M terminal cursor. |
+| `procedure` | `SetTimerFunction` | `procedure SetTimerFunction(timerfunc: integer);` | Set routine for 100ms timer (the default one blinks the terminal cursor). 0 value restores OS routine. |
+| `function` | `GetIO` | `function GetIO(ioaddr: global integer): byte;` | Gets a value from I/O address ($0000-$FFFF). |
+| `procedure` | `SetIO` | `procedure SetIO(ioaddr: global integer, value: global byte);` | Sets a value to I/O address ($0000-$FFFF). |
+| `procedure` | `SetTimerCountdown` | `procedure SetTimerCountdown(value: global byte);` | Sets countdown value for 100ms timer ($78 or 120 is the default). Lower values make a faster timer. Setting value to 0 restores default value. |
+| `procedure` | `SetScreenPos` | `procedure SetScreenPos(value: global byte);` | Sets the value of TIM-011 scroll register at IO adress 00D0h, where scrpos = 0..255 |
+
+### `system/tiles`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetIndexTiles` | `procedure SetIndexTiles(tiles: pointer);` | Tiles/sprites are 16x16 pixels graphic blocks. They can be positioned on 4-pixel boundaries anywhere inside TIM-011 video memory. This gives 0-127 for X and 0-63 for Y coordinate. This function sets the address for tiles accessed by index. |
+| `procedure` | `tileaddr` | `procedure tileaddr();` | — |
+| `procedure` | `OrTile` | `procedure OrTile(x, y: global integer, tile: global integer);` | Puts tile on screen using OR with current content, where x = 0..127, y = 0..63, tile = 0..255 for index based, or full address |
+| `procedure` | `GetTile` | `procedure GetTile(x, y: global integer, tile: global integer);` | Gets 64 bytes for tile from screen into a array variable, where x = 0..127, y = 0..63, tile = 0..255 for index based, or full address |
+| `procedure` | `PutTile` | `procedure PutTile(x, y: global integer, tile: global integer);` | Puts tile on screen, where x = 0..127, y = 0..63, tile = 0..255 for index based, or full address |
+| `procedure` | `FlipTileX` | `procedure FlipTileX(tile: global integer);` | Flips tile pixels horizontaly, where tile = 0..255 for index based, or full address |
+| `procedure` | `FlipTileY` | `procedure FlipTileY(tile: global integer);` | Flips tile pixels vertically, where tile = 0..255 for index based, or full address |
+
+### `system/z80cpm`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Startup` | `procedure Startup() inline;` | — |
+| `procedure` | `run_bios` | `procedure run_bios();` | — |
+| `function` | `bdos_hl` | `function bdos_hl(reg_bc, reg_de: global integer): integer;` | @fn unsigned int bdos_hl(unsigned int bc, unsigned int de) @brief Call to BDOS. @param bc - bc register @param de - de register @return value of hl register |
+| `function` | `bdos_a` | `function bdos_a(reg_bc, reg_de: global integer): byte;` | @fn unsigned char bdos_a(unsigned int bc, unsigned int de) @brief Call to BDOS. @param bc - bc register @param de - de register @return value of a register |
+| `procedure` | `Exit` | `procedure Exit() inline;` | Exit code for Z80 CP/M, must be last executed code in CP/M (and TIM-011) program |
+| `procedure` | `PutChar` | `procedure PutChar(chr: global byte);` | Puts a character to CP/M terminal, where chr is ASCII code |
+| `procedure` | `PutCharLF` | `procedure PutCharLF(chr: global byte);` | Puts a character to CP/M terminal plus adds LF after CR, where chr is ASCII code |
+
+### `unittests/common`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `TestInit` | `procedure TestInit();` | — |
+| `procedure` | `CR` | `procedure CR() inline;` | — |
+| `procedure` | `TestSuiteInit` | `procedure TestSuiteInit();` | — |
+| `procedure` | `Initialise` | `procedure Initialise(zp:pointer);` | — |
+| `function` | `Status` | `function Status() : byte;` | — |
+| `procedure` | `PASS` | `procedure PASS();` | — |
+| `procedure` | `FAIL` | `procedure FAIL();` | — |
+| `procedure` | `WaitABit` | `procedure WaitABit();` | — |
+| `procedure` | `DebugValue` | `procedure DebugValue(v:integer);` | — |
+

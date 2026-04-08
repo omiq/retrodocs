@@ -8,30 +8,437 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/global/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `gfx/genericlevels`
-- `gfx/genericlevels2`
-- `gfx/lib3d`
-- `gfx/linegeneric`
-- `math/matrix`
-- `math/vector`
-- `system/str`
-- `system/tables`
-- `unittests/advanced_math`
-- `unittests/bitop`
-- `unittests/boolean`
-- `unittests/case`
-- `unittests/casts`
-- `unittests/classes`
-- `unittests/forloop`
-- `unittests/functions`
-- `unittests/ifthenelse`
-- `unittests/integer`
-- `unittests/long`
-- `unittests/muldiv`
-- `unittests/registers`
-- `unittests/strings`
-- `unittests/unittests`
-- `unittests/various`
-- `unittests/vars`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `gfx/genericlevels`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `ReadHeader` | `procedure ReadHeader(GenericLevels::zp:global pointer);` | — |
+| `procedure` | `RenderLevel` | `procedure RenderLevel(GenericLevels::x,GenericLevels::y : global byte; GenericLevels::wx, GenericLevels::wy : global byte);` | — |
+| `procedure` | `RenderLevelStrip` | `procedure RenderLevelStrip(GenericLevels::x,GenericLevels::y : global byte; GenericLevels::wx, GenericLevels::wy, GenericLevels::xx : global byte, GenericLevels::xpos : global integer );` | — |
+| `procedure` | `ReadHeader` | `procedure ReadHeader(zp:global pointer);` | — |
+| `procedure` | `RenderLevel` | `procedure RenderLevel(x, y : global byte; wx, wy : global byte);` | — |
+
+### `gfx/genericlevels2`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `ReadHeader` | `procedure ReadHeader(zp:global pointer);` | — |
+| `procedure` | `RenderLevel` | `procedure RenderLevel(x, y : global byte; wx, wy : global byte);` | — |
+
+### `gfx/lib3d`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `FlipPointPointers` | `procedure FlipPointPointers(i : global byte);` | — |
+| `procedure` | `InitializeData` | `procedure InitializeData(startPos: global integer);` | — |
+| `procedure` | `AllocateWireframe` | `procedure AllocateWireframe(i,f,v : global byte);` | — |
+| `procedure` | `RenderWireframe` | `procedure RenderWireframe(i:global byte);` | — |
+| `procedure` | `RenderWireframeColor` | `procedure RenderWireframeColor(i,f:global byte);` | — |
+| `procedure` | `FillColors` | `procedure FillColors(i,f:global byte);` | — |
+| `procedure` | `LoadObject` | `procedure LoadObject(i:global byte; fp: global pointer);` | — |
+| `procedure` | `RotateVertices` | `procedure RotateVertices(i:global byte);` | — |
+| `procedure` | `RotateVerticesOptimisedZ80` | `procedure RotateVerticesOptimisedZ80(i:global byte);` | — |
+| `procedure` | `ProjectSimple` | `procedure ProjectSimple(i,cx,cy,cz: global byte;zdiv :global integer);` | — |
+| `procedure` | `Ortho` | `procedure Ortho(i: global byte);` | — |
+| `procedure` | `RenderLineList` | `procedure RenderLineList();` | — |
+
+### `gfx/linegeneric`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Line` | `procedure Line( x1, y1, x2, y2, color : global byte);` | @ifndef putpixel @raiseerror "You need to define a putpixel routine before including this file" @endif |
+
+### `math/matrix`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `MatMul3` | `procedure MatMul3( p1,pb : global pointer of byte; m : global matp );` | Multiply two 4x4 matrices aa and bb, result in cc |
+| `procedure` | `MatMulVec3` | `procedure MatMulVec3( pb: global pointer of byte; p1:global pointer of byte;res:global pointer of integer );` | Multiplies a matrix 'a' with a vector3 'vec' with result in 'res'. |
+| `procedure` | `MatMulVec3Z80` | `procedure MatMulVec3Z80( pb: global pointer of byte; p1:global pointer of byte;res:global pointer of integer );` | — |
+| `procedure` | `Identity` | `procedure Identity(m:global matp);` | — |
+| `procedure` | `RotateX` | `procedure RotateX(m:global matp; angle:global byte);` | — |
+| `procedure` | `RotateY` | `procedure RotateY(m:global matp; angle:global byte);` | — |
+| `procedure` | `RotateZ` | `procedure RotateZ(m:global matp; angle:global byte);` | — |
+
+### `math/vector`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+
+### `system/str`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `strlen` | `function strlen( p3 : global ^byte):byte;` | Returns the length of a string. Note that this will only work for strings <256 bytes. |
+| `procedure` | `reverse` | `procedure reverse(p2: global ^byte);` | Reverses a string |
+| `procedure` | `itoa` | `procedure itoa( num:global integer; p1: global ^byte; b:global @sz);` | — |
+| `procedure` | `itoh` | `procedure itoh( num:global integer; p1: global ^byte);` | — |
+| `procedure` | `itoa` | `procedure itoa( num:global integer; p1: global ^byte; b:global @sz);` | — |
+| `procedure` | `ltoa` | `procedure ltoa( lnum:global long; p1: global ^byte; b:global @sz);` | Converts a number to a string in base b example: ` itoa(1234, p1, 16); // coverts "1234" to a hexadecimal string stored in p1 ` |
+| `procedure` | `ltoh` | `procedure ltoh(p2, p1:global ^byte);` | Converts a long into a hex text string |
+| `procedure` | `strcat` | `procedure strcat(p1,p2 : global ^byte);` | Appends a copy of the source string (p2) to the destination string (p1). The terminating null character in destination is overwritten by the first character of source, and a null-character is included at the end of the new string formed by the concatenation of both in destination. |
+| `procedure` | `substr` | `procedure substr(p1, p2: global ^byte; b,c : global @sz);` | Copies a substring from p2 to p1. The start position is given by b, and the length is c. ` // Copies 4 bytes from position 14 (to 18) str::substr(#data, #myString, 14,4); ` |
+
+### `system/tables`
+
+*No `procedure` / `function` declarations found (unit may use only `@include`, variables, or declarations this parser skips).*
+
+### `unittests/advanced_math`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Advanced01` | `procedure Advanced01();` | — |
+| `procedure` | `Advanced02` | `procedure Advanced02();` | — |
+| `procedure` | `Advanced03` | `procedure Advanced03();` | — |
+| `procedure` | `Advanced04` | `procedure Advanced04();` | — |
+| `procedure` | `Advanced05` | `procedure Advanced05();` | — |
+| `procedure` | `Advanced06` | `procedure Advanced06();` | — |
+| `procedure` | `Advanced07` | `procedure Advanced07();` | Completely aware that this one fails. Works with *1, also with pointer + |
+| `procedure` | `Advanced08` | `procedure Advanced08();` | — |
+| `function` | `factorial` | `function factorial( p: byte stack ):byte;` | — |
+| `procedure` | `AdvFactorial` | `procedure AdvFactorial();` | — |
+| `procedure` | `MulDivCombo1` | `procedure MulDivCombo1();` | — |
+| `procedure` | `MulDivCombo2` | `procedure MulDivCombo2();` | — |
+| `procedure` | `MulDivCombo3` | `procedure MulDivCombo3();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | — |
+
+### `unittests/bitop`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Test1` | `procedure Test1();` | — |
+| `procedure` | `Test2` | `procedure Test2();` | — |
+| `procedure` | `Test3` | `procedure Test3();` | — |
+| `procedure` | `Test4` | `procedure Test4();` | — |
+| `procedure` | `Test5` | `procedure Test5();` | — |
+| `procedure` | `Test6` | `procedure Test6();` | — |
+| `procedure` | `Test7` | `procedure Test7();` | — |
+| `procedure` | `Test8` | `procedure Test8();` | — |
+| `procedure` | `Test9` | `procedure Test9();` | — |
+| `procedure` | `Test10` | `procedure Test10();` | — |
+| `procedure` | `Test11` | `procedure Test11();` | — |
+| `procedure` | `Test12` | `procedure Test12();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | MAIN PROGRAM |
+
+### `unittests/boolean`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `InvertB` | `function InvertB( bl : boolean) : boolean;` | — |
+| `procedure` | `T1` | `procedure T1();` | — |
+| `procedure` | `T2` | `procedure T2();` | — |
+| `procedure` | `T3` | `procedure T3();` | — |
+| `procedure` | `T4` | `procedure T4();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | MAIN PROGRAM |
+
+### `unittests/case`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Test1` | `procedure Test1();` | — |
+| `procedure` | `Test2` | `procedure Test2();` | — |
+| `procedure` | `Test3` | `procedure Test3();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | MAIN PROGRAM |
+
+### `unittests/casts`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Test1` | `procedure Test1();` | — |
+| `procedure` | `Test2` | `procedure Test2();` | — |
+| `procedure` | `Test3` | `procedure Test3();` | — |
+| `procedure` | `Test4` | `procedure Test4();` | — |
+| `procedure` | `Test5` | `procedure Test5();` | — |
+| `procedure` | `Test6` | `procedure Test6();` | — |
+| `procedure` | `Test7` | `procedure Test7();` | — |
+| `procedure` | `Test8` | `procedure Test8();` | — |
+| `procedure` | `Test9` | `procedure Test9();` | — |
+| `procedure` | `Test10` | `procedure Test10();` | — |
+| `procedure` | `Test11` | `procedure Test11();` | — |
+| `procedure` | `Test12` | `procedure Test12();` | — |
+| `procedure` | `Test13` | `procedure Test13();` | — |
+| `procedure` | `Test14` | `procedure Test14();` | — |
+| `procedure` | `Test15` | `procedure Test15();` | — |
+| `procedure` | `Test16` | `procedure Test16();` | — |
+| `procedure` | `Test17` | `procedure Test17();` | — |
+| `procedure` | `Test18` | `procedure Test18();` | — |
+| `procedure` | `Test19` | `procedure Test19();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | MAIN PROGRAM |
+
+### `unittests/classes`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `getValue` | `function getValue() : integer;` | — |
+| `procedure` | `Init` | `procedure Init( ss1 : integer);` | — |
+| `procedure` | `MulTest1` | `procedure MulTest1();` | — |
+| `procedure` | `MulTest2` | `procedure MulTest2();` | — |
+| `procedure` | `DivTest1` | `procedure DivTest1();` | — |
+| `function` | `getLenSomething` | `function getLenSomething() : byte;` | — |
+| `procedure` | `Add` | `procedure Add(zp:pointer);` | — |
+| `procedure` | `Stuff` | `procedure Stuff();` | — |
+| `procedure` | `CTest1` | `procedure CTest1();` | — |
+| `procedure` | `CTest2` | `procedure CTest2();` | — |
+| `procedure` | `CTest3` | `procedure CTest3();` | Test pointers, indirect assignment |
+| `procedure` | `CTest4` | `procedure CTest4();` | — |
+| `procedure` | `CTest5` | `procedure CTest5();` | — |
+| `procedure` | `CTest6` | `procedure CTest6();` | — |
+| `procedure` | `CTest7` | `procedure CTest7();` | — |
+| `procedure` | `CTest8` | `procedure CTest8();` | — |
+| `procedure` | `CTest9` | `procedure CTest9();` | — |
+| `procedure` | `CTest10` | `procedure CTest10();` | — |
+| `procedure` | `CTestC1` | `procedure CTestC1();` | — |
+| `procedure` | `CTestC2` | `procedure CTestC2();` | — |
+| `procedure` | `CTestC3` | `procedure CTestC3();` | — |
+| `procedure` | `CTest11` | `procedure CTest11();` | — |
+| `procedure` | `MTest1` | `procedure MTest1();` | — |
+| `procedure` | `MTest2` | `procedure MTest2();` | — |
+| `procedure` | `MTest3` | `procedure MTest3();` | — |
+| `procedure` | `MTest4` | `procedure MTest4();` | — |
+| `procedure` | `DTest1` | `procedure DTest1();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | — |
+
+### `unittests/forloop`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Test1` | `procedure Test1();` | — |
+| `procedure` | `Test2` | `procedure Test2();` | — |
+| `procedure` | `Test3` | `procedure Test3();` | — |
+| `procedure` | `Test4` | `procedure Test4();` | — |
+| `procedure` | `Test5` | `procedure Test5();` | — |
+| `procedure` | `Test6` | `procedure Test6();` | — |
+| `procedure` | `Test7` | `procedure Test7();` | — |
+| `procedure` | `Test8` | `procedure Test8();` | — |
+| `procedure` | `TestBreak` | `procedure TestBreak();` | — |
+| `procedure` | `TestContinue` | `procedure TestContinue();` | — |
+| `procedure` | `NegativeStep1` | `procedure NegativeStep1();` | — |
+| `procedure` | `NegativeStep2` | `procedure NegativeStep2();` | — |
+| `procedure` | `NegativeStep3` | `procedure NegativeStep3();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | MAIN PROGRAM |
+
+### `unittests/functions`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `function` | `FnByte` | `function FnByte(fn1:global byte):byte;` | — |
+| `function` | `FnByteAdv` | `function FnByteAdv(fn1:global byte):byte;` | — |
+| `function` | `FnByteInt` | `function FnByteInt(fn1:global byte):byte;` | — |
+| `function` | `FnInt1` | `function FnInt1(fn1:global byte):integer;` | — |
+| `function` | `FnInt2` | `function FnInt2(fn1:global byte):integer;` | — |
+| `function` | `FnInt3` | `function FnInt3(fn1:global byte):integer;` | — |
+| `procedure` | `Test1` | `procedure Test1();` | — |
+| `procedure` | `Test2` | `procedure Test2();` | — |
+| `procedure` | `Test3` | `procedure Test3();` | — |
+| `procedure` | `Test4` | `procedure Test4();` | — |
+| `procedure` | `Test5` | `procedure Test5();` | — |
+| `procedure` | `Test6` | `procedure Test6();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | MAIN PROGRAM |
+
+### `unittests/ifthenelse`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `GT1_GreaterThan_True` | `procedure GT1_GreaterThan_True();` | — |
+| `procedure` | `GT2_GreaterThan_False` | `procedure GT2_GreaterThan_False();` | — |
+| `procedure` | `GT3_GreaterThan_False` | `procedure GT3_GreaterThan_False();` | — |
+| `procedure` | `GT4_GreaterThan_False` | `procedure GT4_GreaterThan_False();` | — |
+| `procedure` | `GT5_GreaterThan_True` | `procedure GT5_GreaterThan_True();` | — |
+| `procedure` | `GTE1_GreaterEqual_True` | `procedure GTE1_GreaterEqual_True();` | — |
+| `procedure` | `GTE2_GreaterThan_False` | `procedure GTE2_GreaterThan_False();` | — |
+| `procedure` | `GTE3_GreaterThan_True` | `procedure GTE3_GreaterThan_True();` | — |
+| `procedure` | `GTE4_GreaterThan_False` | `procedure GTE4_GreaterThan_False();` | — |
+| `procedure` | `GTE5_GreaterThan_True` | `procedure GTE5_GreaterThan_True();` | — |
+| `procedure` | `LT1_LessThan_True` | `procedure LT1_LessThan_True();` | — |
+| `procedure` | `LT2_LessThan_False` | `procedure LT2_LessThan_False();` | — |
+| `procedure` | `LT3_LessThan_False` | `procedure LT3_LessThan_False();` | — |
+| `procedure` | `LT4_LessThan_True` | `procedure LT4_LessThan_True();` | — |
+| `procedure` | `LT5_LessThan_False` | `procedure LT5_LessThan_False();` | — |
+| `procedure` | `LTE1_LessEqual_True` | `procedure LTE1_LessEqual_True();` | — |
+| `procedure` | `LTE1_LessEqual_True2` | `procedure LTE1_LessEqual_True2();` | — |
+| `procedure` | `LTE2_LessThan_False` | `procedure LTE2_LessThan_False();` | — |
+| `procedure` | `LTE3_LessThan_True` | `procedure LTE3_LessThan_True();` | — |
+| `procedure` | `LTE4_LessThan_True` | `procedure LTE4_LessThan_True();` | — |
+| `procedure` | `LTE5_LessThan_False` | `procedure LTE5_LessThan_False();` | — |
+| `procedure` | `EQ1_EqualTo_True` | `procedure EQ1_EqualTo_True();` | — |
+| `procedure` | `EQ2_EqualTo_False` | `procedure EQ2_EqualTo_False();` | — |
+| `procedure` | `NEQ1_NotEqualTo_True` | `procedure NEQ1_NotEqualTo_True();` | — |
+| `procedure` | `NEQ2_NotEqualTo_False` | `procedure NEQ2_NotEqualTo_False();` | — |
+| `procedure` | `Advanced1` | `procedure Advanced1();` | — |
+| `procedure` | `Advanced2` | `procedure Advanced2();` | — |
+| `procedure` | `IGT1_GreaterThan_True` | `procedure IGT1_GreaterThan_True();` | — |
+| `procedure` | `IGT2_GreaterThan_False` | `procedure IGT2_GreaterThan_False();` | — |
+| `procedure` | `IGT3_GreaterThan_False` | `procedure IGT3_GreaterThan_False();` | — |
+| `procedure` | `IGT4_GreaterThan_False` | `procedure IGT4_GreaterThan_False();` | — |
+| `procedure` | `IGT5_GreaterThan_True` | `procedure IGT5_GreaterThan_True();` | — |
+| `procedure` | `IGTE1_GreaterEqual_True` | `procedure IGTE1_GreaterEqual_True();` | — |
+| `procedure` | `IGTE2_GreaterThan_False` | `procedure IGTE2_GreaterThan_False();` | — |
+| `procedure` | `IGTE3_GreaterThan_True` | `procedure IGTE3_GreaterThan_True();` | — |
+| `procedure` | `IGTE4_GreaterThan_False` | `procedure IGTE4_GreaterThan_False();` | — |
+| `procedure` | `IGTE5_GreaterThan_True` | `procedure IGTE5_GreaterThan_True();` | — |
+| `procedure` | `ILT1_GreaterThan_True` | `procedure ILT1_GreaterThan_True();` | — |
+| `procedure` | `ILT2_GreaterThan_False` | `procedure ILT2_GreaterThan_False();` | — |
+| `procedure` | `ILT3_GreaterThan_False` | `procedure ILT3_GreaterThan_False();` | — |
+| `procedure` | `ILT4_GreaterThan_False` | `procedure ILT4_GreaterThan_False();` | — |
+| `procedure` | `ILT5_GreaterThan_True` | `procedure ILT5_GreaterThan_True();` | — |
+| `procedure` | `ILTE1_GreaterEqual_True` | `procedure ILTE1_GreaterEqual_True();` | — |
+| `procedure` | `ILTE2_GreaterThan_False` | `procedure ILTE2_GreaterThan_False();` | — |
+| `procedure` | `ILTE3_GreaterThan_True` | `procedure ILTE3_GreaterThan_True();` | — |
+| `procedure` | `ILTE4_GreaterThan_False` | `procedure ILTE4_GreaterThan_False();` | — |
+| `procedure` | `ILTE5_GreaterThan_True` | `procedure ILTE5_GreaterThan_True();` | — |
+| `procedure` | `LGT1_GreaterThan_True` | `procedure LGT1_GreaterThan_True();` | — |
+| `procedure` | `LGT2_GreaterThan_False` | `procedure LGT2_GreaterThan_False();` | — |
+| `procedure` | `LGT3_GreaterThan_False` | `procedure LGT3_GreaterThan_False();` | — |
+| `procedure` | `LGT4_GreaterThan_False` | `procedure LGT4_GreaterThan_False();` | — |
+| `procedure` | `LGT5_GreaterThan_True` | `procedure LGT5_GreaterThan_True();` | — |
+| `procedure` | `LGTE1_GreaterEqual_True` | `procedure LGTE1_GreaterEqual_True();` | — |
+| `procedure` | `LGTE2_GreaterThan_False` | `procedure LGTE2_GreaterThan_False();` | — |
+| `procedure` | `LGTE3_GreaterThan_True` | `procedure LGTE3_GreaterThan_True();` | — |
+| `procedure` | `LGTE4_GreaterThan_False` | `procedure LGTE4_GreaterThan_False();` | — |
+| `procedure` | `LGTE5_GreaterThan_True` | `procedure LGTE5_GreaterThan_True();` | — |
+| `procedure` | `LLT1_GreaterThan_True` | `procedure LLT1_GreaterThan_True();` | — |
+| `procedure` | `LLT2_GreaterThan_False` | `procedure LLT2_GreaterThan_False();` | — |
+| `procedure` | `LLT3_GreaterThan_False` | `procedure LLT3_GreaterThan_False();` | — |
+| `procedure` | `LLT4_GreaterThan_False` | `procedure LLT4_GreaterThan_False();` | — |
+| `procedure` | `LLT5_GreaterThan_True` | `procedure LLT5_GreaterThan_True();` | — |
+| `procedure` | `LLTE1_GreaterEqual_True` | `procedure LLTE1_GreaterEqual_True();` | — |
+| `procedure` | `LLTE2_GreaterThan_False` | `procedure LLTE2_GreaterThan_False();` | — |
+| `procedure` | `LLTE3_GreaterThan_True` | `procedure LLTE3_GreaterThan_True();` | — |
+| `procedure` | `LLTE4_GreaterThan_False` | `procedure LLTE4_GreaterThan_False();` | — |
+| `procedure` | `LLTE5_GreaterThan_True` | `procedure LLTE5_GreaterThan_True();` | — |
+| `procedure` | `AdvancedI1` | `procedure AdvancedI1();` | — |
+| `procedure` | `AdvancedI2` | `procedure AdvancedI2();` | — |
+| `procedure` | `AdvancedI3` | `procedure AdvancedI3();` | — |
+| `procedure` | `BranchSize1` | `procedure BranchSize1();` | — |
+| `procedure` | `AdvancedI4` | `procedure AdvancedI4();` | — |
+| `procedure` | `AdvancedI5` | `procedure AdvancedI5();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | MAIN PROGRAM |
+
+### `unittests/integer`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `T01` | `procedure T01();` | — |
+| `procedure` | `T02` | `procedure T02();` | — |
+| `procedure` | `T03` | `procedure T03();` | — |
+| `procedure` | `T04` | `procedure T04();` | — |
+| `procedure` | `T05` | `procedure T05();` | — |
+| `procedure` | `T06` | `procedure T06();` | — |
+| `procedure` | `T066` | `procedure T066();` | — |
+| `procedure` | `T07` | `procedure T07();` | — |
+| `procedure` | `T08` | `procedure T08();` | — |
+| `procedure` | `T09` | `procedure T09();` | — |
+| `procedure` | `T10` | `procedure T10();` | — |
+| `procedure` | `T11` | `procedure T11();` | — |
+| `procedure` | `T12` | `procedure T12();` | — |
+| `procedure` | `T13` | `procedure T13();` | — |
+| `procedure` | `T14` | `procedure T14();` | — |
+| `procedure` | `TMIX1` | `procedure TMIX1();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | — |
+
+### `unittests/long`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `T01` | `procedure T01();` | — |
+| `procedure` | `T02` | `procedure T02();` | — |
+| `procedure` | `T03` | `procedure T03();` | — |
+| `procedure` | `T04` | `procedure T04();` | — |
+| `procedure` | `T05` | `procedure T05();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | — |
+
+### `unittests/muldiv`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `ByteMulByte01` | `procedure ByteMulByte01();` | — |
+| `procedure` | `ByteMulBytePow202` | `procedure ByteMulBytePow202();` | — |
+| `procedure` | `ByteDivBytePow203` | `procedure ByteDivBytePow203();` | — |
+| `procedure` | `ByteDivByte04` | `procedure ByteDivByte04();` | — |
+| `procedure` | `ByteMulMul05` | `procedure ByteMulMul05();` | — |
+| `procedure` | `IntByteMul06` | `procedure IntByteMul06();` | — |
+| `procedure` | `IntMulPow07` | `procedure IntMulPow07();` | — |
+| `procedure` | `IntDivByte08` | `procedure IntDivByte08();` | — |
+| `procedure` | `IntDivInt09` | `procedure IntDivInt09();` | — |
+| `procedure` | `IntDivPow210` | `procedure IntDivPow210();` | — |
+| `procedure` | `IntDivMix11` | `procedure IntDivMix11();` | — |
+| `procedure` | `IntDivMix12` | `procedure IntDivMix12();` | — |
+| `procedure` | `IntMulMix13` | `procedure IntMulMix13();` | — |
+| `procedure` | `IntMulInt14` | `procedure IntMulInt14();` | — |
+| `procedure` | `IntMulAdvancedMix15` | `procedure IntMulAdvancedMix15();` | — |
+| `procedure` | `ByteMulAdvanced16` | `procedure ByteMulAdvanced16();` | — |
+| `procedure` | `IntMulConst17` | `procedure IntMulConst17();` | — |
+| `procedure` | `IntCombConst18` | `procedure IntCombConst18();` | — |
+| `procedure` | `IntCombConst19` | `procedure IntCombConst19();` | — |
+| `procedure` | `IntShift20` | `procedure IntShift20();` | — |
+| `procedure` | `IntShift21` | `procedure IntShift21();` | — |
+| `procedure` | `Array1` | `procedure Array1();` | — |
+| `procedure` | `Shift0` | `procedure Shift0();` | — |
+| `procedure` | `Shift1` | `procedure Shift1();` | — |
+| `procedure` | `Shift2` | `procedure Shift2();` | — |
+| `procedure` | `Shift4` | `procedure Shift4();` | — |
+| `procedure` | `Shift5` | `procedure Shift5();` | — |
+| `procedure` | `Shift6` | `procedure Shift6();` | — |
+| `procedure` | `IntByteMulR1` | `procedure IntByteMulR1();` | — |
+| `procedure` | `IntByteMulR2` | `procedure IntByteMulR2();` | — |
+| `procedure` | `IntByteMulR3` | `procedure IntByteMulR3();` | — |
+| `procedure` | `IntByteMulR4` | `procedure IntByteMulR4();` | — |
+| `procedure` | `ByteMulBytePlus01` | `procedure ByteMulBytePlus01();` | — |
+| `procedure` | `ByteMulBytePlus02` | `procedure ByteMulBytePlus02();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | — |
+
+### `unittests/registers`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `R01` | `procedure R01(_a, _x, _y : byte);` | C64 TESTS |
+| `procedure` | `R02` | `procedure R02(_ax : byte);` | — |
+| `procedure` | `R03` | `procedure R03(_ay : byte);` | — |
+| `procedure` | `R04` | `procedure R04(_xy : byte);` | — |
+| `procedure` | `Exec` | `procedure Exec();` | — |
+
+### `unittests/strings`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Test1` | `procedure Test1();` | — |
+| `procedure` | `Test2` | `procedure Test2();` | — |
+| `procedure` | `Test3` | `procedure Test3();` | — |
+| `procedure` | `TestLst1` | `procedure TestLst1();` | — |
+| `procedure` | `TestLst2` | `procedure TestLst2();` | — |
+| `procedure` | `TestLst3` | `procedure TestLst3();` | — |
+| `procedure` | `TestLst4` | `procedure TestLst4();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | MAIN PROGRAM |
+
+### `unittests/unittests`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Exec` | `procedure Exec();` | — |
+
+### `unittests/various`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Test1` | `procedure Test1();` | — |
+| `procedure` | `LoHi1` | `procedure LoHi1();` | — |
+| `procedure` | `LoHi2` | `procedure LoHi2();` | — |
+| `procedure` | `TestAutomaticOffpage` | `procedure TestAutomaticOffpage();` | MAIN PROGRAM |
+| `procedure` | `TestAddress1` | `procedure TestAddress1();` | — |
+| `procedure` | `TestAddress2` | `procedure TestAddress2();` | — |
+| `procedure` | `TestAddress3` | `procedure TestAddress3();` | — |
+| `procedure` | `Exec` | `procedure Exec();` | — |
+
+### `unittests/vars`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `IncA` | `procedure IncA();` | — |
+| `procedure` | `Move2` | `procedure Move2( pm1, pm2 : byte);` | — |
+| `procedure` | `Move1` | `procedure Move1( m1, m2 : byte);` | — |
+| `function` | `IntegerReturn` | `function IntegerReturn(ir_p1 : byte) : integer;` | — |
+| `function` | `ByteReturn` | `function ByteReturn(ir_p1 : global byte) : byte;` | — |
+

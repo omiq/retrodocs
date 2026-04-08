@@ -8,7 +8,26 @@ description: Bundled Turbo Rascal unit files (.tru) shipped with TRSE
 
 These paths are relative to `units/PLUS4/` in the TRSE tree. Reference a unit with `@use "<path>"` (no `.tru` extension).
 
-## Files
+## Units
 
-- `input/key`
-- `system/screen`
+Each section lists **`procedure` and `function` declarations** parsed from the `.tru` source. **Notes** come from the **block comment** immediately above each declaration (`/** … */` or `/* … */`). Line comments (`//`) are not shown.
+
+### `input/key`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `Read` | `procedure Read();` | Read the full 10 row keyboard matrix and populate the keyboard flags |
+| `procedure` | `Held` | `procedure Held( _xy: integer );` | Returns true if the key is being held. Works with multiple keys held at the same time. |
+| `procedure` | `Pressed` | `procedure Pressed( _xy: integer );` | Returns true if the key has just been pressed. Works with multiple keys pressed at the same time. |
+| `procedure` | `GetHeld` | `procedure GetHeld();` | Gets a key being held. If multiple keys are pressed, returns the first key found. |
+
+### `system/screen`
+
+| Kind | Name | Signature | Notes |
+|------|------|-----------|-------|
+| `procedure` | `SetBitmapMode` | `procedure SetBitmapMode() inline;` | — |
+| `procedure` | `SetMulticolorMode` | `procedure SetMulticolorMode() inline;` | — |
+| `procedure` | `SetScreenLoc` | `procedure SetScreenLoc(i: global byte);` | Sets screen location.. $2000 * i? |
+| `procedure` | `SetColorLoc` | `procedure SetColorLoc(i: global byte);` | — |
+| `procedure` | `SetColor` | `procedure SetColor(i,j,k : global byte);` | — |
+

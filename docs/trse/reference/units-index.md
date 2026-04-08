@@ -8,6 +8,8 @@ description: Catalog of bundled .tru library files per platform
 
 TRSE ships **Turbo Rascal unit** files (`.tru`) under the `units/` directory in the source tree. They provide graphics helpers, drivers, music players, and other shared code you can pull into a project with the **`@use`** directive.
 
+Platform pages list each unit file with **procedure/function signatures** and **block-comment notes** extracted from the source (auto-generated; edge cases may be missing).
+
 ## How `@use` is resolved
 
 When the compiler sees `@use "some/path/name"`, it searches for `some/path/name.tru` in this order ([`parser.cpp`](https://github.com/leuat/TRSE/blob/master/source/Compiler/parser.cpp)):
