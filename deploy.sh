@@ -7,7 +7,7 @@
 #   - rsync installed (usually present on Linux/macOS)
 #
 # Usage:
-   cd ~/github/trse/retrodocs
+   cd ~/github/retrodocs
    source .venv/bin/activate
    export DEPLOY_HOST=server
    export DEPLOY_USER=docs
@@ -19,8 +19,9 @@
 #   DEPLOY_KEY=~/.ssh/id_ed25519   Identity file for ssh/rsync
 #   DRY_RUN=1               If set, rsync --dry-run only
 #   SKIP_BUILD=1            If set, skip mkdocs build (use existing ./site)
-#   SKIP_TRSE_IMPORT=1      If set, skip regenerating TRSE method + units pages
-#   TRSE_REPO_ROOT=/path/to/TRSE   Required for standalone retrodocs repo (no ../trse layout); else auto-detect
+SKIP_TRSE_IMPORT=1      If set, skip regenerating TRSE method + units pages
+
+TRSE_REPO_ROOT=~/github/trse  # Required for standalone retrodocs repo (no ../trse layout); else auto-detect
 #   NO_DEPLOY_CACHE_BUST=1  If set, do not set DEPLOY_CACHE_BUST (HTML will link stylesheets/extra.css
 #                           with no ?v= — CDN/browser may keep an old CSS file at that URL)
 #
