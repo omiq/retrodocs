@@ -19,6 +19,7 @@ site_author: Retro Game Coders
 site_url: https://docs.retrogamecoders.com/
 
 repo_url: https://github.com/omiq/retrodocs
+edit_uri: edit/main/docs/
 repo_name: retrodocs
 
 theme:
