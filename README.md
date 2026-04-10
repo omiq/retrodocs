@@ -1,4 +1,4 @@
-# retrodocs — MkDocs site (educational documentation)
+# RetroDocs — Retro Game Coders Educational & Reference Documentation
 
 [![CI](https://github.com/omiq/retrodocs/actions/workflows/ci.yml/badge.svg)](https://github.com/omiq/retrodocs/actions/workflows/ci.yml)
 
