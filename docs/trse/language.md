@@ -7,8 +7,8 @@ description: A practical introduction to Turbo Rascal Syntax Error — the Pasca
 
 TRSE programs are written in **Turbo Rascal** — a structured, Pascal-flavoured language that compiles directly to native machine code for your target platform. If you've seen Pascal or Delphi before you'll feel right at home. If not, don't worry: the syntax is clean and readable.
 
-!!! note "Desktop IDE only"
-    This section covers the **TRSE desktop IDE** and its Turbo Rascal language. The web IDE at [ide.retrogamecoders.com](https://ide.retrogamecoders.com) uses separate toolchains (cc65, z88dk, CMOC, etc.) — see the [Platforms](../platforms/index.md) and [C](../c/index.md) / [Assembly](../assembly/index.md) sections for those.
+!!! note "Desktop IDE"
+    This section covers the Turbo Rascal language. The web IDE at [ide.retrogamecoders.com](https://ide.retrogamecoders.com) includes TRSE support but uses additional toolchains (cc65, z88dk, CMOC, etc.) — see the [Platforms](../platforms/index.md) and [C](../c/index.md) / [Assembly](../assembly/index.md) sections for those.
 
 ---
 
