@@ -1,5 +1,14 @@
 # RetroDocs — Retro Game Coders Educational & Reference Documentation
 
+```
+██████  ███████ ████████ ██████   ██████  ██████   ██████   ██████ ███████ 
+██   ██ ██         ██    ██   ██ ██    ██ ██   ██ ██    ██ ██      ██      
+██████  █████      ██    ██████  ██    ██ ██   ██ ██    ██ ██      ███████ 
+██   ██ ██         ██    ██   ██ ██    ██ ██   ██ ██    ██ ██           ██ 
+██   ██ ███████    ██    ██   ██  ██████  ██████   ██████   ██████ ███████    
+                                                                        
+```
+
 [![CI](https://github.com/omiq/retrodocs/actions/workflows/ci.yml/badge.svg)](https://github.com/omiq/retrodocs/actions/workflows/ci.yml)
 
 Public repo: **[github.com/omiq/retrodocs](https://github.com/omiq/retrodocs)** — Retro Game Coders documentation (Markdown → static HTML), published at [docs.retrogamecoders.com](https://docs.retrogamecoders.com/).
