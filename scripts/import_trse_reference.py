@@ -19,6 +19,7 @@ Options:
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
@@ -34,7 +35,7 @@ def find_repo_root(start: Path) -> Path:
         if (p / "resources" / "text" / "syntax.txt").is_file():
             return p
     raise FileNotFoundError(
-        "Could not find resources/text/syntax.txt. Pass --repo-root /path/to/TRSE"
+        "Could not find resources/text/syntax.txt. Set TRSE_REPO_ROOT or pass --repo-root /path/to/TRSE"
     )
 
 
@@ -155,7 +156,11 @@ def main() -> int:
     docs_dir = retrodocs / "docs"
 
     try:
-        repo = args.repo_root.resolve() if args.repo_root else find_repo_root(script_dir)
+        if args.repo_root:
+            repo = args.repo_root.resolve()
+        else:
+            env_root = (os.environ.get("TRSE_REPO_ROOT") or "").strip()
+            repo = Path(env_root).resolve() if env_root else find_repo_root(script_dir)
     except FileNotFoundError as e:
         print(e, file=sys.stderr)
         return 1

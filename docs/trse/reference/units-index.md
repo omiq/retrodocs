@@ -65,4 +65,4 @@ Place your own reusable `.tru` files in the project folder, or rely on these bun
 
 ---
 
-*Regenerate this page and the per-folder lists with:* `python3 retrodocs/scripts/import_trse_units.py` (run from the TRSE repo root; `deploy.sh` runs it automatically.)
+*Regenerate this page and the per-folder lists with:* `python3 scripts/import_trse_units.py` (with `TRSE_REPO_ROOT` or `--repo-root` if needed; `deploy.sh` runs it automatically.)

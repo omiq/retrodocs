@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{# Match icon set from https://retrogamecoders.com/ (WordPress site icons) #}
+{% block extrahead %}
+  {{ super() }}
+  <link rel="icon" type="image/png" sizes="192x192" href="https://retrogamecoders.com/wp-content/uploads/2021/03/cropped-RGC-192x192.png">
+  <link rel="apple-touch-icon" href="https://retrogamecoders.com/wp-content/uploads/2021/03/cropped-RGC-180x180.png">
+  <meta name="msapplication-TileImage" content="https://retrogamecoders.com/wp-content/uploads/2021/03/cropped-RGC-270x270.png">
+  {# Open Graph / Twitter — asset: docs/images/og-image.jpg → /images/og-image.jpg #}
+  {% set _site = config.site_url or '' %}
+  {% set og_image = _site.rstrip('/') ~ '/images/og-image.jpg' %}
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{ og_image }}">
+  <meta property="og:image:alt" content="{{ config.site_name }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{ og_image }}">
+{% endblock %}

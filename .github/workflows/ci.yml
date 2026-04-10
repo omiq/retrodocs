@@ -1,0 +1,55 @@
+# Verify MkDocs build on every push/PR. Clones TRSE for auto-generated TRSE reference pages.
+# https://github.com/omiq/retrodocs
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout retrodocs
+        uses: actions/checkout@v4
+
+      - name: Clone TRSE (resources/text + units for import scripts)
+        run: |
+          git clone --depth 1 https://github.com/omiq/trse.git "${{ runner.temp }}/trse"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Import TRSE reference (methods + units)
+        env:
+          TRSE_REPO_ROOT: ${{ runner.temp }}/trse
+        run: |
+          python3 scripts/import_trse_reference.py --skip-init
+          python3 scripts/import_trse_units.py
+
+      - name: MkDocs build
+        env:
+          # Same cache-bust behaviour as deploy.sh (hooks.py)
+          DEPLOY_CACHE_BUST: ${{ github.run_id }}
+        run: mkdocs build --strict
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-html
+          path: site/
+          if-no-files-found: error

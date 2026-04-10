@@ -1,5 +1,5 @@
 /* Retro Game Coders — docs site branding (family match with retrogamecoders.com)
-   Tweak hues here if you align with exact WP theme CSS later. */
+   Palette: slate-only (see mkdocs.yml). */
 
 /* Material "custom" palette — required when mkdocs.yml uses primary: custom */
 [data-md-color-primary="custom"] {
@@ -23,31 +23,35 @@
   --rgc-ink: #0d1117;
 }
 
-/* ----- Light scheme ----- */
-[data-md-color-scheme="default"] {
-  --md-primary-fg-color: var(--rgc-navy);
-  --md-primary-fg-color--light: var(--rgc-navy-light);
-  --md-primary-fg-color--dark: #0f1828;
-  --md-accent-fg-color: var(--rgc-gold);
-  --md-typeset-a-color: #1565c0;
-  --md-typeset-a-color--hover: var(--rgc-gold-muted);
+/*
+  Sidebar “headers” in Material are three different nodes:
+  - Drawer: label.md-nav__title[for="__drawer"] (logo + site name) — direct child of .md-nav--primary
+  - Tab/section group: label.md-nav__link[for^="__nav_"] on .md-nav__item--section (e.g. top “TRSE” row)
+  - Inside expanded group: nav[data-md-level] > label.md-nav__title[for^="__nav_"] (duplicate title above links)
+  Do not use .md-nav__link .md-ellipsis alone — that matches every link’s title text.
+*/
+.md-nav--primary > label.md-nav__title[for="__drawer"],
+.md-nav--primary label.md-nav__title[for^="__nav_"],
+.md-nav--primary .md-nav__item--section.md-nav__item--nested > label.md-nav__link[for^="__nav_"] {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  padding: 0.65rem 0.5rem 0.75rem 0;
+  box-shadow: 0 0 0 0;
 }
 
-[data-md-color-scheme="default"] .md-header {
-  background-color: var(--rgc-navy);
-  box-shadow: 0 0.05rem 0.25rem rgba(15, 24, 40, 0.35);
+/* Nested section title sits next to the back icon — keep icon visible */
+.md-nav--primary label.md-nav__title[for^="__nav_"] .md-nav__icon {
+  opacity: 0.85;
 }
 
-[data-md-color-scheme="default"] .md-tabs {
-  background-color: var(--rgc-navy-light);
-  border-bottom: 1px solid rgba(232, 163, 23, 0.25);
+.md-nav {
+  border: 1px solid rgba(5, 239, 247, 0.28);
 }
 
-[data-md-color-scheme="default"] .md-search__input {
-  background-color: rgba(255, 255, 255, 0.12);
-}
-
-/* ----- Dark scheme ----- */
+/* Scheme variables (body uses data-md-color-scheme="slate") */
 [data-md-color-scheme="slate"] {
   --md-primary-fg-color: var(--rgc-navy-light);
   --md-primary-fg-color--light: #2a4060;
@@ -57,12 +61,12 @@
   --md-typeset-a-color--hover: var(--rgc-gold);
 }
 
-[data-md-color-scheme="slate"] .md-header {
+.md-header {
   background-color: var(--rgc-ink);
   box-shadow: 0 0.05rem 0.25rem rgba(0, 0, 0, 0.45);
 }
 
-[data-md-color-scheme="slate"] .md-tabs {
+.md-tabs {
   background-color: #161b22;
   border-bottom: 1px solid rgba(232, 163, 23, 0.2);
 }
@@ -82,12 +86,8 @@
 
 /* Footer band (Material 9) */
 .md-footer-meta {
-  background-color: var(--rgc-navy);
-  color: rgba(255, 255, 255, 0.85);
-}
-
-[data-md-color-scheme="slate"] .md-footer-meta {
   background-color: #0d1117;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .md-footer-meta a {

@@ -18,27 +18,20 @@ site_author: Retro Game Coders
 # Canonical URL (sitemap, social cards). Production:
 site_url: https://docs.retrogamecoders.com/
 
-#repo_url: https://github.com/omiq/TRSE
-#repo_name: TRSE (upstream reference)
+repo_url: https://github.com/omiq/retrodocs
+repo_name: retrodocs
 
 theme:
   name: material
+  custom_dir: overrides
+  # Favicons / PWA icons — same assets as https://retrogamecoders.com/
+  favicon: https://retrogamecoders.com/wp-content/uploads/2021/03/cropped-RGC-32x32.png
   logo: https://retrogamecoders.com/wp-content/uploads/2021/03/cropped-Collect-%E2%80%A2-Play-%E2%80%A2-Refurb-%E2%80%A2-CreateRetro-Game-CodersRetro-Game-CodersRetro-Game-Coders-768x126.png
+  # Single palette = dark only; no light/dark toggle in the header.
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: custom
-      accent: custom
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: custom
-      accent: custom
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+    scheme: slate
+    primary: custom
+    accent: custom
   features:
     - navigation.tabs
     - navigation.sections
@@ -46,9 +39,17 @@ theme:
     - search.suggest
     - search.highlight
     - content.code.copy
+    - content.action.edit
 
 plugins:
   - search
+
+hooks:
+  - hooks.py
+
+# Extra paths for `mkdocs serve` live reload (in addition to docs_dir + config file).
+watch:
+  - docs/stylesheets
 
 extra_css:
   - stylesheets/extra.css
@@ -116,7 +117,7 @@ nav:
       - "Methods (reference)": trse/reference/methods-index.md
       - "Included units (.tru)": trse/reference/units-index.md
       - trse/help-import.md
-  - Maintaining this site: MAINTAINING.md
+
 
 extra:
   # Header logo links to main community site (docs canonical URL stays site_url)

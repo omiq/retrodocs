@@ -17,6 +17,7 @@ Then: mkdocs build
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -38,7 +39,7 @@ def find_repo_root(start: Path) -> Path:
             return p
     raise FileNotFoundError(
         "Could not find TRSE root (expected units/ and resources/). "
-        "Pass --repo-root /path/to/TRSE"
+        "Set TRSE_REPO_ROOT or pass --repo-root /path/to/TRSE"
     )
 
 
@@ -185,8 +186,8 @@ def write_index(
     lines.append(
         "\n---\n\n"
         "*Regenerate this page and the per-folder lists with:* "
-        "`python3 retrodocs/scripts/import_trse_units.py` "
-        "(run from the TRSE repo root; `deploy.sh` runs it automatically.)\n"
+        "`python3 scripts/import_trse_units.py` (with `TRSE_REPO_ROOT` or `--repo-root` if needed; "
+        "`deploy.sh` runs it automatically.)\n"
     )
     out_index.write_text("".join(lines), encoding="utf-8")
 
@@ -200,13 +201,19 @@ def main() -> int:
     )
     args = ap.parse_args()
     script = Path(__file__).resolve()
-    repo = args.repo_root.resolve() if args.repo_root else find_repo_root(script.parent)
+    script_dir = script.parent
+    if args.repo_root:
+        repo = args.repo_root.resolve()
+    else:
+        env_root = (os.environ.get("TRSE_REPO_ROOT") or "").strip()
+        repo = Path(env_root).resolve() if env_root else find_repo_root(script_dir)
     units_dir = repo / "units"
     if not units_dir.is_dir():
         print(f"Error: missing {units_dir}", file=sys.stderr)
         return 1
 
-    retrodocs_docs = repo / "retrodocs" / "docs"
+    # Always write next to this script (…/retrodocs/docs/), not under TRSE/retrodocs/docs.
+    retrodocs_docs = script_dir.parent / "docs"
     out_index = retrodocs_docs / "trse" / "reference" / "units-index.md"
     out_units = retrodocs_docs / "trse" / "reference" / "units"
     out_units.mkdir(parents=True, exist_ok=True)

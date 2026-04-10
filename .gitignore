@@ -5,3 +5,8 @@ __pycache__/
 
 # MkDocs output (regenerate with: mkdocs build)
 site/
+
+# Editor / OS
+.DS_Store
+*.swp
+*.swo

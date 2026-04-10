@@ -19,7 +19,14 @@
 #   DEPLOY_KEY=~/.ssh/id_ed25519   Identity file for ssh/rsync
 #   DRY_RUN=1               If set, rsync --dry-run only
 #   SKIP_BUILD=1            If set, skip mkdocs build (use existing ./site)
-#   SKIP_TRSE_IMPORT=1      If set, skip regenerating TRSE method + units pages from ../resources/text/ and ../units/
+#   SKIP_TRSE_IMPORT=1      If set, skip regenerating TRSE method + units pages
+#   TRSE_REPO_ROOT=/path/to/TRSE   Required for standalone retrodocs repo (no ../trse layout); else auto-detect
+#   NO_DEPLOY_CACHE_BUST=1  If set, do not set DEPLOY_CACHE_BUST (HTML will link stylesheets/extra.css
+#                           with no ?v= — CDN/browser may keep an old CSS file at that URL)
+#
+# CloudPanel: DEPLOY_PATH must be the site’s actual document root for this host (the folder
+# that contains index.html after upload). If CSS/HTML changes never appear, verify the path
+# with: ssh user@host ls -la "$DEPLOY_PATH/stylesheets/extra.css"
 #
 set -euo pipefail
 
@@ -56,6 +63,10 @@ if [[ -z "${SKIP_BUILD:-}" ]]; then
     exit 1
   fi
   if [[ -z "${SKIP_TRSE_IMPORT:-}" ]]; then
+    if [[ -n "${TRSE_REPO_ROOT:-}" ]]; then
+      export TRSE_REPO_ROOT
+      echo "==> TRSE_REPO_ROOT=${TRSE_REPO_ROOT}"
+    fi
     echo "==> import TRSE reference (syntax.txt + help/m/*.rtf)"
     python3 "$SCRIPT_DIR/scripts/import_trse_reference.py" --skip-init
     echo "==> import TRSE units catalog (units/**/*.tru)"
@@ -63,8 +74,21 @@ if [[ -z "${SKIP_BUILD:-}" ]]; then
   else
     echo "==> SKIP_TRSE_IMPORT: using existing docs/trse/reference/"
   fi
+  # New ?v= on extra.css for this deploy so clients do not reuse a cached stylesheet at the
+  # same URL (Cloudflare purge alone is often not enough). hooks.py reads DEPLOY_CACHE_BUST.
+  if [[ -z "${NO_DEPLOY_CACHE_BUST:-}" ]]; then
+    DEPLOY_CACHE_BUST="$(date -u +%Y%m%d%H%M%S)"
+    export DEPLOY_CACHE_BUST
+    echo "==> DEPLOY_CACHE_BUST=${DEPLOY_CACHE_BUST} (hooks append ?v= to extra_css)"
+  else
+    unset DEPLOY_CACHE_BUST 2>/dev/null || true
+    echo "==> NO_DEPLOY_CACHE_BUST: extra.css URL unchanged (not recommended for production)"
+  fi
   echo "==> mkdocs build"
   mkdocs build --strict
+  echo "==> verify built CSS link (should include ?v= unless NO_DEPLOY_CACHE_BUST):"
+  grep -o 'stylesheets/extra\.css[^"]*' site/index.html | head -1 || true
+  ls -la site/stylesheets/extra.css 2>/dev/null || true
 else
   echo "==> SKIP_BUILD: using existing ./site"
 fi
