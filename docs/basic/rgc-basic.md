@@ -8,26 +8,26 @@ You can run it in **five** complementary ways:
 |--------|----------------|
 | **[Web IDE (WASM)](rgc-basic/web-ide.md)** | Same interpreter in the browser — instant share, no install |
 | **Terminal** (`basic`) | Scripting, pipes, `ARG$` / `SYSTEM` / `EXEC$`, PETSCII→ANSI |
-| **Graphics** (`basic-gfx`) | [Raylib](https://www.raylib.com/) window — 40×25 PETSCII, `POKE` screen RAM, sprites, gamepad |
+| **Graphics** (`basic-gfx`) | [Raylib](https://www.raylib.com/) window — 40×25 PETSCII, `POKE` screen RAM, PNG sprites (tilemaps, z-order, collision), bitmap, scroll, gamepad |
 | **Windows / macOS / Linux** | [Prebuilt binaries](https://github.com/omiq/rgc-basic/releases) for all three |
 
-This documentation is the **friendly entry point**: concepts, workflows, and tables so you are not forced to read only the [GitHub README](https://github.com/omiq/rgc-basic/blob/main/README.md), [CHANGELOG](https://github.com/omiq/rgc-basic/blob/main/CHANGELOG.md), or example sources. The repo remains the **source of truth** for every edge case; we link to it where it helps.
+This documentation set includes a **full [language reference](rgc-basic/language.md)** (statements, intrinsics, meta directives, system variables, host matrix), deep **[Terminal & PETSCII](rgc-basic/terminal-petscii.md)** and **[Web IDE](rgc-basic/web-ide.md)** pages, and a **complete [graphics](rgc-basic/graphics-raylib.md)** chapter (bitmap, **PNG sprites**, scroll, gamepad) — so routine API detail lives here, not only in the [GitHub README](https://github.com/omiq/rgc-basic/blob/main/README.md). The repo remains the **source of truth** for every edge case and version note; we link to it where it helps.
 
 ## Quick links
 
 | Topic | Page |
 |--------|------|
 | Download, build, releases, macOS Gatekeeper | [Install & platforms](rgc-basic/install.md) |
-| Statements, functions, variables, `#INCLUDE`, `#OPTION` | [Language reference](rgc-basic/language.md) |
+| Full statement & function reference, operators, `TI`/`ST`, reserved words | [Language reference](rgc-basic/language.md) |
 | CLI flags, PETSCII/ANSI, terminal scripting, `COLOR` / `LOCATE` | [Terminal & PETSCII](rgc-basic/terminal-petscii.md) |
-| `basic-gfx`, virtual memory, bitmap, sprites, `INKEY$`, `TI` | [Graphics (Raylib)](rgc-basic/graphics-raylib.md) |
-| RGC IDE integration, URLs, keyboard focus | [Web IDE (WASM)](rgc-basic/web-ide.md) |
+| `basic-gfx`, virtual memory, bitmap, **sprites (full API)**, `INKEY$`, `TI`, scroll, gamepad | [Graphics (Raylib)](rgc-basic/graphics-raylib.md) |
+| RGC IDE, **`HTTP$`**, **`PLATFORM$()`**, WASM vs native | [Web IDE (WASM)](rgc-basic/web-ide.md) |
 
 ## Project links
 
 - **Repository:** [github.com/omiq/rgc-basic](https://github.com/omiq/rgc-basic)
 - **Releases:** [github.com/omiq/rgc-basic/releases](https://github.com/omiq/rgc-basic/releases) (stable) and [**nightly**](https://github.com/omiq/rgc-basic/releases/tag/nightly) (automated builds from `main`)
-- **Examples:** [`examples/`](https://github.com/omiq/rgc-basic/tree/main/examples) in the repo — demos for trek, PETSCII viewers, gfx games, scripting, etc.
+- **Examples:** [`examples/`](https://github.com/omiq/rgc-basic/tree/main/examples) in the repo — demos for trek, PETSCII viewers, gfx games, scripting, etc. Many of the same **`*.bas`** files are bundled in the **[Web IDE](rgc-basic/web-ide.md)** RGC BASIC preset — open directly, e.g. [petscii-data.bas](https://ide.retrogamecoders.com/?file=petscii-data.bas&platform=rgc-basic), [trek.bas](https://ide.retrogamecoders.com/?file=trek.bas&platform=rgc-basic), [gfx_game_shell.bas](https://ide.retrogamecoders.com/?file=gfx_game_shell.bas&platform=rgc-basic).
 
 ## How this relates to other docs here
 
@@ -41,7 +41,7 @@ When you outgrow “toy” snippets and want **real files, JSON, shell glue, or 
 1. Open **[Web IDE](rgc-basic/web-ide.md)** or install **[binaries](rgc-basic/install.md)**.
 2. Run a tiny `PRINT` / `FOR` program, then skim **[Language reference](rgc-basic/language.md)** for keywords you need.
 3. For colourful terminal output or pipes, read **[Terminal & PETSCII](rgc-basic/terminal-petscii.md)**.
-4. For games and `.seq` art, move to **[Graphics (Raylib)](rgc-basic/graphics-raylib.md)** and the repo `examples/gfx_*.bas` files.
+4. For games, sprites, and `.seq` art, read **[Graphics (Raylib)](rgc-basic/graphics-raylib.md)** (full sprite/bitmap API) and run the repo `examples/gfx_*.bas` / `tutorial_gfx_*.bas` files — or open the same basenames in the **[Web IDE](rgc-basic/web-ide.md)** ([example](https://ide.retrogamecoders.com/?file=gfx_poke_demo.bas&platform=rgc-basic)).
 
 ---
 
