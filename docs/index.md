@@ -10,7 +10,7 @@ Welcome to the ***documentation*** companion to **[ide.retrogamecoders.com](http
 | **[TRSE](trse/index.md)** | Turbo Rascal and built-in method reference |
 | **[Assembly](assembly/index.md)** | [6502](assembly/6502.md), [Z80](assembly/z80.md) starters |
 | **[C](c/index.md)** | [cc65](c/cc65.md) starter |
-| **[BASIC](basic/index.md)** | [Commodore BASIC v2](basic/commodore-basic-v2.md), [XC-BASIC 3](basic/xc-basic-3.md) |
+| **[BASIC](basic/index.md)** | [RGC BASIC](basic/rgc-basic/), [Commodore BASIC v2](basic/commodore-basic-v2.md), [XC-BASIC 3](basic/xc-basic-3.md) |
 
 
 
