@@ -41,9 +41,14 @@ Tutorial-style demos (also listed under [Examples](#example-programs-in-the-repo
 
 - **`INKEY$`** — Non-blocking; returns one character or `""`. Case may vary; use **`UCASE$(INKEY$())`** for comparisons.
 - **`INPUT`** — In gfx, reads from the **window** key queue (not the terminal).
-- **`PEEK(56320 + code)`** — Poll a key map (**`GFX_KEY_BASE`** = `0xDC00`); codes for letters use **uppercase ASCII** (e.g. W = 87). Supported keys include ASCII `A`–`Z`, `0`–`9`, Space (32), Enter (13), Esc (27), and C64 cursor codes Up (145), Down (17), Left (157), Right (29).
+- **`KEYDOWN(code)`** — 1 while the key is currently held, else 0. Use for **diagonal movement** — `A+D` or `A+W` fire independently, unlike `INKEY$` which only surfaces one key at a time.
+- **`KEYUP(code)`** — Inverse of `KEYDOWN`. 1 when the key is *not* held.
+- **`KEYPRESS(code)`** — Rising-edge latch: returns 1 exactly once per press, then 0 until the key is released and pressed again. Good for pause toggles / single-shot actions.
+- **`PEEK(56320 + code)`** — Lower-level key-map poll (`GFX_KEY_BASE` = `0xDC00`). The `KEYDOWN`/`KEYUP`/`KEYPRESS` functions are equivalent to `PEEK(GFX_KEY_BASE + code)` plus the edge-latch tracking, and survive `#OPTION memory` base changes.
+- **Key codes:** uppercase ASCII for letters/digits (e.g. `W` = 87, `A` = 65); special keys Space (32), Enter (13), Esc (27), Tab (9), Backspace (8), and C64 cursor codes Up (145), Down (17), Left (157), Right (29).
 - **`TI`** — 60 Hz jiffy counter (wraps per README); **`TI$`** — time string `HHMMSS`.
 - **`SLEEP n`** — Pause in **ticks** (60 ≈ 1 second).
+- **`VSYNC`** — Frame commit + ~16 ms wait. Atomically flips the `TILEMAP DRAW` / `SPRITE STAMP` build buffer to the show buffer so the renderer never displays a half-populated scene, then yields one display frame. Use `VSYNC` at the end of a per-frame loop instead of `SLEEP 1` for flicker-free output.
 
 ## Bitmap mode (`SCREEN 1`)
 
@@ -51,8 +56,14 @@ Tutorial-style demos (also listed under [Examples](#example-programs-in-the-repo
 - **`COLOR` / `BACKGROUND`** — Set pen and paper in bitmap mode (same C64-style indices as text).
 - **`PSET x, y`** / **`PRESET x, y`** — Set/clear one pixel (clipped to the bitmap).
 - **`LINE x1, y1 TO x2, y2`** — Bresenham line (same clipping).
+- **`RECT x1, y1 TO x2, y2`** — Rectangle outline in the current pen.
+- **`FILLRECT x1, y1 TO x2, y2`** — Solid rectangle (either corner diagonal works).
+- **`CIRCLE x, y, r`** — Midpoint-circle outline.
+- **`FILLCIRCLE x, y, r`** — Solid disk.
+- **`DRAWTEXT x, y, text$`** — Pixel-space text using the active 8×8 charset (OR blend, current pen). Unlike `PRINT` / `TEXTAT` this isn't tied to the 40×25 text grid, so HUDs can sit anywhere. Bytes of `text$` go through `petscii_to_screencode`.
+- **`BITMAPCLEAR`** — Wipe the bitmap plane without touching text/colour RAM.
 
-Example: `./basic-gfx examples/gfx_bitmap_demo.bas` — [Web IDE](https://ide.retrogamecoders.com/?file=gfx_bitmap_demo.bas&platform=rgc-basic)
+Examples: `./basic-gfx examples/gfx_bitmap_demo.bas` · `examples/gfx_hud_demo.bas` · `examples/gfx_ball_demo.bas`.
 
 ## `SCREENCODES` and text streams
 
@@ -110,6 +121,100 @@ Sprites use **numbered slots** (0 … 63 in the implementation). Only **`.png`**
 | Function | Meaning |
 |----------|---------|
 | **`SPRITECOLLIDE(a, b)`** | **1** if axis-aligned bounding boxes of two **visible**, **drawn** sprites overlap; **0** otherwise. Empty or hidden slots never collide. |
+
+## Two-word command family
+
+New graphics commands follow AMOS/STOS-style **verb/noun** spellings. Existing concat names (`LOADSPRITE`, `DRAWSPRITE`, `SPRITEFRAME`, `UNLOADSPRITE`, `DRAWSPRITETILE`, `DRAWTILEMAP`, `SPRITETILES`) stay as permanent aliases — both spellings tokenise to the same handler.
+
+| Two-word (canonical) | Concat alias |
+|---|---|
+| `SPRITE LOAD slot, "file.png" [, tw, th]` | `LOADSPRITE` |
+| `SPRITE DRAW slot, x, y [, z [, sx, sy [, sw, sh]]]` | `DRAWSPRITE` |
+| `SPRITE FRAME slot, n` | `SPRITEFRAME` |
+| `SPRITE FREE slot` | `FREESPRITE` / `UNLOADSPRITE` |
+| `SPRITE FRAMES(slot)` | `SPRITETILES(slot)` |
+| `SPRITE STAMP slot, x, y [, frame [, z]]` | *(new)* |
+| `TILE DRAW slot, x, y, tile_idx [, z]` | `DRAWSPRITETILE` / `DRAWTILE` |
+| `TILE COUNT(slot)` | `SPRITETILES(slot)` |
+| `TILEMAP DRAW slot, x0, y0, cols, rows, map [, z]` | `DRAWTILEMAP` |
+| `SHEET COLS(slot)` / `SHEET ROWS(slot)` / `SHEET WIDTH(slot)` / `SHEET HEIGHT(slot)` | *(new accessors)* |
+| `IMAGE NEW slot, w, h` / `IMAGE FREE slot` / `IMAGE COPY …` / `IMAGE SAVE slot, "path.bmp"` | *(new blitter)* |
+
+Pick whichever spelling reads cleaner in your program.
+
+## Sprite stamping vs persistent draw
+
+**`SPRITE DRAW`** tracks a single persistent position per slot — N calls with the same slot collapse to the last one. Use it for the player, a single enemy, a HUD panel, etc.
+
+**`SPRITE STAMP slot, x, y [, frame [, z]]`** appends one cell to a per-frame list, so N stamps of one slot in one frame all render at distinct positions. Use it for **particles, bullets, enemy swarms, starfields** — any case where you'd previously have called `SPRITECOPY` into many slots.
+
+`frame` is a 1-based tile index; `0` or omitted falls back to the slot's current `SPRITE FRAME`. If the slot holds a single image with no tile grid the draw uses the full sprite rect.
+
+Per-frame loop:
+
+```basic
+SCREEN 1
+SPRITE LOAD 0, "particle.png"
+SPRITE LOAD 1, "ship.png"
+loop:
+  IF KEYDOWN(ASC("Q")) THEN END
+  CLS
+  FOR I = 0 TO 49
+    SPRITE STAMP 0, SX(I), SY(I), 0, 10
+  NEXT I
+  DRAWSPRITE 1, PLX, PLY, 100
+  VSYNC
+GOTO loop
+```
+
+Example: `examples/gfx_stamp_demo.bas`.
+
+## Tilemaps (`TILEMAP DRAW`)
+
+```basic
+DIM MAP(COLS*ROWS-1)
+REM … populate map with 1-based tile indices (0 = transparent) …
+TILEMAP DRAW 0, 0, 0, COLS, ROWS, MAP()
+```
+
+One batched call stamps the whole grid — one interpreter dispatch regardless of tile count. Cells layer with `SPRITE STAMP` output; the renderer draws tiles before sprites so a player sprite at `z=100` composites on top of a background tilemap at `z=0`. Supports negative `x0`/`y0` for smooth scrolling under a fixed viewport.
+
+Shape/metadata:
+
+```basic
+PRINT "sheet is "; SHEET COLS(0); "x"; SHEET ROWS(0)
+PRINT "cell is ";  SHEET WIDTH(0); "x"; SHEET HEIGHT(0)
+PRINT "total cells: "; TILE COUNT(0)
+```
+
+Examples: `examples/gfx_tilemap_demo.bas`, `examples/gfx_world_demo.bas` (40×40 world + push-scroll + WASD player).
+
+## Blitter surfaces (`IMAGE NEW` / `COPY` / `SAVE`)
+
+Off-screen 1bpp bitmap surfaces for scroll / parallax / work-buffer patterns from AMOS/STOS-style BASIC.
+
+- **`IMAGE NEW slot, w, h`** — allocate an off-screen bitmap. `slot` is 1..31. Any dimensions; surface starts empty.
+- **`IMAGE FREE slot`** — release it.
+- **`IMAGE COPY src, sx, sy, sw, sh TO dst, dx, dy`** — rectangular 1bpp blit between any two slots. Slot `0` is the live visible bitmap (320×200), so visible↔offscreen copies work without conversion. Overlapping same-slot rects stage through a scratch row buffer.
+- **`IMAGE SAVE slot, "path.bmp"`** — export as 24-bit BMP (pen=1 → white, pen=0 → black). Convert to PNG externally if needed.
+
+**Smooth scroll recipe** (`examples/gfx_scroll_demo.bas`):
+
+```basic
+IMAGE NEW 1, 640, 200      : REM oversized world
+REM … paint world into slot 1 …
+REM each frame:
+IMAGE COPY 1, XO, 0, 320, 200 TO 0, 0, 0
+```
+
+**Parallax** (`examples/gfx_parallax_demo.bas`): one surface per band, independent `XO` per band, one `IMAGE COPY` per band per frame.
+
+**Screenshot**:
+
+```basic
+IMAGE COPY 0, 0, 0, 320, 200 TO 1, 0, 0
+IMAGE SAVE 1, "shot.bmp"
+```
 
 ## Viewport scrolling
 
