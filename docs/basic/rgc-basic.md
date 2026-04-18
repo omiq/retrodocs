@@ -8,10 +8,10 @@ You can run it in **five** complementary ways:
 |--------|----------------|
 | **[Web IDE (WASM)](rgc-basic/web-ide.md)** | Same interpreter in the browser — instant share, no install |
 | **Terminal** (`basic`) | Scripting, pipes, `ARG$` / `SYSTEM` / `EXEC$`, PETSCII→ANSI |
-| **Graphics** (`basic-gfx`) | [Raylib](https://www.raylib.com/) window — 40×25 PETSCII, `POKE` screen RAM, PNG sprites (tilemaps, z-order, collision), bitmap, scroll, gamepad |
+| **Graphics** (`basic-gfx`) | [Raylib](https://www.raylib.com/) window — 40×25 PETSCII, `POKE` screen RAM, AMOS-class 2-D primitives (RECT/CIRCLE/ELLIPSE/TRIANGLE/POLYGON/FLOODFILL/DRAWTEXT + all fills), PNG sprites with rotation and multi-instance stamping, array-driven `TILEMAP DRAW`, 1bpp blitter (`IMAGE NEW/LOAD/GRAB/COPY/SAVE`), `KEYDOWN`/`KEYPRESS`, atomic `VSYNC` frame commit, scroll, gamepad |
 | **Windows / macOS / Linux** | [Prebuilt binaries](https://github.com/omiq/rgc-basic/releases) for all three |
 
-This documentation set includes a **full [language reference](rgc-basic/language.md)** (statements, intrinsics, meta directives, system variables, host matrix), deep **[Terminal & PETSCII](rgc-basic/terminal-petscii.md)** and **[Web IDE](rgc-basic/web-ide.md)** pages, and a **complete [graphics](rgc-basic/graphics-raylib.md)** chapter (bitmap, **PNG sprites**, scroll, gamepad) — so routine API detail lives here, not only in the [GitHub README](https://github.com/omiq/rgc-basic/blob/main/README.md). The repo remains the **source of truth** for every edge case and version note; we link to it where it helps.
+This documentation set includes a **full [language reference](rgc-basic/language.md)** (statements, intrinsics, meta directives, system variables, host matrix), deep **[Terminal & PETSCII](rgc-basic/terminal-petscii.md)** and **[Web IDE](rgc-basic/web-ide.md)** pages, and a **complete [graphics](rgc-basic/graphics-raylib.md)** chapter (Graphics 1.0 — bitmap primitives, PNG sprites with rotation and stamping, tilemaps, 1bpp blitter with PNG/BMP I/O, VSYNC pipeline, keyboard intrinsics, scroll, gamepad) — so routine API detail lives here, not only in the [GitHub README](https://github.com/omiq/rgc-basic/blob/main/README.md). The repo remains the **source of truth** for every edge case and version note; we link to it where it helps.
 
 ## Quick links
 
@@ -20,7 +20,7 @@ This documentation set includes a **full [language reference](rgc-basic/language
 | Download, build, releases, macOS Gatekeeper | [Install & platforms](rgc-basic/install.md) |
 | Full statement & function reference, operators, `TI`/`ST`, reserved words | [Language reference](rgc-basic/language.md) |
 | CLI flags, PETSCII/ANSI, terminal scripting, `COLOR` / `LOCATE` | [Terminal & PETSCII](rgc-basic/terminal-petscii.md) |
-| `basic-gfx`, virtual memory, bitmap, **sprites (full API)**, `INKEY$`, `TI`, scroll, gamepad | [Graphics (Raylib)](rgc-basic/graphics-raylib.md) |
+| `basic-gfx`, virtual memory, bitmap primitives + fills, **sprites (full API + STAMP)**, tilemaps, blitter surfaces, `KEYDOWN`/`VSYNC`, `INKEY$`, `TI`, scroll, gamepad | [Graphics (Raylib)](rgc-basic/graphics-raylib.md) |
 | RGC IDE, **`HTTP$`**, **`PLATFORM$()`**, WASM vs native | [Web IDE (WASM)](rgc-basic/web-ide.md) |
 
 ## Project links
@@ -45,4 +45,4 @@ When you outgrow “toy” snippets and want **real files, JSON, shell glue, or 
 
 ---
 
-*Documentation aligned with RGC BASIC **v1.5.x**-class features described in the upstream README; for exact behaviour per release, see [CHANGELOG](https://github.com/omiq/rgc-basic/blob/main/CHANGELOG.md).*
+*Documentation aligned with RGC BASIC **Graphics 1.0** (unreleased post-v1.8; full feature set landed in the Unreleased section of the CHANGELOG). For exact behaviour per release, see [CHANGELOG](https://github.com/omiq/rgc-basic/blob/main/CHANGELOG.md).*

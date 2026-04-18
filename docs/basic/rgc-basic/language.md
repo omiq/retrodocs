@@ -155,8 +155,12 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 
 | Statements / functions | See |
 |------------------------|-----|
-| **`LOADSPRITE`**, **`DRAWSPRITE`**, **`DRAWSPRITETILE`**, **`UNLOADSPRITE`**, **`SPRITEVISIBLE`**, **`SPRITEMODULATE`**, **`SPRITEFRAME`** | [Graphics — PNG sprites](graphics-raylib.md#png-sprites--full-reference) |
-| **`SPRITEW`**, **`SPRITEH`**, **`SPRITETILES`**, **`SPRITEFRAME()`**, **`SPRITECOLLIDE`**, **`SCROLLX`/`SCROLLY`**, **`JOY`**, **`JOYAXIS`** | Same page |
+| **`LOADSPRITE`** / **`SPRITE LOAD`**, **`DRAWSPRITE`** / **`SPRITE DRAW`**, **`DRAWSPRITETILE`** / **`TILE DRAW`**, **`UNLOADSPRITE`** / **`SPRITE FREE`**, **`SPRITEVISIBLE`**, **`SPRITEMODULATE`**, **`SPRITEFRAME`** / **`SPRITE FRAME`**, **`SPRITECOPY`**, **`SPRITE STAMP`** (multi-instance) | [Graphics — PNG sprites](graphics-raylib.md#png-sprites--full-reference) |
+| **`TILEMAP DRAW`** (batched array → tile grid), **`DRAWTILEMAP`** (alias) | [Graphics — tilemaps](graphics-raylib.md#tilemaps-tilemap-draw) |
+| **`IMAGE NEW`**, **`IMAGE FREE`**, **`IMAGE COPY … TO …`**, **`IMAGE LOAD`**, **`IMAGE GRAB`**, **`IMAGE SAVE`** | [Graphics — blitter surfaces](graphics-raylib.md#blitter-surfaces-image-new--copy--save) |
+| **`RECT`** / **`FILLRECT`**, **`CIRCLE`** / **`FILLCIRCLE`**, **`ELLIPSE`** / **`FILLELLIPSE`**, **`TRIANGLE`** / **`FILLTRIANGLE`**, **`POLYGON`** / **`FILLPOLYGON`**, **`FLOODFILL`**, **`DRAWTEXT`** | [Graphics — bitmap mode](graphics-raylib.md#bitmap-mode-screen-1) |
+| **`VSYNC`** (frame commit + wait one display frame) | [Graphics — keyboard & time](graphics-raylib.md#keyboard--time) |
+| **`SPRITEW`**, **`SPRITEH`**, **`SPRITETILES`** / **`TILE COUNT`** / **`SPRITE FRAMES`**, **`SHEET COLS/ROWS/WIDTH/HEIGHT`**, **`SPRITEFRAME()`**, **`SPRITECOLLIDE`**, **`SCROLLX`/`SCROLLY`**, **`JOY`**, **`JOYAXIS`**, **`KEYDOWN`/`KEYUP`/`KEYPRESS`**, **`ANIMFRAME`** | Same page |
 
 ### Other
 
@@ -249,7 +253,7 @@ Details: [Web IDE — `HTTP$`](web-ide.md#http-and-httpstatus).
 
 ### Graphics-only (see [Graphics](graphics-raylib.md))
 
-**`INKEY$()`**, **`PEEK`**, **`SPRITEW`**, **`SPRITEH`**, **`SPRITETILES`**, **`SPRITEFRAME()`**, **`SPRITECOLLIDE`**, **`SCROLLX()`**, **`SCROLLY()`**, **`JOY`**, **`JOYSTICK`**, **`JOYAXIS`**.
+**`INKEY$()`**, **`PEEK`**, **`KEYDOWN(code)`**, **`KEYUP(code)`**, **`KEYPRESS(code)`** (rising-edge latch), **`ANIMFRAME(first, last, jiffies)`** (time-cycled frame index), **`SPRITEW`**, **`SPRITEH`**, **`SPRITETILES`** / **`TILE COUNT`** / **`SPRITE FRAMES`**, **`SHEET COLS/ROWS/WIDTH/HEIGHT`**, **`SPRITEFRAME()`**, **`SPRITECOLLIDE`**, **`SCROLLX()`**, **`SCROLLY()`**, **`JOY`**, **`JOYSTICK`**, **`JOYAXIS`**.
 
 ---
 
@@ -279,7 +283,7 @@ Identifiers starting with **`TI`** are resolved with CBM-style rules ( **`TI`** 
 
 ## Reserved words (identifiers)
 
-The interpreter keeps a fixed **`reserved_words[]`** table in **`basic.c`**: every keyword for statements and intrinsics (**`PRINT`**, **`FUNCTION`**, **`SPRITECOLLIDE`**, **`HTTPSTATUS`**, **`LOOP`**, **`EXIT`**, …) plus tokens such as **`INK`**, **`DOWN`**, **`JOIN`**, **`XOR`**, etc. **Do not use those spellings as variable names.** (Exact rules for **labels** vs identifiers are described in the upstream README.)
+The interpreter keeps a fixed **`reserved_words[]`** table in **`basic.c`**: every keyword for statements and intrinsics (**`PRINT`**, **`FUNCTION`**, **`SPRITECOLLIDE`**, **`HTTPSTATUS`**, **`LOOP`**, **`EXIT`**, …) plus tokens such as **`INK`**, **`DOWN`**, **`JOIN`**, **`XOR`**, etc. Graphics 1.0 additions — **`RECT`**, **`FILLRECT`**, **`CIRCLE`**, **`FILLCIRCLE`**, **`ELLIPSE`**, **`FILLELLIPSE`**, **`TRIANGLE`**, **`FILLTRIANGLE`**, **`POLYGON`**, **`FILLPOLYGON`**, **`FLOODFILL`**, **`DRAWTEXT`**, **`VSYNC`** — are reserved too. **Do not use those spellings as variable names.** (Exact rules for **labels** vs identifiers are described in the upstream README.)
 
 Authoritative list: **`reserved_words[]`** in **[basic.c](https://github.com/omiq/rgc-basic/blob/main/basic.c)**.
 
