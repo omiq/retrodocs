@@ -2,6 +2,8 @@
 
 **`basic-gfx`** is the graphical build of the interpreter, linked against **[Raylib](https://www.raylib.com/)**. It opens a window with a **40×25** (or **80×25** with `-columns 80`) PETSCII-style display, **virtual memory** for `POKE`/`PEEK`, **`INKEY$`**, **`TI`/`TI$`**, bitmap mode, **PNG sprites with tile sheets, z-order, tint/scale, and collision**, viewport scrolling, gamepads, and more — while sharing the same BASIC language as **`basic`**.
 
+**Graphics 1.0** (current): a complete AMOS/STOS-class 2-D feature set — bitmap primitives (`PSET`/`LINE`/`RECT`/`FILLRECT`/`CIRCLE`/`FILLCIRCLE`/`ELLIPSE`/`FILLELLIPSE`/`TRIANGLE`/`FILLTRIANGLE`/`POLYGON`/`FILLPOLYGON`/`FLOODFILL`/`DRAWTEXT`), PNG sprites with rotation and multi-instance stamping, time-based animation, an array-driven tilemap renderer, a 1bpp blitter with file I/O (`IMAGE LOAD`/`SAVE`/`GRAB`/`COPY`), named keyboard polling (`KEYDOWN`/`KEYUP`/`KEYPRESS`), and an atomic double-buffered `VSYNC` frame commit.
+
 Build from source with **`make basic-gfx`** after Raylib is installed; releases ship **`basic-gfx`** next to **`basic`**.
 
 On Windows use `basic-gfx.exe`. Paths to assets are **relative to the `.bas` file’s directory** (or absolute).
@@ -11,6 +13,11 @@ On Windows use `basic-gfx.exe`. Paths to assets are **relative to the `.bas` fil
 Run locally from the repo **`examples/`** folder (or release archive):
 
 ```bash
+./basic-gfx examples/gfx_showcase.bas        # Graphics 1.0 tour
+./basic-gfx examples/gfx_world_demo.bas      # tilemap + scrolling + WASD
+./basic-gfx examples/gfx_stamp_demo.bas      # SPRITE STAMP particles
+./basic-gfx examples/gfx_rotate_demo.bas     # rotated sprites
+./basic-gfx examples/gfx_anim_demo.bas       # ANIMFRAME boing ball
 ./basic-gfx examples/gfx_poke_demo.bas
 ./basic-gfx -petscii examples/gfx_inkey_demo.bas
 ./basic-gfx -petscii -charset lower examples/gfx_colaburger_viewer.bas
