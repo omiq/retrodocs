@@ -101,10 +101,13 @@ Sprites use **numbered slots** (0 … 63 in the implementation). Only **`.png`**
 
 | Function / statement | Meaning |
 |----------------------|---------|
-| **`SPRITETILES(slot)`** | Number of tiles in a loaded tile sheet (after **`LOADSPRITE …, tw, th`**). |
+| **`SPRITETILES(slot)`** / **`TILE COUNT(slot)`** / **`SPRITE FRAMES(slot)`** | Number of tiles in a loaded tile sheet (after **`LOADSPRITE …, tw, th`** / `SPRITE LOAD …`). |
+| **`SHEET COLS(slot)`** / **`SHEET ROWS(slot)`** | Grid shape of the loaded sheet. |
+| **`SHEET WIDTH(slot)`** / **`SHEET HEIGHT(slot)`** | Cell dimensions in pixels. |
 | **`SPRITEW(slot)`** / **`SPRITEH(slot)`** | Pixel width/height: for tile sheets, **one cell’s** size; else full texture (**0** if not loaded). |
-| **`SPRITEFRAME slot, frame`** | Set **1-based** tile index used when **`DRAWSPRITE`** omits **`sx, sy, sw, sh`** (same as choosing that tile with **`DRAWSPRITETILE`**). |
+| **`SPRITEFRAME slot, frame`** / **`SPRITE FRAME …`** | Set **1-based** tile index used when **`DRAWSPRITE`** omits **`sx, sy, sw, sh`** (same as choosing that tile with **`DRAWSPRITETILE`**). |
 | **`SPRITEFRAME(slot)`** | Current **1-based** frame index. |
+| **`ANIMFRAME(first, last, jiffies_per_frame)`** | Time-based frame cycler. Returns a 1-based index in `[first, last]`, advancing every `jiffies_per_frame` ticks (60 jiffies = 1 second). Feeds straight into `SPRITE FRAME`: e.g. `SPRITE FRAME 0, ANIMFRAME(1, 4, 6)` cycles four frames at 10 FPS without a counter variable. |
 
 ### Tint, opacity, and scale
 
@@ -146,7 +149,7 @@ Pick whichever spelling reads cleaner in your program.
 
 **`SPRITE DRAW`** tracks a single persistent position per slot — N calls with the same slot collapse to the last one. Use it for the player, a single enemy, a HUD panel, etc.
 
-**`SPRITE STAMP slot, x, y [, frame [, z]]`** appends one cell to a per-frame list, so N stamps of one slot in one frame all render at distinct positions. Use it for **particles, bullets, enemy swarms, starfields** — any case where you'd previously have called `SPRITECOPY` into many slots.
+**`SPRITE STAMP slot, x, y [, frame [, z [, rot_deg]]]`** appends one cell to a per-frame list, so N stamps of one slot in one frame all render at distinct positions. Use it for **particles, bullets, enemy swarms, starfields** — any case where you'd previously have called `SPRITECOPY` into many slots. Optional `rot_deg` rotates around the sprite centre (raylib backend only — canvas/WASM accepts the arg but ignores it).
 
 `frame` is a 1-based tile index; `0` or omitted falls back to the slot's current `SPRITE FRAME`. If the slot holds a single image with no tile grid the draw uses the full sprite rect.
 
