@@ -45,4 +45,4 @@ When you outgrow “toy” snippets and want **real files, JSON, shell glue, or 
 
 ---
 
-*Documentation aligned with RGC BASIC **Graphics 1.0** (unreleased post-v1.8; full feature set landed in the Unreleased section of the CHANGELOG). For exact behaviour per release, see [CHANGELOG](https://github.com/omiq/rgc-basic/blob/main/CHANGELOG.md).*
+*Documentation aligned with RGC BASIC **1.9.0** (2026-04-18, "Graphics 1.0" milestone). Next major is **2.0** when sound lands. For exact behaviour per release, see [CHANGELOG](https://github.com/omiq/rgc-basic/blob/main/CHANGELOG.md) and the [1.9.0 announcement](https://github.com/omiq/rgc-basic/blob/main/docs/release-graphics-1.0.html).*

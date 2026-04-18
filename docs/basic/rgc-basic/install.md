@@ -4,7 +4,7 @@
 
 Official builds for **Windows, macOS, and Linux** are attached to GitHub **Releases**:
 
-- **[Latest release](https://github.com/omiq/rgc-basic/releases/)** — versioned builds (e.g. **1.5.x**).
+- **[Latest release](https://github.com/omiq/rgc-basic/releases/)** — versioned builds (current: **1.9.0**, April 2026 "Graphics 1.0" milestone).
 - **[Nightly](https://github.com/omiq/rgc-basic/releases/tag/nightly)** — built automatically from **`main`** each night.
 
 Each archive typically includes:
