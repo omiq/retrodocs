@@ -60,6 +60,10 @@ Tutorial-style demos (also listed under [Examples](#example-programs-in-the-repo
 - **`FILLRECT x1, y1 TO x2, y2`** — Solid rectangle (either corner diagonal works).
 - **`CIRCLE x, y, r`** — Midpoint-circle outline.
 - **`FILLCIRCLE x, y, r`** — Solid disk.
+- **`ELLIPSE x, y, rx, ry`** — Axis-aligned ellipse outline (midpoint algorithm).
+- **`FILLELLIPSE x, y, rx, ry`** — Solid ellipse.
+- **`TRIANGLE x1,y1, x2,y2, x3,y3`** — Triangle outline.
+- **`FILLTRIANGLE x1,y1, x2,y2, x3,y3`** — Solid triangle (scanline fill).
 - **`DRAWTEXT x, y, text$`** — Pixel-space text using the active 8×8 charset (OR blend, current pen). Unlike `PRINT` / `TEXTAT` this isn't tied to the 40×25 text grid, so HUDs can sit anywhere. Bytes of `text$` go through `petscii_to_screencode`.
 - **`BITMAPCLEAR`** — Wipe the bitmap plane without touching text/colour RAM.
 
