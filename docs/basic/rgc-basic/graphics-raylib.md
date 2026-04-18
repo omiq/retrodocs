@@ -64,6 +64,8 @@ Tutorial-style demos (also listed under [Examples](#example-programs-in-the-repo
 - **`FILLELLIPSE x, y, rx, ry`** — Solid ellipse.
 - **`TRIANGLE x1,y1, x2,y2, x3,y3`** — Triangle outline.
 - **`FILLTRIANGLE x1,y1, x2,y2, x3,y3`** — Solid triangle (scanline fill).
+- **`POLYGON n, vx(), vy()`** / **`FILLPOLYGON n, vx(), vy()`** — N-sided polygon (up to 256 vertices). `POLYGON` closes with `n` `LINE` segments; `FILLPOLYGON` fan-triangulates from vertex 0 (correct for convex shapes).
+- **`FLOODFILL x, y`** — paint-bucket seed fill of the connected off region starting at `(x, y)`.
 - **`DRAWTEXT x, y, text$`** — Pixel-space text using the active 8×8 charset (OR blend, current pen). Unlike `PRINT` / `TEXTAT` this isn't tied to the 40×25 text grid, so HUDs can sit anywhere. Bytes of `text$` go through `petscii_to_screencode`.
 - **`BITMAPCLEAR`** — Wipe the bitmap plane without touching text/colour RAM.
 
@@ -203,6 +205,8 @@ Off-screen 1bpp bitmap surfaces for scroll / parallax / work-buffer patterns fro
 - **`IMAGE NEW slot, w, h`** — allocate an off-screen bitmap. `slot` is 1..31. Any dimensions; surface starts empty.
 - **`IMAGE FREE slot`** — release it.
 - **`IMAGE COPY src, sx, sy, sw, sh TO dst, dx, dy`** — rectangular 1bpp blit between any two slots. Slot `0` is the live visible bitmap (320×200), so visible↔offscreen copies work without conversion. Overlapping same-slot rects stage through a scratch row buffer.
+- **`IMAGE LOAD slot, "path"`** — read PNG / BMP / JPG / TGA / GIF into the slot as a 1bpp mask (luminance-threshold at 128; alpha=0 → off).
+- **`IMAGE GRAB slot, sx, sy, sw, sh`** — shortcut for "allocate slot to (sw×sh) and copy from visible (sx, sy)" — one-statement snapshot of a viewport region.
 - **`IMAGE SAVE slot, "path.bmp"`** — export as 24-bit BMP (pen=1 → white, pen=0 → black). Convert to PNG externally if needed.
 
 **Smooth scroll recipe** (`examples/gfx_scroll_demo.bas`):
