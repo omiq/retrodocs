@@ -44,6 +44,19 @@ Tutorial-style demos (also listed under [Examples](#example-programs-in-the-repo
 - **`LOAD "file" INTO addr`** / **`LOAD @label INTO addr`** — load raw bytes into virtual memory (**gfx**; terminal build errors).
 - **`MEMSET` / `MEMCPY`** — fill/copy bytes in virtual memory (**gfx**).
 
+## Per-cell colour with `PAPER`
+
+- **`BACKGROUND n`** sets the **global** background register (0–15) — used when `CLS` clears or when a `PRINT` writes into a cell with no explicit paper.
+- **`PAPER n`** stamps only the **per-cell** `bgcolor[]` byte on subsequent `PRINT` output, without touching the global register. Use it to draw a highlighted menu row, a status-bar stripe, or a coloured card border without repainting the rest of the screen.
+
+```basic
+BACKGROUND 6                           ' global blue
+PAPER 0 : COLOR 1 : PRINT "WHITE ON BLACK"
+PAPER 2 : COLOR 7 : PRINT "YELLOW ON RED"
+```
+
+Example: `examples/gfx_menu_demo.bas` (selection bar + rainbow title via per-fragment `PAPER`/`COLOR`).
+
 ## Keyboard & time
 
 - **`INKEY$`** — Non-blocking; returns one character or `""`. Case may vary; use **`UCASE$(INKEY$())`** for comparisons.
@@ -154,7 +167,7 @@ New graphics commands follow AMOS/STOS-style **verb/noun** spellings. Existing c
 | `TILE COUNT(slot)` | `SPRITETILES(slot)` |
 | `TILEMAP DRAW slot, x0, y0, cols, rows, map [, z]` | `DRAWTILEMAP` |
 | `SHEET COLS(slot)` / `SHEET ROWS(slot)` / `SHEET WIDTH(slot)` / `SHEET HEIGHT(slot)` | *(new accessors)* |
-| `IMAGE NEW slot, w, h` / `IMAGE FREE slot` / `IMAGE COPY …` / `IMAGE SAVE slot, "path.bmp"` | *(new blitter)* |
+| `IMAGE NEW slot, w, h` / `IMAGE FREE slot` / `IMAGE COPY …` / `IMAGE GRAB slot, sx, sy, sw, sh` / `IMAGE LOAD slot, "path"` / `IMAGE SAVE slot, "path.png\|.bmp"` | *(blitter + screenshot)* |
 
 Pick whichever spelling reads cleaner in your program.
 
@@ -205,16 +218,18 @@ PRINT "total cells: "; TILE COUNT(0)
 
 Examples: `examples/gfx_tilemap_demo.bas`, `examples/gfx_world_demo.bas` (40×40 world + push-scroll + WASD player).
 
-## Blitter surfaces (`IMAGE NEW` / `COPY` / `SAVE`)
+## Blitter surfaces (`IMAGE NEW` / `COPY` / `GRAB` / `SAVE`)
 
-Off-screen 1bpp bitmap surfaces for scroll / parallax / work-buffer patterns from AMOS/STOS-style BASIC.
+Off-screen bitmap surfaces for scroll / parallax / work-buffer / screenshot patterns from AMOS/STOS-style BASIC.
 
-- **`IMAGE NEW slot, w, h`** — allocate an off-screen bitmap. `slot` is 1..31. Any dimensions; surface starts empty.
-- **`IMAGE FREE slot`** — release it.
+- **`IMAGE NEW slot, w, h`** — allocate an off-screen **1bpp** bitmap. `slot` is 1..31. Any dimensions; surface starts empty.
+- **`IMAGE FREE slot`** — release it (frees both the 1bpp buffer and any RGBA buffer a grab left behind).
 - **`IMAGE COPY src, sx, sy, sw, sh TO dst, dx, dy`** — rectangular 1bpp blit between any two slots. Slot `0` is the live visible bitmap (320×200), so visible↔offscreen copies work without conversion. Overlapping same-slot rects stage through a scratch row buffer.
 - **`IMAGE LOAD slot, "path"`** — read PNG / BMP / JPG / TGA / GIF into the slot as a 1bpp mask (luminance-threshold at 128; alpha=0 → off).
-- **`IMAGE GRAB slot, sx, sy, sw, sh`** — shortcut for "allocate slot to (sw×sh) and copy from visible (sx, sy)" — one-statement snapshot of a viewport region.
-- **`IMAGE SAVE slot, "path.bmp"`** — export as 24-bit BMP (pen=1 → white, pen=0 → black). Convert to PNG externally if needed.
+- **`IMAGE GRAB slot, sx, sy, sw, sh`** — snapshot a region of the **currently-displayed framebuffer** into `slot` as **32-bit RGBA** — bitmap + text + sprites + tilemap cells all composited, full palette and alpha. On desktop `basic-gfx` the grab blocks the interpreter for up to one display frame (~16 ms) while the render thread reads back the composited target. On canvas WASM the frame is composited inline (no threading). If an RGBA hook isn't available on the current build, falls back to a 1bpp copy of the bitmap plane.
+- **`IMAGE SAVE slot, "path"`** — extension-dispatched export:
+  - **`.png`** — 32-bit RGBA PNG. If the slot was populated by `IMAGE GRAB`, alpha and the full composite are preserved. Slots still holding a 1bpp mask write on-pixel = opaque white, off-pixel = `rgba(0,0,0,0)` (transparent — good for reusing a drawn panel as a sprite). Slot 0 without a grab resolves on/off through the current `COLOR` / `BACKGROUND`.
+  - **anything else** — 24-bit BMP (no alpha channel; RGBA grabs are premultiplied against black on write, 1bpp slots stay pen=white/off=black).
 
 **Smooth scroll recipe** (`examples/gfx_scroll_demo.bas`):
 
@@ -227,11 +242,85 @@ IMAGE COPY 1, XO, 0, 320, 200 TO 0, 0, 0
 
 **Parallax** (`examples/gfx_parallax_demo.bas`): one surface per band, independent `XO` per band, one `IMAGE COPY` per band per frame.
 
-**Screenshot**:
+**Screenshot / animation frames → ffmpeg**:
 
 ```basic
-IMAGE COPY 0, 0, 0, 320, 200 TO 1, 0, 0
-IMAGE SAVE 1, "shot.bmp"
+VSYNC                                  : REM let the scene composite
+IMAGE GRAB 1, 0, 0, 320, 200
+IMAGE SAVE 1, "shot.png"               : REM full colour + alpha
+```
+
+Per-frame recorder — writes `frame_00001.png`, `frame_00002.png`, …:
+
+```basic
+N = 0
+DO
+  : REM … render …
+  VSYNC
+  IMAGE GRAB 1, 0, 0, 320, 200
+  N = N + 1
+  IMAGE SAVE 1, "frame_" + RIGHT$("00000" + STR$(N), 5) + ".png"
+LOOP UNTIL N >= 300                    : REM 5s at 60 fps
+```
+
+Encode with ffmpeg:
+
+```bash
+ffmpeg -framerate 60 -i frame_%05d.png -c:v libx264 -pix_fmt yuv420p out.mp4
+```
+
+Example: `examples/gfx_screenshot_demo.bas` (S takes a numbered screenshot; commented-out per-frame recorder block at the bottom).
+
+## Mouse (`basic-gfx` and canvas WASM)
+
+| Function / statement | Meaning |
+|----------------------|---------|
+| **`GETMOUSEX()` / `GETMOUSEY()`** | Pointer in **framebuffer pixels** (same space as `DRAWSPRITE`). |
+| **`ISMOUSEBUTTONPRESSED(n)`** | Rising-edge: **1** the frame the button goes down, else **0**. |
+| **`ISMOUSEBUTTONDOWN(n)`** | **1** while the button is held. |
+| **`ISMOUSEBUTTONRELEASED(n)`** | Falling-edge: **1** the frame the button goes up. |
+| **`ISMOUSEBUTTONUP(n)`** | **1** while the button is not held. |
+| **`MOUSESET x, y`** | Move the system pointer to `(x, y)` in framebuffer pixels. On WASM the host may clamp the move to the canvas; `MOUSESET` latches the logical position for a few frames so `GETMOUSEX/Y` report the requested value. |
+| **`SETMOUSECURSOR code`** | Raylib `MouseCursor` codes — `0` default, `2` I-beam, `4` crosshair, `5` pointing hand, etc. Canvas/WASM maps the code to CSS `cursor`. |
+| **`HIDECURSOR` / `SHOWCURSOR`** | Toggle pointer visibility. |
+
+Button codes: **0** left, **1** right, **2** middle (Raylib `MouseButton` order).
+
+Example: `examples/gfx_mouse_demo.bas` (paint with LEFT, clear with RIGHT, hide/show with MIDDLE, `MOUSESET` warp on LEFT+RIGHT, cursor shape changes by vertical zone).
+
+## Anti-aliasing / texture filter
+
+- **`ANTIALIAS ON`** — Bilinear filter on scaled sprites and the upscaled framebuffer. Smooth; useful if you're deliberately upsampling pixel art.
+- **`ANTIALIAS OFF`** — Nearest-neighbour (the default). Hard pixels; classic retro look.
+
+The mode applies globally to subsequently-loaded sprites and the render target. Toggle any time; the render thread re-applies the filter on the next tick.
+
+Example: `examples/gfx_antialias_demo.bas` (SPACE flips modes; a 4× scaled ship shows the difference).
+
+## Periodic timers
+
+Cooperative callbacks fired between statements. Up to **12** timers (ids **1–12**), minimum interval **16 ms**, re-entrancy is skipped (not queued).
+
+| Statement | Meaning |
+|-----------|---------|
+| **`TIMER id, interval_ms, FuncName`** | Register (or replace) timer `id` to call zero-arg `FUNCTION FuncName` every `interval_ms` ms. |
+| **`TIMER STOP id`** | Disable without removing — re-enable later with `TIMER ON`. |
+| **`TIMER ON id`** | Re-enable a stopped timer. |
+| **`TIMER CLEAR id`** | Remove entirely. |
+
+Timers reset at the start of each run. Works in terminal, `basic-gfx`, and WASM. Examples: `examples/timer_demo.bas`, `examples/timer_clock.bas`.
+
+```basic
+FUNCTION Tick()
+  T = T + 1
+  LOCATE 0, 0 : PRINT "TICK "; T; "    "
+END FUNCTION
+
+TIMER 1, 100, Tick                     ' every 100 ms
+DO
+  IF KEYDOWN(KEY_ESC) THEN EXIT
+  VSYNC
+LOOP
 ```
 
 ## Viewport scrolling
@@ -269,6 +358,11 @@ The **WASM/canvas** build aims to mirror **`basic-gfx`** for teaching; host deta
 | Scroll / memory / tiles / pad | `tutorial_gfx_scroll.bas`, `tutorial_gfx_memory.bas`, `tutorial_gfx_tilemap.bas`, `tutorial_gfx_gamepad.bas` | [1](https://ide.retrogamecoders.com/?file=tutorial_gfx_scroll.bas&platform=rgc-basic) · [2](https://ide.retrogamecoders.com/?file=tutorial_gfx_memory.bas&platform=rgc-basic) · [3](https://ide.retrogamecoders.com/?file=tutorial_gfx_tilemap.bas&platform=rgc-basic) · [4](https://ide.retrogamecoders.com/?file=tutorial_gfx_gamepad.bas&platform=rgc-basic) |
 | PETSCII viewers | `gfx_colaburger_viewer.bas`, `gfx_inkey_demo.bas` | [1](https://ide.retrogamecoders.com/?file=gfx_colaburger_viewer.bas&platform=rgc-basic) · [2](https://ide.retrogamecoders.com/?file=gfx_inkey_demo.bas&platform=rgc-basic) |
 | Bitmap | `gfx_bitmap_demo.bas` | [IDE](https://ide.retrogamecoders.com/?file=gfx_bitmap_demo.bas&platform=rgc-basic) |
+| Screenshot / ffmpeg frames | `gfx_screenshot_demo.bas` | [IDE](https://ide.retrogamecoders.com/?file=gfx_screenshot_demo.bas&platform=rgc-basic) |
+| Mouse | `gfx_mouse_demo.bas` | [IDE](https://ide.retrogamecoders.com/?file=gfx_mouse_demo.bas&platform=rgc-basic) |
+| Anti-alias toggle | `gfx_antialias_demo.bas` | [IDE](https://ide.retrogamecoders.com/?file=gfx_antialias_demo.bas&platform=rgc-basic) |
+| Menu / PAPER | `gfx_menu_demo.bas` | [IDE](https://ide.retrogamecoders.com/?file=gfx_menu_demo.bas&platform=rgc-basic) |
+| Timers | `timer_demo.bas`, `timer_clock.bas` | [1](https://ide.retrogamecoders.com/?file=timer_demo.bas&platform=rgc-basic) · [2](https://ide.retrogamecoders.com/?file=timer_clock.bas&platform=rgc-basic) |
 
 Index listing: `examples/tutorial_gfx_index.bas` — [Web IDE](https://ide.retrogamecoders.com/?file=tutorial_gfx_index.bas&platform=rgc-basic). Static HTML overview: **`web/tutorial-gfx-features.html`** when you serve **`web/`** over HTTP.
 

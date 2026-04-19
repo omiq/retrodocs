@@ -149,6 +149,9 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`TEXTAT col, row, expr$`** | Move and print string at absolute position. |
 | **`CURSOR ON` / `CURSOR OFF`** | Terminal: ANSI show/hide cursor. |
 | **`COLOR n` / `COLOUR n`**, **`BACKGROUND n`** | C64-style indices **0–15** (foreground / background). |
+| **`PAPER n`** | Per-cell background index (**0–15**); only subsequent `PRINT` output stamps `bgcolor[]`. Leaves the global `BACKGROUND` register untouched. |
+| **`ANTIALIAS ON` / `ANTIALIAS OFF`** | **Gfx:** bilinear vs nearest-neighbour filter for sprites and the upscaled framebuffer (default **OFF**). |
+| **`TIMER id, interval_ms, FuncName`** / **`TIMER STOP id`** / **`TIMER ON id`** / **`TIMER CLEAR id`** | Register, disable, re-enable, or remove a periodic timer. **12** timers max (ids **1–12**); minimum interval **16 ms**; `FuncName` is a zero-arg `FUNCTION`/`END FUNCTION` block. Re-entry is skipped, not queued. |
 | **`SCREEN 0` / `SCREEN 1`**, **`PSET`**, **`PRESET`**, **`LINE`**, **`SCREENCODES`**, **`SCROLL`**, sprite statements | **Gfx / canvas** — see [Graphics](graphics-raylib.md). |
 
 ### Sprites and gamepad (gfx / canvas)
