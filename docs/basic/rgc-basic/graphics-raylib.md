@@ -88,6 +88,19 @@ Example: `examples/gfx_menu_demo.bas` (selection bar + rainbow title via per-fra
 - **`FLOODFILL x, y`** — paint-bucket seed fill of the connected off region starting at `(x, y)`.
 - **`DRAWTEXT x, y, text$`** — Pixel-space text using the active 8×8 charset (OR blend, current pen). Unlike `PRINT` / `TEXTAT` this isn't tied to the 40×25 text grid, so HUDs can sit anywhere. Bytes of `text$` go through `petscii_to_screencode`.
 - **`BITMAPCLEAR`** — Wipe the bitmap plane without touching text/colour RAM.
+- **`DOUBLEBUFFER ON` / `DOUBLEBUFFER OFF`** — toggle bitmap-plane double-buffering. Default **OFF** (legacy draw-as-you-go). With **ON**, BASIC still writes to `bitmap[]` but the renderer displays `bitmap_show[]`, and `VSYNC` atomically commits `build → show`. Combined with the always-double-buffered sprite cell list, a full per-frame `CLS : RECT … : FILLCIRCLE … : DRAWTEXT … : SPRITE STAMP … : VSYNC` sequence never shows a half-drawn frame. Toggling on eagerly promotes the current bitmap into the show plane so the first frame isn't blank. Canonical loop:
+
+```basic
+DOUBLEBUFFER ON
+DO
+  CLS
+  FILLCIRCLE BX, BY, BR
+  DRAWTEXT 12, 182, "BOUNCES " + STR$(BOUNCES)
+  VSYNC
+LOOP
+```
+
+Example: `examples/gfx_doublebuffer_demo.bas` (SPACE toggles the mode in-flight).
 
 Examples: `./basic-gfx examples/gfx_bitmap_demo.bas` · `examples/gfx_hud_demo.bas` · `examples/gfx_ball_demo.bas`.
 

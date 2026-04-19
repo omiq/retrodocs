@@ -151,6 +151,7 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`CURSOR ON` / `CURSOR OFF`** | Terminal: ANSI show/hide cursor. |
 | **`DOWNLOAD path$`** | **Browser WASM:** reads the file from MEMFS, wraps it in a Blob with a guessed MIME type, triggers a real browser download. **Native:** no-op (file is already on disk); prints a one-shot hint on stderr. |
 | **`COLOR n` / `COLOUR n`**, **`BACKGROUND n`** | C64-style indices **0–15** (foreground / background). |
+| **`DOUBLEBUFFER ON` / `DOUBLEBUFFER OFF`** | **Gfx:** toggle bitmap-plane double-buffering (default OFF). With **ON**, renderer displays a committed back-buffer and only updates on `VSYNC` — matches the cell list so whole frames commit atomically. |
 | **`PAPER n`** | Per-cell background index (**0–15**); only subsequent `PRINT` output stamps `bgcolor[]`. Leaves the global `BACKGROUND` register untouched. |
 | **`ANTIALIAS ON` / `ANTIALIAS OFF`** | **Gfx:** bilinear vs nearest-neighbour filter for sprites and the upscaled framebuffer (default **OFF**). |
 | **`TIMER id, interval_ms, FuncName`** / **`TIMER STOP id`** / **`TIMER ON id`** / **`TIMER CLEAR id`** | Register, disable, re-enable, or remove a periodic timer. **12** timers max (ids **1–12**); minimum interval **16 ms**; `FuncName` is a zero-arg `FUNCTION`/`END FUNCTION` block. Re-entry is skipped, not queued. |
