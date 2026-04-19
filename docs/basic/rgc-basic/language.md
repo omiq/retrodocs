@@ -85,6 +85,7 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`WHILE` … `WEND`** | Pre-test loop. |
 | **`DO` … `LOOP`** | Infinite until **`EXIT`**; or **`LOOP UNTIL expr`**. **`EXIT`** exits the **innermost** **`DO`**. |
 | **`FOR` … `NEXT`** | Numeric **`FOR`** with optional **`STEP`** (positive or negative). |
+| **`FOREACH var IN arr[()]` … `NEXT var`** | Iterate each element of a 1-D array (numeric or string). `NEXT var` advances; `EXIT` pops the innermost FOR/FOREACH. Empty arrays run zero iterations. |
 | **`GOTO`** | Target is a line number or **label**. |
 | **`GOSUB` / `RETURN`** | Subroutine stack; target line or label. |
 | **`ON expr GOTO` / `ON expr GOSUB`** | Multi-way branch (e.g. **`ON N GOTO 100,200,300`**). |
@@ -220,6 +221,8 @@ Parentheses are required where shown. String functions use a trailing **`$`** in
 | Function | Notes |
 |----------|--------|
 | **`JSON$(json$, path$)`** | Extract by path (`"key"`, `"key[0]"`, `"a.b"`, …); returns string. Use **`VAL(JSON$(…))`** for numbers. |
+| **`JSONLEN(json$, path$)`** | Count of entries at path (array / object), **0** for scalars or missing paths. Pairs with `FOR I = 0 TO JSONLEN(j$, "items") - 1`. |
+| **`JSONKEY$(json$, path$, n)`** | 0-based Nth key when path resolves to an object; **`""`** for arrays or scalars. Enumerate fields without hard-coding names. |
 
 ### Environment and host
 
@@ -227,6 +230,10 @@ Parentheses are required where shown. String functions use a trailing **`$`** in
 |----------|--------|
 | **`ENV$(name$)`** | Environment variable, or **`""`**. |
 | **`FILEEXISTS(path$)`** | **1** if the path is openable for reading, **0** otherwise. Works against **MEMFS** in browser WASM and the host filesystem natively. Idiomatic post-save check: `IF FILEEXISTS(P$) THEN DOWNLOAD P$`. |
+| **`CWD$()`**, **`CHDIR path$`** | Current working directory + change. Native `getcwd`/`chdir`; MEMFS on browser WASM via the same POSIX layer. `CHDIR` raises a runtime error on missing paths. |
+| **`DIR$(path$ [, delim$])`** | Delimiter-joined (default newline) list of non-hidden names in `path$`. Returns **`""`** on failure. Capped by `#OPTION maxstr`. |
+| **`DIR path$ INTO arr$ [, count]`** | Statement form: populate a 1-D string array (must be DIMmed) with filenames and optionally assign the count. Mirrors `SPLIT … INTO arr$ [, count]`. |
+| **`TICKUS()`**, **`TICKMS()`** | Monotonic microsecond / millisecond counters. Origin is implementation-defined — differences are meaningful. Native: `clock_gettime(CLOCK_MONOTONIC)`. Browser WASM: `emscripten_get_now()`. |
 | **`PLATFORM$()`** | Host string — see [Web IDE](web-ide.md#platform-and-capabilities) for **browser** vs native. |
 
 ### Evaluation and conversion
