@@ -160,6 +160,7 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`ANTIALIAS ON` / `ANTIALIAS OFF`** | **Gfx:** bilinear vs nearest-neighbour filter for sprites and the upscaled framebuffer (default **OFF**). |
 | **`TIMER id, interval_ms, FuncName`** / **`TIMER STOP id`** / **`TIMER ON id`** / **`TIMER CLEAR id`** | Register, disable, re-enable, or remove a periodic timer. **12** timers max (ids **1–12**); minimum interval **16 ms**; `FuncName` is a zero-arg `FUNCTION`/`END FUNCTION` block. Re-entry is skipped, not queued. |
 | **`SCREEN 0` / `SCREEN 1`**, **`PSET`**, **`PRESET`**, **`LINE`**, **`SCREENCODES`**, **`SCROLL`**, sprite statements | **Gfx / canvas** — see [Graphics](graphics-raylib.md). |
+| **`LOADSOUND slot, "file.wav"`**, **`PLAYSOUND slot`**, **`STOPSOUND`**, **`UNLOADSOUND slot`**, **`SOUNDPLAYING()`** | **basic-gfx + basic-wasm-raylib (canvas WASM stays frozen):** single-voice WAV playback, 32 slots. `PLAYSOUND` is non-blocking and stops whatever was already playing. `SOUNDPLAYING()` returns **1** while audible, **0** when idle — self-clears at natural end-of-sample. Browsers require a user gesture (key / click) before `AudioContext` resumes, so gate the first cue on `KEYPRESS` or `ISMOUSEBUTTONPRESSED`. |
 
 ### Sprites and gamepad (gfx / canvas)
 
