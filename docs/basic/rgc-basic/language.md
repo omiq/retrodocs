@@ -169,7 +169,7 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`IMAGE NEW`**, **`IMAGE FREE`**, **`IMAGE COPY … TO …`**, **`IMAGE LOAD`**, **`IMAGE GRAB`**, **`IMAGE SAVE`** | [Graphics — blitter surfaces](graphics-raylib.md#blitter-surfaces-image-new--copy--save) |
 | **`RECT`** / **`FILLRECT`**, **`CIRCLE`** / **`FILLCIRCLE`**, **`ELLIPSE`** / **`FILLELLIPSE`**, **`TRIANGLE`** / **`FILLTRIANGLE`**, **`POLYGON`** / **`FILLPOLYGON`**, **`FLOODFILL`**, **`DRAWTEXT`** | [Graphics — bitmap mode](graphics-raylib.md#bitmap-mode-screen-1) |
 | **`VSYNC`** (frame commit + wait one display frame) | [Graphics — keyboard & time](graphics-raylib.md#keyboard--time) |
-| **`SPRITEW`**, **`SPRITEH`**, **`SPRITETILES`** / **`TILE COUNT`** / **`SPRITE FRAMES`**, **`SHEET COLS/ROWS/WIDTH/HEIGHT`**, **`SPRITEFRAME()`**, **`SPRITECOLLIDE`**, **`SCROLLX`/`SCROLLY`**, **`JOY`**, **`JOYAXIS`**, **`KEYDOWN`/`KEYUP`/`KEYPRESS`**, **`ANIMFRAME`** | Same page |
+| **`SPRITEW`**, **`SPRITEH`**, **`SPRITETILES`** / **`TILE COUNT`** / **`SPRITE FRAMES`**, **`SHEET COLS/ROWS/WIDTH/HEIGHT`**, **`SPRITEFRAME()`**, **`SPRITECOLLIDE`**, **`ISMOUSEOVERSPRITE(slot)`**, **`SPRITEAT(x, y)`**, **`SCROLLX`/`SCROLLY`**, **`JOY`**, **`JOYAXIS`**, **`KEYDOWN`/`KEYUP`/`KEYPRESS`**, **`ANIMFRAME`** | Same page |
 
 ### Other
 
@@ -263,7 +263,7 @@ Details: [Web IDE — `HTTP$`](web-ide.md#http-and-httpstatus).
 
 ### Graphics-only (see [Graphics](graphics-raylib.md))
 
-**`INKEY$()`**, **`PEEK`**, **`KEYDOWN(code)`**, **`KEYUP(code)`**, **`KEYPRESS(code)`** (rising-edge latch), **`ANIMFRAME(first, last, jiffies)`** (time-cycled frame index), **`SPRITEW`**, **`SPRITEH`**, **`SPRITETILES`** / **`TILE COUNT`** / **`SPRITE FRAMES`**, **`SHEET COLS/ROWS/WIDTH/HEIGHT`**, **`SPRITEFRAME()`**, **`SPRITECOLLIDE`**, **`SCROLLX()`**, **`SCROLLY()`**, **`JOY`**, **`JOYSTICK`**, **`JOYAXIS`**.
+**`INKEY$()`**, **`PEEK`**, **`KEYDOWN(code)`**, **`KEYUP(code)`**, **`KEYPRESS(code)`** (rising-edge latch), **`ANIMFRAME(first, last, jiffies)`** (time-cycled frame index), **`SPRITEW`**, **`SPRITEH`**, **`SPRITETILES`** / **`TILE COUNT`** / **`SPRITE FRAMES`**, **`SHEET COLS/ROWS/WIDTH/HEIGHT`**, **`SPRITEFRAME()`**, **`SPRITECOLLIDE`**, **`ISMOUSEOVERSPRITE(slot)`** (SCROLL-aware bbox hit test), **`SPRITEAT(x, y)`** (topmost visible slot at point, Z tie-break; −1 if none), **`SCROLLX()`**, **`SCROLLY()`**, **`JOY`**, **`JOYSTICK`**, **`JOYAXIS`**.
 
 ---
 
