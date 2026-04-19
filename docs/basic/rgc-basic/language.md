@@ -80,6 +80,7 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | Statement | Summary |
 |-----------|---------|
 | **`LET`** | Optional; **`A=1`** is fine without **`LET`**. |
+| **Compound assign** | **`A++`** / **`A--`** increment / decrement by 1. **`A += expr`** / **`-=`** / **`*=`** / **`/=`** = `A = A op expr`. **`S$ += "x"`** concatenates; **`-= *= /=`** raise on strings. Statement-only (not expression). |
 | **`IF … THEN`** | Inline (`IF X THEN 100`, `IF X THEN PRINT "Y"`) or block: **`IF` … `[ELSE]` … `END IF`**. Nested blocks supported. |
 | **`WHILE` … `WEND`** | Pre-test loop. |
 | **`DO` … `LOOP`** | Infinite until **`EXIT`**; or **`LOOP UNTIL expr`**. **`EXIT`** exits the **innermost** **`DO`**. |
