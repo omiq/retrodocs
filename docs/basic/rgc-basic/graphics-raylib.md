@@ -230,6 +230,8 @@ Off-screen bitmap surfaces for scroll / parallax / work-buffer / screenshot patt
 - **`IMAGE SAVE slot, "path"`** — extension-dispatched export:
   - **`.png`** — 32-bit RGBA PNG. If the slot was populated by `IMAGE GRAB`, alpha and the full composite are preserved. Slots still holding a 1bpp mask write on-pixel = opaque white, off-pixel = `rgba(0,0,0,0)` (transparent — good for reusing a drawn panel as a sprite). Slot 0 without a grab resolves on/off through the current `COLOR` / `BACKGROUND`.
   - **anything else** — 24-bit BMP (no alpha channel; RGBA grabs are premultiplied against black on write, 1bpp slots stay pen=white/off=black).
+- **`FILEEXISTS(path$)`** — returns **1** if the path is openable for reading, **0** otherwise. Works against MEMFS in browser WASM and the host filesystem natively. Pairs with `IMAGE SAVE` so programs can verify the file landed before telling the user or triggering a `DOWNLOAD`.
+- **`DOWNLOAD path$`** — browser WASM: reads the file from MEMFS, wraps it in a Blob with a guessed MIME type, and fires a synthetic `<a download>` click so the user gets a real file on disk. Native builds: no-op with a one-shot stderr hint. Kept as a separate statement (not folded into `IMAGE SAVE`) so per-frame recorders don't spam 300 download prompts.
 
 **Smooth scroll recipe** (`examples/gfx_scroll_demo.bas`):
 
@@ -248,6 +250,9 @@ IMAGE COPY 1, XO, 0, 320, 200 TO 0, 0, 0
 VSYNC                                  : REM let the scene composite
 IMAGE GRAB 1, 0, 0, 320, 200
 IMAGE SAVE 1, "shot.png"               : REM full colour + alpha
+IF FILEEXISTS("shot.png") THEN
+  DOWNLOAD "shot.png"                  : REM browser gets a real file
+END IF
 ```
 
 Per-frame recorder — writes `frame_00001.png`, `frame_00002.png`, …:

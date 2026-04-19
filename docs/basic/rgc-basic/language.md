@@ -148,6 +148,7 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`LOCATE col, row`** | **0-based** cursor move (ANSI in terminal; gfx text cursor). |
 | **`TEXTAT col, row, expr$`** | Move and print string at absolute position. |
 | **`CURSOR ON` / `CURSOR OFF`** | Terminal: ANSI show/hide cursor. |
+| **`DOWNLOAD path$`** | **Browser WASM:** reads the file from MEMFS, wraps it in a Blob with a guessed MIME type, triggers a real browser download. **Native:** no-op (file is already on disk); prints a one-shot hint on stderr. |
 | **`COLOR n` / `COLOUR n`**, **`BACKGROUND n`** | C64-style indices **0–15** (foreground / background). |
 | **`PAPER n`** | Per-cell background index (**0–15**); only subsequent `PRINT` output stamps `bgcolor[]`. Leaves the global `BACKGROUND` register untouched. |
 | **`ANTIALIAS ON` / `ANTIALIAS OFF`** | **Gfx:** bilinear vs nearest-neighbour filter for sprites and the upscaled framebuffer (default **OFF**). |
@@ -220,6 +221,7 @@ Parentheses are required where shown. String functions use a trailing **`$`** in
 | Function | Notes |
 |----------|--------|
 | **`ENV$(name$)`** | Environment variable, or **`""`**. |
+| **`FILEEXISTS(path$)`** | **1** if the path is openable for reading, **0** otherwise. Works against **MEMFS** in browser WASM and the host filesystem natively. Idiomatic post-save check: `IF FILEEXISTS(P$) THEN DOWNLOAD P$`. |
 | **`PLATFORM$()`** | Host string — see [Web IDE](web-ide.md#platform-and-capabilities) for **browser** vs native. |
 
 ### Evaluation and conversion
