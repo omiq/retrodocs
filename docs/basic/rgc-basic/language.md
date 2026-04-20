@@ -23,7 +23,7 @@ This page documents **statements, functions, directives, and system variables** 
 | Kind | Operators |
 |------|-----------|
 | **Relational** | `<`, `>`, `=`, `<=`, `>=`, `<>` |
-| **Arithmetic** | `+`, `-`, `*`, `/`, `^` (power), `MOD` (floored modulo) |
+| **Arithmetic** | `+`, `-`, `*`, `/`, **`\`** (integer divide, truncate-toward-zero, classic BASIC / QBasic-style), `^` (power), `MOD` (floored modulo). `\` pairs with `MOD`: `(a \ b) * b + (a MOD b) == a`. |
 | **Bitwise** | `<<`, `>>`, `AND`, `OR`, `XOR` (integer parts of operands) |
 | **Strings** | Concatenation with `+`; string/numeric comparisons where applicable |
 
