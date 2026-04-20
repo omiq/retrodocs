@@ -25,7 +25,7 @@ This page documents **statements, functions, directives, and system variables** 
 | **Relational** | `<`, `>`, `=`, `<=`, `>=`, `<>` |
 | **Arithmetic** | `+`, `-`, `*`, `/`, **`\`** (integer divide, truncate-toward-zero, classic BASIC / QBasic-style), `^` (power), `MOD` (floored modulo). `\` pairs with `MOD`: `(a \ b) * b + (a MOD b) == a`. |
 | **Bitwise** | `<<`, `>>`, `AND`, `OR`, `XOR` (integer parts of operands) |
-| **Strings** | Concatenation with `+`; string/numeric comparisons where applicable |
+| **Strings** | Concatenation with `+`; string/numeric comparisons where applicable. Backslash escapes inside double-quoted literals: **`\n`** (LF, CHR$(10)), **`\r`** (CR, CHR$(13)), **`\t`** (TAB, CHR$(9)), **`\0`** (NUL), **`\\`** (literal backslash), **`\"`** (literal quote). Unknown `\x` passes through as `\x`. Expanded at load time. Works in ASCII + PETSCII modes, terminal + gfx builds, SCREEN 0/1/2. |
 
 **`RND(x)`** — Returns a value in **0..1** (uniform via `rand()`). If **`x < 0`**, the generator is **reseeded** (C64-style negative seed); the implementation uses `time` so runs differ, similar in spirit to **`RND(-TI)`** on a C64.
 
