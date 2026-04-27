@@ -112,6 +112,7 @@ nav:
           - "Language reference": basic/rgc-basic/language.md
           - "Terminal & PETSCII": basic/rgc-basic/terminal-petscii.md
           - "Graphics (Raylib)": basic/rgc-basic/graphics-raylib.md
+          - "Level authoring (MAPLOAD vs builder)": basic/rgc-basic/level-authoring.md
   - TRSE:
       - trse/index.md
       - "The TRSE language": trse/language.md
