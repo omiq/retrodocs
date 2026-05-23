@@ -85,6 +85,7 @@ Processed at **load time**. **`#OPTION`** values in the file **override** the sa
 | `#OPTION nowrap` | Do not wrap at column width. Default for non-gfx variants (`basic`, `basic-wasm`); the host terminal / browser pane handles its own wrapping. |
 | `#OPTION wrap` | Insert line breaks at column width (inverse of `#OPTION nowrap`). Default for gfx variants. Use to opt into wrap on a non-gfx build, or to override a host-applied `-nowrap`. |
 | `#OPTION diagnostics` *(2.1.2)* | Same as **`-diagnostics`**. Default off. When set, fail-soft `HTTP$` / `HTTPFETCH` / `BUFFERFETCH` failures (status 0 or ≥ 400) emit a non-halting **`Warning`** with line context instead of failing silently, and populate **`LASTERROR$()`**. Use during development / tests to locate silent network failures. |
+| `#OPTION http strict` / `#OPTION http loose` *(2.1.2)* | Mirror of `#OPTION json strict`. **Strict**: an HTTP failure (status 0 or ≥ 400) from `HTTP$` / `HTTPFETCH` / `BUFFERFETCH` halts with a runtime error instead of silently setting `HTTPSTATUS()`. **Loose** (default) continues — check `HTTPSTATUS()` yourself. Strict overrides the `#OPTION diagnostics` breadcrumb. |
 | `#OPTION memory c64` / `pet` / `default` | **basic-gfx / canvas WASM only** — virtual memory layout for **`POKE`/`PEEK`**. |
 | `#OPTION screen $addr`, `#OPTION colorram …`, `#OPTION charmem …`, `#OPTION keymatrix …`, `#OPTION bitmap …` | Override individual regions (decimal or hex). |
 | `#OPTION gfx_title "text"` | **basic-gfx** — window title (see also **`-gfx-title`**). |
