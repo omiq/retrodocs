@@ -118,7 +118,7 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`DO` … `LOOP`** | Infinite until **`EXIT`**; or **`LOOP UNTIL expr`**. **`EXIT`** exits the **innermost** **`DO`**. |
 | **`FOR` … `NEXT`** | Numeric **`FOR`** with optional **`STEP`** (positive or negative). |
 | **`FOREACH var IN arr[()]` … `NEXT var`** | Iterate each element of a 1-D array (numeric or string). `NEXT var` advances; `EXIT` pops the innermost FOR/FOREACH. Empty arrays run zero iterations. |
-| **`GOTO`** | Target is a line number or **label**. |
+| **`GOTO`** | Target is a line number or **label**. Jumping forward *within* a `FOR` body to a line that ends in `NEXT` is supported (the loop frame is preserved). `GOTO` does still reset `IF` / `WHILE` / `DO` nesting, so don't jump *into* the middle of those blocks. |
 | **`GOSUB` / `RETURN`** | Subroutine stack; target line or label. |
 | **`ON expr GOTO` / `ON expr GOSUB`** | Multi-way branch (e.g. **`ON N GOTO 100,200,300`**). |
 | **`ASSERT cond [, msg$]`** *(2.1.2)* | Test a condition for regression / CI scripts. `cond` uses the same relational + `AND`/`OR` handling as **`IF`** (so bare **`=`** is equality). If false: halt with `Error … ASSERT failed: <msg>` and set exit code **2**. If true: continue. Pair with **`-json-status`** (see [terminal](terminal-petscii.md#command-line-options)) so `basic --json-status t.bas; echo $?` is a test gate. Used by the `conformance/` corpus. |
