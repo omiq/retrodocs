@@ -121,6 +121,7 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`GOTO`** | Target is a line number or **label**. |
 | **`GOSUB` / `RETURN`** | Subroutine stack; target line or label. |
 | **`ON expr GOTO` / `ON expr GOSUB`** | Multi-way branch (e.g. **`ON N GOTO 100,200,300`**). |
+| **`ASSERT cond [, msg$]`** *(2.1.2)* | Test a condition for regression / CI scripts. `cond` uses the same relational + `AND`/`OR` handling as **`IF`** (so bare **`=`** is equality). If false: halt with `Error … ASSERT failed: <msg>` and set exit code **2**. If true: continue. Pair with **`-json-status`** (see [terminal](terminal-petscii.md#command-line-options)) so `basic --json-status t.bas; echo $?` is a test gate. Used by the `conformance/` corpus. |
 
 ### Data and comments
 
