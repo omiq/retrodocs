@@ -70,6 +70,70 @@ Example: `examples/gfx_menu_demo.bas` (selection bar + rainbow title via per-fra
 - **`SLEEP n`** — Pause in **ticks** (60 ≈ 1 second).
 - **`VSYNC`** — Frame commit + ~16 ms wait. Atomically flips the `TILEMAP DRAW` / `SPRITE STAMP` build buffer to the show buffer so the renderer never displays a half-populated scene, then yields one display frame. Use `VSYNC` at the end of a per-frame loop instead of `SLEEP 1` for flicker-free output.
 
+## Screen modes — `SCREEN 0..4`
+
+Five distinct render modes share the same primitive vocabulary (`PSET`, `LINE`, `RECT`, `FILLRECT`, `CIRCLE`, `DRAWTEXT`, `CLS`, …). The difference is **what each pixel can carry** and **how big the plane is**.
+
+| Mode | Size | Pixel | Memory / plane | Pen control |
+|------|------|-------|----------------|-------------|
+| `SCREEN 0` | 40×25 cells | PETSCII screencode + fg/bg index | 1 KB chars + 1 KB colour | `COLOR n`, `PAPER n`, `BACKGROUND n` |
+| `SCREEN 1` | 320×200 | 1bpp + per-pixel palette index | 8 KB bitmap + 64 KB colour | `COLOR n` (0..15) |
+| `SCREEN 2` | 320×200 | 32-bit RGBA | 256 KB | `COLOR n`, `COLORRGB r,g,b[,a]`, `BACKGROUNDRGB` |
+| `SCREEN 3` | 320×200 | 8-bit palette index | 64 KB (reuses S1 colour plane) | `COLOR 0..255` |
+| `SCREEN 4` | 640×400 | 32-bit RGBA | 1 MB | `COLOR n`, `COLORRGB r,g,b[,a]`, `BACKGROUNDRGB` |
+
+### `SCREEN n`
+
+- **Purpose**: switch render mode. Lazy-allocates RGBA / hi-RGBA planes on first entry.
+- **Parameters**: `n` — `0` text, `1` bitmap, `2` 320×200 RGBA, `3` 256-colour indexed, `4` 640×400 RGBA.
+- **Returns**: nothing. Errors with mode list on out-of-range.
+- **Example**:
+  ```basic
+  SCREEN 2
+  BACKGROUNDRGB 20, 20, 40 : CLS
+  COLORRGB 255, 200, 0 : FILLCIRCLE 160, 100, 40
+  ```
+
+### Multi-buffer `SCREEN BUFFER` / `DRAW` / `SHOW` / `SWAP` / `COPY` / `FREE`
+
+Slot 0 is the live `bitmap[]`, slot 1 is the `DOUBLEBUFFER` back-buffer, slots 2..7 are user-allocated. Lets you pre-render expensive scenes once and flip between them at zero per-frame cost (AMOS-style).
+
+- **`SCREEN BUFFER n`** — allocate slot `n` (2..7). Statement; errors if already used or alloc fails.
+- **`SCREEN DRAW n`** — retarget all bitmap writes (`PSET`, `LINE`, `CLS`, `DRAWTEXT`, …) to slot `n` (0..7). Returns nothing.
+- **`SCREEN SHOW n`** — move the renderer's display plane to slot `n` (0..7).
+- **`SCREEN SWAP a, b`** — atomically set `draw=a`, `show=b`. Useful for ping-pong page-flipping.
+- **`SCREEN COPY src, dst`** — blit one allocated plane into another (any-to-any).
+- **`SCREEN FREE n`** — release slot `n` (2..7). Refused if `n` is the active draw or show slot — switch off first.
+
+**Example** — pre-render scenes A and B, flip on key:
+
+```basic
+SCREEN 1
+SCREEN BUFFER 2 : SCREEN DRAW 2 : CLS : FILLRECT 40,40 TO 280,160
+SCREEN BUFFER 3 : SCREEN DRAW 3 : CLS : FILLCIRCLE 160,100,60
+SCREEN DRAW 0 : SCREEN SHOW 2
+DO
+  IF KEYPRESS(ASC(" ")) THEN SCREEN SHOW 5 - SHOWING : SHOWING = 5 - SHOWING
+  VSYNC
+LOOP
+```
+
+Demo: `examples/gfx_screen_buffer_demo.bas`.
+
+### `LOADSCREEN path$ [, x [, y]]`
+
+- **Purpose**: load any common image format (PNG / BMP / JPG / TGA / GIF) into the **current** screen plane. Behaviour dispatches on `SCREEN` mode (cell-quantise → dither → RGBA copy → palette match).
+- **Parameters**:
+  - `path$` — image file. **Use a literal quoted string in the IDE** so the asset pre-load regex picks it up before run.
+  - `x`, `y` — optional offset (cells in `SCREEN 0`, pixels otherwise). Clipped.
+- **Returns**: nothing. Errors on missing / unreadable / wrong format.
+- **Example**:
+  ```basic
+  SCREEN 4 : LOADSCREEN "panorama.png"
+  ```
+
+Demo: `examples/gfx_loadscreen_demo.bas` (0/1/2/3/4 keys cycle modes on the same PNG).
+
 ## Bitmap mode (`SCREEN 1`)
 
 - **`SCREEN 1`** — 320×200 **1 bpp** bitmap; **`SCREEN 0`** — back to 40×25 text.
@@ -188,9 +252,16 @@ Pick whichever spelling reads cleaner in your program.
 
 **`SPRITE DRAW`** tracks a single persistent position per slot — N calls with the same slot collapse to the last one. Use it for the player, a single enemy, a HUD panel, etc.
 
-**`SPRITE STAMP slot, x, y [, frame [, z [, rot_deg]]]`** appends one cell to a per-frame list, so N stamps of one slot in one frame all render at distinct positions. Use it for **particles, bullets, enemy swarms, starfields** — any case where you'd previously have called `SPRITECOPY` into many slots. Optional `rot_deg` rotates around the sprite centre (raylib backend only — canvas/WASM accepts the arg but ignores it).
+### `SPRITE STAMP slot, x, y [, frame [, z [, rot_deg]]]`
 
-`frame` is a 1-based tile index; `0` or omitted falls back to the slot's current `SPRITE FRAME`. If the slot holds a single image with no tile grid the draw uses the full sprite rect.
+- **Purpose**: append one sprite cell to the per-frame draw list. Unlike `SPRITE DRAW` (one persistent pose per slot — N calls collapse to the last), `STAMP` lets N draws of the **same** slot render at distinct positions in one frame. Used for particles, bullets, enemy swarms, starfields, anything where you would previously have called `SPRITECOPY` into many slots.
+- **Parameters**:
+  - `slot` — sprite slot 0..63 (must be `LOADSPRITE`'d).
+  - `x`, `y` — pixel position on the framebuffer (320×200 in `SCREEN 1` / `SCREEN 2` / `SCREEN 3`; 640×400 in `SCREEN 4`).
+  - `frame` — optional 1-based tile index; `0` or omitted falls back to the slot's current `SPRITE FRAME`. Single-image slots ignore.
+  - `z` — optional integer depth; higher = on top. Default 0.
+  - `rot_deg` — optional rotation in degrees around the sprite centre. **Raylib backend only** — canvas/WASM accepts the arg but ignores it.
+- **Returns**: nothing.
 
 Per-frame loop:
 
@@ -289,6 +360,217 @@ ffmpeg -framerate 60 -i frame_%05d.png -c:v libx264 -pix_fmt yuv420p out.mp4
 
 Example: `examples/gfx_screenshot_demo.bas` (S takes a numbered screenshot; commented-out per-frame recorder block at the bottom).
 
+## RGBA blitter — `IMAGE CREATE`, `IMAGE BLEND`, `IMAGE DRAW`
+
+The 1bpp blitter family above (`IMAGE NEW` / `COPY` / `LOAD` / `SAVE` / `GRAB`) handles silhouettes and screenshots. The **RGBA** family is used in `SCREEN 2` / `SCREEN 4` when you want full-colour alpha-composited work — sprite sheets with antialiased edges, parallax bands with soft fades, pre-baked HUD strips wider than the framebuffer.
+
+### `IMAGE CREATE slot, w, h`
+
+- **Purpose**: allocate an off-screen **RGBA** surface. Companion to `IMAGE NEW` (1bpp) — must be RGBA before `IMAGE LOAD` of a PNG with alpha if you want `IMAGE BLEND` to honour transparency.
+- **Parameters**:
+  - `slot` — 1..31 (slot 0 is the live framebuffer).
+  - `w`, `h` — pixel dimensions, both > 0. `IMAGE LOAD` later may resize the slot to match the loaded PNG.
+- **Returns**: nothing. Errors on bad slot / size / out of memory.
+- **Example**:
+  ```basic
+  IMAGE CREATE 1, 64, 64
+  IMAGE LOAD   1, "chick.png"
+  ```
+
+### `IMAGE BLEND src, sx, sy, sw, sh TO dst, dx, dy`
+
+- **Purpose**: alpha-composited rectangular blit between two RGBA slots (Porter-Duff "source over"). Semi-transparent source pixels smooth-blend against the destination.
+- **Parameters**:
+  - `src` — RGBA source slot (1..31).
+  - `sx, sy, sw, sh` — rectangle inside `src`.
+  - `dst` — RGBA destination. Use **0** to route to the live `SCREEN 2` / `SCREEN 4` framebuffer; use 1..31 for an off-screen RGBA slot.
+  - `dx, dy` — top-left in `dst`.
+- **Returns**: nothing. Errors if either slot isn't RGBA, or `dst = 0` outside RGBA modes.
+- **Example**:
+  ```basic
+  SCREEN 2
+  LOADSCREEN "sky.png"
+  IMAGE CREATE 1, 32, 32 : IMAGE LOAD 1, "chick.png"
+  DO
+    LOADSCREEN "sky.png"                       : REM reset background each frame
+    IMAGE BLEND 1, 0, 0, 32, 32 TO 0, X, Y
+    X = X + 1 : IF X > 320 THEN X = -32
+    VSYNC
+  LOOP
+  ```
+
+Demo: `examples/gfx_blend_demo.bas`.
+
+### `IMAGE DRAW slot`
+
+- **Purpose**: retarget every RGBA primitive (`LINE`, `FILLRECT`, `CIRCLE`, `DRAWTEXT`, `PSET`, `POLYGON`, …) to an off-screen `IMAGE CREATE` surface instead of the live framebuffer. Mirror of `SCREEN DRAW n` but routed into the IMAGE pool, so the canvas size is **arbitrary** (not 320×200 / 640×400). Pre-bake wide scroller strips, world maps, HUD layers, sprite atlases, then blit back with `IMAGE BLEND`.
+- **Parameters**: `slot` — `0` (restore live screen) or `1..31` (RGBA-allocated surface).
+- **Returns**: nothing. Errors on non-RGBA mode, or unallocated / 1bpp slot.
+- **Example**:
+  ```basic
+  SCREEN 2
+  IMAGE CREATE 1, 1280, 200                    : REM 4-screen-wide strip
+  IMAGE DRAW 1
+    FOR I = 0 TO 1279 STEP 16 : LINE I,0 TO I,199 : NEXT I
+    DRAWTEXT 0, 0, "WIDE WORLD"
+  IMAGE DRAW 0                                 : REM back to live
+  IMAGE BLEND 1, SCROLL_X, 0, 320, 200 TO 0, 0, 0
+  ```
+
+## HUD overlay plane — `OVERLAY`
+
+The raylib renderer composites in this order: bitmap plane → cell list (`TILEMAP DRAW` + `SPRITE STAMP`) → **overlay** (when active). `OVERLAY ON` redirects every bitmap-plane primitive (`PSET`, `LINE`, `FILLRECT`, `RECT`, `DRAWTEXT`, `CLS`) into a separate RGBA buffer drawn above world tiles. Result: HUD text and dialog boxes always sit above sprites and tilemap, never get painted over.
+
+> **Screen-mode requirement:** redirect is honoured **only in `SCREEN 2` / `SCREEN 4`** (RGBA modes). In `SCREEN 0` / `SCREEN 1` / `SCREEN 3` the text / 1bpp / indexed primitives keep writing to their own planes; `OVERLAY ON` is accepted and the buffer auto-allocates, but stays empty so nothing visible composites on top. Use `SCREEN 2` (or `SCREEN 4`) when you want OVERLAY-based HUD; otherwise paint the HUD directly to the active plane after world tiles in your render order.
+
+- **`OVERLAY ON`** — start redirecting. Lazy-allocates the buffer on first `ON`.
+- **`OVERLAY OFF`** — back to the main bitmap (default).
+- **`OVERLAY CLS`** — clear overlay to fully transparent (alpha 0). Don't confuse with bare `CLS` — `OVERLAY CLS` only clears the overlay plane regardless of redirection state.
+- **Returns**: nothing.
+
+**Canonical loop:**
+
+```basic
+DO
+  CLS                                           ' clear world bitmap
+  TILEMAP DRAW 0, 0, 0, COLS, ROWS, MAP()
+  SPRITE STAMP 1, PX, PY, 0, 50
+
+  OVERLAY ON
+    OVERLAY CLS                                 ' clear HUD plane
+    COLORRGB 0, 0, 0, 200 : FILLRECT 0, 0 TO 319, 23
+    COLORRGB 255, 240, 80, 255 : DRAWTEXT 4, 4, "LIFE 3"
+  OVERLAY OFF
+
+  VSYNC
+LOOP
+```
+
+Canvas WASM (frozen) flattens the overlay onto the bitmap plane — works for static HUDs but won't sit above tiles. Native `basic-gfx` and `basic-wasm-raylib` do the proper compositing.
+
+## HUD authoring — panel PNG + attribute icons
+
+Practical guide to drawing a Zelda / SNES-style HUD strip on top of a tile world. Covers asset layout, alpha, NPOT warning, z-ordering, IDE preload caveats. Companion demo: [`examples/hud_demo.bas`](https://github.com/omiq/rgc-basic/blob/main/examples/hud_demo.bas) ([open in IDE](https://ide.retrogamecoders.com/?file=hud_demo.bas&platform=rgc-basic)).
+
+### Sheet layout
+
+**Panel** — single PNG, RGBA. Suggested 320×24 (full-width strip) or 64×56 (corner card). Match the framebuffer native size: `SCREEN 2` = **320×200**, `SCREEN 4` = **640×400**. Don't draw at output scale — draw at native, the renderer upscales.
+
+**Icons** — pack as a **tile sheet**. 16×16 cells in a row, e.g. 64×16 PNG = 4 icons. Load with cell dims so `SPRITE STAMP frame` selects each one:
+
+```basic
+SPRITE LOAD 5, "hud_icons.png", 16, 16
+SPRITE STAMP 5, X, Y, ICON_INDEX, 260       ' z=260 above HUD panel
+```
+
+### Power-of-two warning (NPOT)
+
+Some browsers / GPUs warn `GL: NPOT textures extension not found, limited NPOT support (no-mipmaps, no-repeat)` when a texture is non-power-of-two. **Informational** — for HUD strips at native res with no scaling or repeating, NPOT works fine. Pad to power-of-two dims (16, 32, 64, 128, 256, 512) only when you need mipmaps or texture repeat.
+
+### Alpha
+
+PNG alpha is honoured by `SPRITE LOAD` automatically. For `IMAGE LOAD` you **must** call `IMAGE CREATE slot, w, h` first to allocate an RGBA slot — without that, the legacy 1bpp path takes the PNG and alpha is lost:
+
+```basic
+IMAGE CREATE 1, 320, 24                       ' RGBA slot
+IMAGE LOAD 1, "hud_panel.png"                 ' alpha preserved
+IMAGE BLEND 1, 0, 0, 320, 24 TO 0, 0, 0       ' Porter-Duff over the live framebuffer
+```
+
+### Translucent panel — pen alpha
+
+For a quick semi-transparent strip without a PNG, set the pen alpha and `FILLRECT`:
+
+```basic
+COLORRGB 0, 0, 0, 180                         ' 70% opaque black
+FILLRECT 0, 0 TO 319, 23
+```
+
+Drawn into the overlay (or RGBA plane) so the world below partially shows through. Works in `SCREEN 2` / `SCREEN 4` only — `COLORRGB` alpha is ignored in `SCREEN 1` / `SCREEN 3` (palette-only).
+
+### Filtering — `ANTIALIAS`
+
+Default OFF (nearest-neighbour). For pixel-art HUD = **leave OFF**. Turn `ANTIALIAS ON` only if you scale the framebuffer up beyond 1× and want smooth edges (rare in retro look — usually OFF is correct).
+
+### Z order — what stacks where
+
+| Layer | Suggested z | How drawn |
+|-------|-------------|-----------|
+| World tiles | 0 | `TILEMAP DRAW` |
+| World sprites | 50–100 | `SPRITE STAMP` |
+| Player | 200 | `SPRITE STAMP` |
+| HUD panel PNG | 250 | `SPRITE STAMP`, **or** `IMAGE BLEND` into overlay |
+| HUD icons | 260 | `SPRITE STAMP` (higher z than panel) |
+| HUD text | overlay-only | `DRAWTEXT` inside `OVERLAY ON … OFF` |
+
+If you use OVERLAY (`SCREEN 2` / `SCREEN 4` only — see [OVERLAY](#hud-overlay-plane-overlay)), draw the panel + icons inside the overlay block too: `IMAGE BLEND` for the panel, `SPRITE STAMP` for icons, `DRAWTEXT` for counters. Otherwise stamp them with high `z` above world.
+
+### `DRAWTEXT` vs PNG icons
+
+`DRAWTEXT` paints with the active 8×8 chargen — fine for `LIFE 3`, score numbers. For heart / mana / coin glyphs use a PNG icon sheet. Mix freely:
+
+```basic
+SPRITE STAMP 5, 4, 4, ICON_HEART, 260         ' icon at left
+DRAWTEXT 22, 8, "x" + STR$(LIVES)             ' "x3" text
+SPRITE STAMP 5, 60, 4, ICON_KEY, 260
+DRAWTEXT 78, 8, STR$(KEYS)
+```
+
+### IDE asset preload — literal path requirement
+
+The IDE asset preloader regex scans the `.bas` source for **literal quoted strings** in `LOAD` calls and stages those files into MEMFS before run. Variable forms break the scan:
+
+- ✓ `IMAGE LOAD 1, "hud_panel.png"` — staged into MEMFS
+- ✗ `F$ = "hud_panel.png" : IMAGE LOAD 1, F$` — preloader misses it, runtime FILEIO fails
+
+Workaround pattern (used by `map_editor.bas`): keep an `ASSET_HINT$` array of literals at the top of the program just to bait the preloader:
+
+```basic
+DIM ASSET_HINT$(1)
+ASSET_HINT$(0) = "hud_panel.png"
+ASSET_HINT$(1) = "hud_icons.png"
+```
+
+Also covers JSON tilesets — every `tileset.src` referenced inside any preloaded `.json` must itself be in `ASSET_HINT$`, since the preloader doesn't recurse into JSON.
+
+### Native build paths
+
+Asset paths are **relative to the `.bas` file's directory**. `examples/rpg/rpg.bas` finds `examples/rpg/hud_panel.png` via `IMAGE LOAD 1, "hud_panel.png"`. No `./` prefix needed; absolute paths also work.
+
+### Build + deploy reminder
+
+After dropping new PNG into `~/github/rgc-basic/examples/rpg/`:
+1. Commit + push canonical
+2. `cd ~/github/8bitworkshop && ./scripts/sync-rgc-basic.sh`
+3. Update `presets/rgc-basic/presets.json` if filename is brand-new (sync script warns)
+4. Deploy 8bitworkshop
+
+---
+
+## Palette file I/O
+
+### `PALETTELOAD path$`
+
+- **Purpose**: read a plain-text `.pal` palette file into the live 256-entry palette. Tolerates JASC-PAL headers, `#` comments, blank lines. Entries beyond the file's count are untouched.
+- **Parameters**: `path$` — source file. Format: 256 lines of `R G B [A]`, decimal 0..255 each.
+- **Returns**: nothing. Errors on missing / unreadable file.
+- **Example**:
+  ```basic
+  PALETTELOAD "sunset.pal"
+  PALETTEROTATE 16, 255                         ' cycle 240 entries
+  ```
+
+### `PALETTESAVE path$`
+
+- **Purpose**: write the live palette to a plain-text `.pal` file. Round-trips through `PALETTELOAD`.
+- **Parameters**: `path$` — destination file.
+- **Returns**: nothing.
+- **Example**:
+  ```basic
+  PALETTESAVE "my-tuned.pal"
+  IF FILEEXISTS("my-tuned.pal") THEN DOWNLOAD "my-tuned.pal"
+  ```
+
 ## Mouse (`basic-gfx` and canvas WASM)
 
 | Function / statement | Meaning |
@@ -386,6 +668,9 @@ Index listing: `examples/tutorial_gfx_index.bas` — [Web IDE](https://ide.retro
 
 ## See also
 
+- [Getting started](getting-started.md) — first program, frame loop, sprites in 30 lines
+- [Language reference](language.md) — full statement / function table including detailed references for `OVERLAY`, `IMAGE CREATE/BLEND/DRAW`, `LOADSCREEN`, `MAPSAVE`, `BUFFER*`
+- [Network & buffers](network-and-buffers.md) — pulling assets in over HTTP, slot-based file fetches
 - [Terminal & PETSCII](terminal-petscii.md) — plain `basic` without a window
 - [Web IDE](web-ide.md) — browser integration
 - [Install & platforms](install.md) — obtaining binaries

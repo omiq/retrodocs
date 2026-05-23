@@ -17,11 +17,15 @@ This documentation set includes a **full [language reference](rgc-basic/language
 
 | Topic | Page |
 |--------|------|
+| **Brand new? Start here** — install, hello world, frame loop, sprites in 30 lines, common gotchas | [Getting started](rgc-basic/getting-started.md) |
 | Download, build, releases, macOS Gatekeeper | [Install & platforms](rgc-basic/install.md) |
-| Full statement & function reference, operators, `TI`/`ST`, reserved words | [Language reference](rgc-basic/language.md) |
+| Full statement & function reference, operators, `TI` / `ST`, reserved words, recently added detailed reference | [Language reference](rgc-basic/language.md) |
 | CLI flags, PETSCII/ANSI, terminal scripting, `COLOR` / `LOCATE` | [Terminal & PETSCII](rgc-basic/terminal-petscii.md) |
-| `basic-gfx`, virtual memory, bitmap primitives + fills, **sprites (full API + STAMP)**, tilemaps, blitter surfaces, `KEYDOWN`/`VSYNC`, `INKEY$`, `TI`, scroll, gamepad | [Graphics (Raylib)](rgc-basic/graphics-raylib.md) |
-| RGC IDE, **`HTTP$`**, **`PLATFORM$()`**, WASM vs native | [Web IDE (WASM)](rgc-basic/web-ide.md) |
+| `basic-gfx`, screen modes 0..4 (text / 1bpp / RGBA / indexed / hi-RGBA), bitmap primitives, **sprites (full API + STAMP)**, tilemaps, 1bpp + RGBA blitter (`IMAGE NEW`/`CREATE`/`BLEND`/`DRAW`), HUD `OVERLAY`, `LOADSCREEN`, palette load/save, `KEYDOWN`/`VSYNC`, scroll zones, multi-buffer `SCREEN`, mouse, gamepad, sound, music | [Graphics (Raylib)](rgc-basic/graphics-raylib.md) |
+| RGC IDE, `HTTP$`, `PLATFORM$()`, WASM vs native | [Web IDE (WASM)](rgc-basic/web-ide.md) |
+| `HTTP$` / `HTTPFETCH` / `BUFFER*` slot-based file-backed HTTP, binary I/O (`PUTBYTE` / `GETBYTE` / `EOF`), CORS notes | [Network & buffers](rgc-basic/network-and-buffers.md) |
+| `MAPLOAD` / `MAPSAVE` JSON tilemaps, BASIC-builder vs JSON | [Level authoring](rgc-basic/level-authoring.md) |
+| Object types (loot, weapons, spells, traps, McGuffins), enemy AI presets, attack patterns, boss phases — Zelda-class RPG vocabulary | [RPG tutorial](rgc-basic/rpg-tutorial.md) |
 
 ## Project links
 
@@ -38,10 +42,12 @@ When you outgrow “toy” snippets and want **real files, JSON, shell glue, or 
 
 ## Suggested learning path
 
-1. Open **[Web IDE](rgc-basic/web-ide.md)** or install **[binaries](rgc-basic/install.md)**.
-2. Run a tiny `PRINT` / `FOR` program, then skim **[Language reference](rgc-basic/language.md)** for keywords you need.
-3. For colourful terminal output or pipes, read **[Terminal & PETSCII](rgc-basic/terminal-petscii.md)**.
-4. For games, sprites, and `.seq` art, read **[Graphics (Raylib)](rgc-basic/graphics-raylib.md)** (full sprite/bitmap API) and run the repo `examples/gfx_*.bas` / `tutorial_gfx_*.bas` files — or open the same basenames in the **[Web IDE](rgc-basic/web-ide.md)** ([example](https://ide.retrogamecoders.com/?file=gfx_poke_demo.bas&platform=rgc-basic)).
+1. Read **[Getting started](rgc-basic/getting-started.md)** — pick a runtime, run hello world, see the frame-loop pattern.
+2. Open **[Web IDE](rgc-basic/web-ide.md)** or install **[binaries](rgc-basic/install.md)**.
+3. Skim **[Language reference](rgc-basic/language.md)** for keywords you need; revisit the *Recently added — detailed reference* appendix for `BUFFER*`, `OVERLAY`, `IMAGE CREATE/BLEND/DRAW`, `LOADSCREEN`, `MAPSAVE`, `PUTBYTE`/`GETBYTE`.
+4. For colourful terminal output or pipes, read **[Terminal & PETSCII](rgc-basic/terminal-petscii.md)**.
+5. For games, sprites, sound, palette tricks, scroll zones — read **[Graphics (Raylib)](rgc-basic/graphics-raylib.md)** and run the repo `examples/gfx_*.bas` / `tutorial_gfx_*.bas` files. Open the same basenames in the **[Web IDE](rgc-basic/web-ide.md)** ([example](https://ide.retrogamecoders.com/?file=gfx_poke_demo.bas&platform=rgc-basic)).
+6. For HTTP, binaries, large responses, level loading — read **[Network & buffers](rgc-basic/network-and-buffers.md)** and **[Level authoring](rgc-basic/level-authoring.md)**.
 
 ---
 

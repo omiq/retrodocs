@@ -54,12 +54,15 @@ Processed at **load time**. **`#OPTION`** values in the file **override** the sa
 | `#OPTION charset upper` / `#OPTION charset lower` | PETSCII letter set. |
 | `#OPTION palette ansi` / `#OPTION palette c64` | PETSCII colour mapping. |
 | `#OPTION maxstr N` | String length limit (**1–4096**; default large). |
-| `#OPTION columns N` | Print width (**1–255**; default **40**). |
-| `#OPTION nowrap` | Do not wrap at column width. |
+| `#OPTION columns N` | Print width (**1–255**; default **40**). Implicitly clears `nowrap` so the directive does what its name suggests. |
+| `#OPTION nowrap` | Do not wrap at column width. Default for non-gfx variants (`basic`, `basic-wasm`); the host terminal / browser pane handles its own wrapping. |
+| `#OPTION wrap` | Insert line breaks at column width (inverse of `#OPTION nowrap`). Default for gfx variants. Use to opt into wrap on a non-gfx build, or to override a host-applied `-nowrap`. |
 | `#OPTION memory c64` / `pet` / `default` | **basic-gfx / canvas WASM only** — virtual memory layout for **`POKE`/`PEEK`**. |
 | `#OPTION screen $addr`, `#OPTION colorram …`, `#OPTION charmem …`, `#OPTION keymatrix …`, `#OPTION bitmap …` | Override individual regions (decimal or hex). |
 | `#OPTION gfx_title "text"` | **basic-gfx** — window title (see also **`-gfx-title`**). |
 | `#OPTION border N` or `#OPTION border N colour` | **basic-gfx** — padding around the drawable area (see [Graphics](graphics-raylib.md)). |
+
+**Precedence for any setting that can be expressed both ways** (e.g. `columns`, `nowrap` / `wrap`, `palette`, `charset`, `maxstr`): per-script `#OPTION` directives beat CLI / launch flags, which beat the built-in default. So a script with `#OPTION COLUMNS 40` wraps at 40 even if the host passed `-nowrap`. This matches the mental model "`#OPTION` is per-script intent, `-flag` is environment default — intent wins".
 
 Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rgc-basic/blob/main/docs/meta-directives-plan.md)** in the repo.
 
@@ -81,7 +84,8 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 |-----------|---------|
 | **`LET`** | Optional; **`A=1`** is fine without **`LET`**. |
 | **Compound assign** | **`A++`** / **`A--`** increment / decrement by 1. **`A += expr`** / **`-=`** / **`*=`** / **`/=`** = `A = A op expr`. **`S$ += "x"`** concatenates; **`-= *= /=`** raise on strings. Statement-only (not expression). |
-| **`IF … THEN`** | Inline (`IF X THEN 100`, `IF X THEN PRINT "Y"`) or block: **`IF` … `[ELSE]` … `END IF`**. Nested blocks supported. |
+| **`IF … THEN`** | Inline (`IF X THEN 100`, `IF X THEN PRINT "Y"`) or block: **`IF` … `[ELSE IF cond THEN]` … `[ELSE]` … `END IF`**. Nested blocks supported. |
+| **`ELSE IF cond THEN` / `ELSEIF cond THEN`** | Multi-way block-form chain inside an existing `IF … END IF`. Both spellings (two-word `ELSE IF` and one-word `ELSEIF`) tokenise to the same handler; mix freely in one chain. **Block-form only** — no inline `IF a THEN x ELSE IF b THEN y` (use nested inline `IF … THEN … ELSE (IF … THEN …)` instead). Conditions are evaluated top-to-bottom; the first true branch fires and the rest skip to `END IF`. See [tests/else_if_test.bas](https://github.com/omiq/rgc-basic/blob/main/tests/else_if_test.bas) for the full behavior matrix. |
 | **`WHILE` … `WEND`** | Pre-test loop. |
 | **`DO` … `LOOP`** | Infinite until **`EXIT`**; or **`LOOP UNTIL expr`**. **`EXIT`** exits the **innermost** **`DO`**. |
 | **`FOR` … `NEXT`** | Numeric **`FOR`** with optional **`STEP`** (positive or negative). |
@@ -129,7 +133,9 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`INPUT# lfn, var [, …]`** | Read tokens into variables. |
 | **`GET# lfn, str$`** | One character into string variable. |
 | **`CLOSE [lfn [, …]]`** | Close listed channels or **all** if omitted. |
-| **`ST`** | After **`INPUT#`** / **`GET#`**: **0** = success, **64** = end of file, **1** = error / not open. |
+| **`ST`** | After **`INPUT#`** / **`GET#`** / **`GETBYTE`** / **`PUTBYTE`**: **0** = success, **64** = end of file, **1** = error / not open. |
+| **`PUTBYTE #lfn, byte_expr`** | Single-byte raw write (binary file output). See [detailed reference](#binary-file-io-putbyte-and-getbyte). |
+| **`GETBYTE #lfn, var`** | Single-byte raw read into numeric scalar; **-1** at EOF. See [detailed reference](#binary-file-io-putbyte-and-getbyte). |
 
 ### Memory and loading (**basic-gfx** / canvas)
 
@@ -156,24 +162,34 @@ Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rg
 | **`SCREEN BUFFER n`**, **`SCREEN DRAW n`**, **`SCREEN SHOW n`**, **`SCREEN FREE n`**, **`SCREEN SWAP a, b`**, **`SCREEN COPY src, dst`** | **Gfx:** multi-plane bitmap buffers (8 slots). Slot 0 = live `bitmap[]`, slot 1 = `DOUBLEBUFFER` back-buffer, slots 2..7 = user-allocated via `SCREEN BUFFER n`. `SCREEN DRAW n` retargets all bitmap writes (`PSET`, `LINE`, `CLS`, `DRAWTEXT`, ...); `SCREEN SHOW n` moves the renderer. `FREE` is refused if the slot is the active draw or show. `SWAP` sets draw=a, show=b atomically; `COPY` blits one plane into another. |
 | **`SCREEN 2`** | **Gfx:** 320×200 RGBA. Each pixel carries its own RGBA. 256 KB per plane, lazy-allocated on first entry. Use `COLORRGB r, g, b [, a]` / `BACKGROUNDRGB` for full-colour pens; palette `COLOR n` still works and syncs the RGBA pen via the palette table. |
 | **`SCREEN 3`** | **Gfx:** 320×200 8bpp palette-indexed. 64 KB per plane (reuses the SCREEN 1 colour plane). `COLOR` / `BACKGROUND` accept 0..255 in this mode. 256-entry palette shared with SCREEN 1/2 — `PALETTESET` / `PALETTEROTATE` visibly retint every drawn pixel on the next frame without any redraw. Entries 0..15 = C64 defaults; 16..255 = HSV rainbow + greyscale by default. |
+| **`SCREEN 4`** | **Gfx:** 640×400 RGBA "QB64-style" desktop canvas. Same primitives and pen system as `SCREEN 2` (`COLORRGB`, `BACKGROUNDRGB`, `LINE`, `RECT`, `FILLRECT`, `CIRCLE`, `DRAWTEXT`, `LOADSCREEN`, `IMAGE LOAD`/`BLEND`) — only the coordinate range and plane size differ (1 MB per plane vs 256 KB). Use for level editors, multi-pane HUDs, IDE-ish workspaces where 320×200 is too cramped. Demo: `examples/gfx_screen4_demo.bas`. |
 | **`PALETTESET i, r, g, b [, a]`**, **`PALETTESETHEX i, "#RRGGBB[AA]"`**, **`PALETTERESET`**, **`PALETTEROTATE first, last [, step]`** | **Gfx:** retune the shared 256-entry palette. `PALETTEROTATE` shifts entries [first..last] in-place (one C-side memcpy swap, not 256 PALETTESETs) — classic palette cycling for water / fire / plasma retro effects. Read via **`PALETTE(i, chan)`** and **`PALETTEHEX$(i)`**. |
+| **`PALETTELOAD path$`** / **`PALETTESAVE path$`** | **Gfx:** plain-text `.pal` file I/O (JASC-PAL compatible). Round-trips with the live palette. See [detailed reference](#palette-file-io). |
+| **`LOADSCREEN path$ [, x [, y]]`** | **Gfx:** load a PNG / BMP / JPG / TGA / GIF into the current screen plane; behaviour depends on `SCREEN` mode. See [detailed reference](#loadscreen-path-x-y). |
+| **`OVERLAY ON` / `OVERLAY OFF` / `OVERLAY CLS`** | **Gfx (raylib backend):** redirect bitmap-plane writes to an RGBA HUD plane that composites above tiles + sprites. See [detailed reference](#hud-overlay-raylib-basic-gfx-and-canvas-wasm). |
+| **`IMAGE CREATE slot, w, h`**, **`IMAGE BLEND src, sx, sy, sw, sh TO dst, dx, dy`**, **`IMAGE DRAW slot`** | **Gfx (`SCREEN 2` / `SCREEN 4`):** RGBA off-screen surfaces + alpha-composited blits + draw-target retargeting. See [detailed reference](#rgba-blitter-image-create-image-blend-image-draw). |
+| **`MAPSAVE path$ [, layer$]`** | **Gfx:** rewrite the named tile layer in the JSON last opened by `MAPLOAD`. See [detailed reference](#map-io-companion-to-mapload). |
 | **`CLS`**, **`CLS x, y TO x2, y2`** | Full-screen clear (terminal + gfx) or, in basic-gfx bitmap mode, clear only the given pixel rectangle on the current draw plane (same shape as `FILLRECT` with `COLOR 0`). Handy for redrawing only a HUD strip inside `DOUBLEBUFFER` / `SCREEN BUFFER` loops. |
-| **`DRAWTEXT x, y, text$ [, scale]`** | **Gfx:** stamp string onto the bitmap at pixel `(x, y)` via active chargen, transparent OR blend, current pen. Optional integer `scale` (1..8, clamped) pixel-doubles each source pixel into a `scale × scale` block — 16×16 / 24×24 / ... text against the 8×8 chargen with no Font system. Per-call fg/bg and Font-slot arguments still wait on the Font work. |
+| **`DRAWTEXT x, y, text$ [, scale]`** / **`DRAWTEXT x, y, text$, fg, bg [, font [, scale]]`** | **Gfx:** stamp string onto the bitmap at pixel `(x, y)` via active chargen. `scale` 1..8 pixel-doubles each source pixel into a `scale × scale` block. Extended 5-arg form sets per-call foreground / background palette indices; `bg = -1` means transparent paper (non-glyph pixels untouched). `font` is parsed but currently ignored — reserved for the eventual `LOADFONT` work. **Inline PETSCII tokens (2.1):** 16 colour tokens (`{RED}`, `{WHITE}`, `{GREEN}`, …) swap the pen mid-string so one call paints multi-colour text. **`{REVERSE ON}` / `{REVERSE OFF}`** toggle reverse-video. With `bg >= 0` reverse fills the cell with fg and stamps glyph in bg (classic Commodore swap). With `bg < 0` reverse fills the cell with fg and leaves glyph pixels UNTOUCHED — whatever is painted underneath reads through the letter shape, giving a "gradient-coloured text" / knockout effect. Cursor-move tokens (`\n` / `\r` / `{HOME}` / `{CLEAR}` / `{DOWN}` / `{UP}` / `{LEFT}` / `{RIGHT}`) are consumed silently — DRAWTEXT is pixel-space, use multiple calls for multi-line layout. See `examples/gfx_drawtext_tokens_demo.bas`. |
+| **`IMAGE DRAW slot`** *(2.1)* | **Gfx SCREEN 2 / 4 only:** retarget every RGBA primitive (`LINE`, `FILLRECT`, `CIRCLE`, `DRAWTEXT`, `PSET`, `POLYGON`, …) to an off-screen `IMAGE CREATE` surface instead of the live framebuffer. Mirror of `SCREEN DRAW n`, but routed into the IMAGE pool so the canvas size is arbitrary (not 320×200). `IMAGE DRAW 0` restores the live screen. Used to pre-bake wide scroller strips, world maps, HUD layers, reusable sprite atlases — then blit back with `IMAGE BLEND`. Non-RGBA modes raise a runtime error. See `examples/gfx_imagedraw_demo.bas`. |
+| **`SCROLL ZONE id, y, h`**, **`SCROLL ZONE id, dx`**, **`SCROLL ZONE CLEAR id`**, **`SCROLL ZONE RESET id`** *(2.1)* | **Gfx RGBA:** declare up to 15 horizontal bands (ids 1..15) that scroll independently at composite time. `y, h` form declares the rect; two-arg form advances the zone's running dx (modular wrap on plane width, state persists across frames so one-per-frame = smooth scroll). Classic demo message-bar / foreground-only scroll / multi-band parallax. |
+| **`SCROLL LINE y, dx`**, **`SCROLL LINE RESET`**, **`SCROLL RESET`** *(2.1)* | **Gfx RGBA:** per-scanline horizontal offset. Each row gets its own `dx`, applied at composite time. Stacks on top of `SCROLL ZONE` offsets. Raster-warp trick reproduced in software — water ripple, flag wave, heat haze, CRT jitter. `SCROLL LINE RESET` zeroes every row; `SCROLL RESET` nukes both zones and per-line state. See `examples/gfx_scrollzone_demo.bas`. |
 | **`PAPER n`** | Per-cell background index (**0–15**); only subsequent `PRINT` output stamps `bgcolor[]`. Leaves the global `BACKGROUND` register untouched. |
 | **`ANTIALIAS ON` / `ANTIALIAS OFF`** | **Gfx:** bilinear vs nearest-neighbour filter for sprites and the upscaled framebuffer (default **OFF**). |
 | **`TIMER id, interval_ms, FuncName`** / **`TIMER STOP id`** / **`TIMER ON id`** / **`TIMER CLEAR id`** | Register, disable, re-enable, or remove a periodic timer. **12** timers max (ids **1–12**); minimum interval **16 ms**; `FuncName` is a zero-arg `FUNCTION`/`END FUNCTION` block. Re-entry is skipped, not queued. |
 | **`SCREEN 0` / `SCREEN 1`**, **`PSET`**, **`PRESET`**, **`LINE`**, **`SCREENCODES`**, **`SCROLL`**, sprite statements | **Gfx / canvas** — see [Graphics](graphics-raylib.md). |
 | **`LOADSOUND slot, "file.wav"`**, **`PLAYSOUND slot`**, **`STOPSOUND`**, **`UNLOADSOUND slot`**, **`SOUNDPLAYING()`** | **basic-gfx + basic-wasm-raylib (canvas WASM stays frozen):** single-voice WAV playback, 32 slots. `PLAYSOUND` is non-blocking and stops whatever was already playing. `SOUNDPLAYING()` returns **1** while audible, **0** when idle — self-clears at natural end-of-sample. Browsers require a user gesture (key / click) before `AudioContext` resumes, so gate the first cue on `KEYPRESS` or `ISMOUSEBUTTONPRESSED`. |
+| **`LOADMUSIC slot, "song.mod"`**, **`PLAYMUSIC slot`**, **`STOPMUSIC slot`**, **`PAUSEMUSIC slot`** / **`RESUMEMUSIC slot`**, **`MUSICVOLUME slot, 0.0..1.0`**, **`MUSICLOOP slot, 0|1`**, **`UNLOADMUSIC slot`**, **`MUSICPLAYING(slot)`**, **`MUSICLENGTH(slot)`**, **`MUSICTIME(slot)`**, **`MUSICPEAK()`**, **`MUSICTITLE$(slot)`**, **`MUSICSAMPLENAME$(slot, idx)`**, **`MUSICCHANNELS(slot)`**, **`MUSICPATTERNS(slot)`**, **`MUSICORDERS(slot)`**, **`MUSICSAMPLECOUNT(slot)`** | **basic-gfx + basic-wasm-raylib (canvas WASM stays frozen):** streaming tracker-module / long-form playback via raylib `raudio` — **MOD / XM / S3M / IT / OGG / MP3**. Eight slots, separate pool from `LOADSOUND`. `MUSICLENGTH(slot)` returns total seconds (MOD length computed via pattern/tempo walk at load — jar_mod's built-in probe freezes Windows MinGW for tens of seconds, so we do it ourselves). `MUSICTIME(slot)` is elapsed seconds (wraps on loop). `MUSICPEAK()` is the 0..1 master-mix held-peak for VU meters. Same browser-autoplay rules as `LOADSOUND` — wait for a user gesture before the first `LOADMUSIC`. Example: `examples/gfx_music_demo.bas` with bundled Public-Domain tracks. |
 
 ### Sprites and gamepad (gfx / canvas)
 
 | Statements / functions | See |
 |------------------------|-----|
-| **`LOADSPRITE`** / **`SPRITE LOAD`**, **`DRAWSPRITE`** / **`SPRITE DRAW`**, **`DRAWSPRITETILE`** / **`TILE DRAW`**, **`UNLOADSPRITE`** / **`SPRITE FREE`**, **`SPRITEVISIBLE`**, **`SPRITEMODULATE`**, **`SPRITEFRAME`** / **`SPRITE FRAME`**, **`SPRITECOPY`**, **`SPRITE STAMP`** (multi-instance) | [Graphics — PNG sprites](graphics-raylib.md#png-sprites--full-reference) |
+| **`LOADSPRITE`** / **`SPRITE LOAD`**, **`DRAWSPRITE`** / **`SPRITE DRAW`**, **`DRAWSPRITETILE`** / **`TILE DRAW`**, **`UNLOADSPRITE`** / **`SPRITE FREE`**, **`SPRITEVISIBLE`**, **`SPRITEMODULATE`**, **`SPRITEFRAME`** / **`SPRITE FRAME`**, **`SPRITECOPY`**, **`SPRITE STAMP`** (multi-instance) | [Graphics — PNG sprites](graphics-raylib.md#png-sprites-full-reference) |
 | **`TILEMAP DRAW`** (batched array → tile grid), **`DRAWTILEMAP`** (alias) | [Graphics — tilemaps](graphics-raylib.md#tilemaps-tilemap-draw) |
-| **`IMAGE NEW`**, **`IMAGE FREE`**, **`IMAGE COPY … TO …`**, **`IMAGE LOAD`**, **`IMAGE GRAB`**, **`IMAGE SAVE`** | [Graphics — blitter surfaces](graphics-raylib.md#blitter-surfaces-image-new--copy--save) |
+| **`IMAGE NEW`**, **`IMAGE FREE`**, **`IMAGE COPY … TO …`**, **`IMAGE LOAD`**, **`IMAGE GRAB`**, **`IMAGE SAVE`** | [Graphics — blitter surfaces](graphics-raylib.md#blitter-surfaces-image-new-copy-grab-save) |
 | **`RECT`** / **`FILLRECT`**, **`CIRCLE`** / **`FILLCIRCLE`**, **`ELLIPSE`** / **`FILLELLIPSE`**, **`TRIANGLE`** / **`FILLTRIANGLE`**, **`POLYGON`** / **`FILLPOLYGON`**, **`FLOODFILL`**, **`DRAWTEXT`** | [Graphics — bitmap mode](graphics-raylib.md#bitmap-mode-screen-1) |
-| **`VSYNC`** (frame commit + wait one display frame) | [Graphics — keyboard & time](graphics-raylib.md#keyboard--time) |
+| **`VSYNC`** (frame commit + wait one display frame) | [Graphics — keyboard & time](graphics-raylib.md#keyboard-time) |
 | **`SPRITEW`**, **`SPRITEH`**, **`SPRITETILES`** / **`TILE COUNT`** / **`SPRITE FRAMES`**, **`SHEET COLS/ROWS/WIDTH/HEIGHT`**, **`SPRITEFRAME()`**, **`SPRITECOLLIDE`**, **`ISMOUSEOVERSPRITE(slot [, alpha_cutoff])`**, **`SPRITEAT(x, y)`**, **`SCROLLX`/`SCROLLY`**, **`JOY`**, **`JOYAXIS`**, **`KEYDOWN`/`KEYUP`/`KEYPRESS`**, **`ANIMFRAME`** | Same page |
 
 ### Other
@@ -263,14 +279,16 @@ Parentheses are required where shown. String functions use a trailing **`$`** in
 | **`SYSTEM(cmd$)`** | Run shell command; returns **exit status**. **Browser WASM:** not available — returns **-1**. |
 | **`EXEC$(cmd$)`** | **`stdout`** as string (up to interpreter max string size; trailing newline trimmed). **Browser WASM:** returns **`""`**. |
 
-### HTTP (browser WASM only)
+### HTTP and buffers (browser WASM + `basic-gfx`)
 
-| Function | Notes |
-|----------|--------|
-| **`HTTP$(url$ [, method$ [, body$]])`** | **`fetch`**; response body as string. Alias: **`HTTP(url)`** without **`$`** calls the same intrinsic. |
-| **`HTTPSTATUS()`** | Status from last **`HTTP$`**; **0** if failed / not WASM. |
+| Function / statement | Notes |
+|----------------------|--------|
+| **`HTTP$(url$ [, method$ [, body$]])`** | **`fetch`**; response body as string, capped at `#OPTION maxstr` (≤4 KB). Alias: **`HTTP(url)`** without **`$`** calls the same intrinsic. |
+| **`HTTPSTATUS()`** | Status from last **`HTTP$`** / **`HTTPFETCH`** / **`BUFFERFETCH`**; **0** if failed / not WASM. |
+| **`HTTPFETCH(url$, path$ [, method$ [, body$]])`** | One-shot HTTP-to-file. Bypasses the 4 KB string cap. See [detailed reference](#httpfetchurl-path-method-body). |
+| **`BUFFERNEW slot`**, **`BUFFERFETCH slot, url$ [, method$ [, body$]]`**, **`BUFFERFREE slot`**, **`BUFFERLEN(slot)`**, **`BUFFERPATH$(slot)`** | Slot-based file-backed HTTP. Pulls arbitrary-size responses into a temp file you can `OPEN` / `GETBYTE` / `LOADSCREEN` / etc. See [Network & buffers](network-and-buffers.md) and [detailed reference](#buffer-slots-file-backed-http-fetches). |
 
-Details: [Web IDE — `HTTP$`](web-ide.md#http-and-httpstatus).
+Details: [Web IDE — `HTTP$`](web-ide.md#http-and-httpstatus); [Network & buffers](network-and-buffers.md).
 
 ### Graphics-only (see [Graphics](graphics-raylib.md))
 
@@ -287,6 +305,334 @@ Details: [Web IDE — `HTTP$`](web-ide.md#http-and-httpstatus).
 | **`TI$`** | **Gfx:** string **`HHMMSS`** from jiffy clock. **Terminal:** **wall-clock** **`HHMMSS`** from local time. |
 
 Identifiers starting with **`TI`** are resolved with CBM-style rules ( **`TI`** vs **`TI$`** ).
+
+---
+
+## Recently added — detailed reference
+
+Every entry below follows the same shape: **Purpose**, **Parameters**, **Returns**, **Example**. Older entries already covered in the tables above are not repeated.
+
+### Buffer slots — file-backed HTTP fetches
+
+A `BUFFER` is a numbered slot (0..15) backed by a temp file the interpreter manages on disk (or in MEMFS on browser WASM). The point: `HTTP$()` returns a string capped by `#OPTION maxstr` (4 KB max), so you can't pull a 100 KB JSON or a 2 MB binary into memory in one shot. `BUFFER*` lets you stream the response into a file you can then `OPEN` like any other and walk byte-by-byte with `GETBYTE` or `INPUT#`.
+
+Available in `basic-gfx` and browser WASM (`basic-wasm-raylib`); plain terminal `basic` returns 0 / `""` from `BUFFERLEN` / `BUFFERPATH$`.
+
+#### `BUFFERNEW slot`
+
+- **Purpose**: allocate a buffer slot and create its empty backing file. Replaces any prior occupant of the same slot.
+- **Parameters**: `slot` — integer 0..15.
+- **Returns**: nothing (statement). Errors hint "slot out of range" or "cannot create backing file".
+- **Example**:
+  ```basic
+  BUFFERNEW 0
+  ```
+
+#### `BUFFERFETCH slot, url$ [, method$ [, body$]]`
+
+- **Purpose**: HTTP fetch into the slot's backing file. Browser WASM only — native builds set `HTTPSTATUS()` to 0 and write nothing.
+- **Parameters**:
+  - `slot` — integer 0..15, must have been `BUFFERNEW`'d.
+  - `url$` — full URL (must allow CORS from your page origin).
+  - `method$` — optional, `"GET"` (default) / `"POST"` / `"PUT"` / `"DELETE"`.
+  - `body$` — optional request body for POST/PUT.
+- **Returns**: nothing (statement). Sets `HTTPSTATUS()` to the HTTP status code on completion.
+- **Example**:
+  ```basic
+  BUFFERNEW 0
+  BUFFERFETCH 0, "https://api.example.com/data"
+  PRINT "got "; BUFFERLEN(0); " bytes, status "; HTTPSTATUS()
+  ```
+
+#### `BUFFERFREE slot`
+
+- **Purpose**: unlink the backing file and release the slot. Idempotent — safe to call on an empty slot.
+- **Parameters**: `slot` — integer 0..15.
+- **Returns**: nothing (statement).
+- **Example**:
+  ```basic
+  BUFFERFREE 0
+  ```
+
+#### `BUFFERLEN(slot)`
+
+- **Purpose**: byte length of the slot's backing file (i.e., how much was downloaded).
+- **Parameters**: `slot` — integer 0..15.
+- **Returns**: numeric bytes; **0** if slot empty / unallocated / on the terminal build.
+- **Example**:
+  ```basic
+  IF BUFFERLEN(0) = 0 THEN PRINT "empty response" : END
+  ```
+
+#### `BUFFERPATH$(slot)`
+
+- **Purpose**: filesystem path of the slot's backing file. Pass to `OPEN`, `IMAGE LOAD`, `LOADSCREEN`, `MAPLOAD`, etc. so any path-taking command can consume HTTP-fetched bytes.
+- **Parameters**: `slot` — integer 0..15.
+- **Returns**: string path; **`""`** if slot empty / unallocated.
+- **Example**:
+  ```basic
+  OPEN 1, 1, 0, BUFFERPATH$(0)
+  GETBYTE #1, B
+  CLOSE 1
+  ```
+
+See also: full walkthrough in [Network & buffers](network-and-buffers.md).
+
+### `HTTPFETCH(url$, path$ [, method$ [, body$]])`
+
+- **Purpose**: one-shot HTTP-to-file. Fetches `url$` and writes the body to `path$` directly (no slot bookkeeping). Use when you already have the destination path you want; use `BUFFER*` when you want the interpreter to pick a temp path for you.
+- **Parameters**:
+  - `url$` — full URL, CORS-aware on browser WASM.
+  - `path$` — destination file path (MEMFS in browser, host FS native).
+  - `method$` — optional, default GET.
+  - `body$` — optional request body.
+- **Returns**: numeric — non-zero on success, 0 on failure. Also sets `HTTPSTATUS()`.
+- **Example**:
+  ```basic
+  IF HTTPFETCH("https://example.com/sky.png", "sky.png") THEN
+    LOADSCREEN "sky.png"
+  END IF
+  ```
+
+### Binary file I/O — `PUTBYTE` and `GETBYTE`
+
+Pair with `OPEN lfn, device, sec, "filename"` (device 1 = host file, secondary 0/1/2 = read/write/append). `PRINT#`/`INPUT#` are line/token oriented; `PUTBYTE`/`GETBYTE` are raw single-byte for binary formats (PNG inspection, MOD parsing, custom save files).
+
+#### `PUTBYTE #lfn, byte_expr`
+
+- **Purpose**: write one byte (0..255) to an open file channel.
+- **Parameters**:
+  - `lfn` — logical file number from `OPEN` (1..255).
+  - `byte_expr` — numeric, masked with `& 255`.
+- **Returns**: nothing. Sets `ST = 0` on success, `ST = 1` if the channel is not open or the write failed.
+- **Example**:
+  ```basic
+  OPEN 2, 1, 1, "save.bin"
+  FOR I = 0 TO 255 : PUTBYTE #2, I : NEXT I
+  CLOSE 2
+  ```
+
+#### `GETBYTE #lfn, var`
+
+- **Purpose**: read one byte (0..255) from an open file channel into a numeric scalar.
+- **Parameters**:
+  - `lfn` — logical file number (1..255).
+  - `var` — numeric scalar variable (not array, not string). Receives 0..255 on success or **-1** at EOF / on error.
+- **Returns**: nothing. Sets `ST = 0` on success, `ST = 64` at EOF, `ST = 1` if the channel is not open.
+- **Example**:
+  ```basic
+  OPEN 1, 1, 0, "data.bin"
+  DO
+    GETBYTE #1, B
+    IF B = -1 THEN EXIT
+    PRINT HEX$(B); " ";
+  LOOP
+  CLOSE 1
+  ```
+
+### Object overlays — `OBJLOAD` / `OBJSAVE`
+
+Decouple object placement from terrain so a single base map can drive multiple gameplay variants (easy / hard, wave 1 / wave 2 / wave 3, base / mod, etc.). Pair with [`MAPLOAD`](#map-io-companion-to-mapload): load the base map first, then `OBJLOAD` an overlay file that replaces or extends the `MAP_OBJ_*` arrays.
+
+Overlay schema (Shape A):
+
+```json
+{
+  "format": 1,
+  "kind": "objects-overlay",
+  "appliesTo": "level1-overworld",
+  "mode": "replace",
+  "objects": [
+    { "id": 100, "type": "enemy", "kind": "octorok",
+      "shape": "rect", "x": 64, "y": 64, "w": 16, "h": 16 }
+  ]
+}
+```
+
+A Shape B overlay (full map JSON whose only populated layer is `obj`) is also accepted as a fallback so editors that only emit the wider schema still work. The runtime ignores `appliesTo` — it's documentation; check it from BASIC if you want a hard match.
+
+#### `OBJLOAD path$ [, mode$]`
+
+- **Purpose**: load an objects-overlay file into the existing `MAP_OBJ_*` arrays. Caller must `DIM` the arrays large enough for the total objects (base + overlay if appending).
+- **Parameters**:
+  - `path$` — overlay file. Browser WASM: must be bundled in the IDE preset.
+  - `mode$` — optional. `"replace"` (default) clears `MAP_OBJ_COUNT` to 0 before loading. `"append"` stacks overlay objects on top of whatever's already in the arrays.
+- **Returns**: nothing. Sets `MAP_OBJ_COUNT` to the new total. Errors on missing file, file > 4 MiB, unsupported format, missing objects array.
+- **Example**:
+  ```basic
+  MAPLOAD "level1.json"
+  IF DIFF$ = "hard" THEN
+    OBJLOAD "level1.hard.objects.json"
+  ELSE
+    OBJLOAD "level1.easy.objects.json"
+  END IF
+  ```
+
+#### `OBJSAVE path$`
+
+- **Purpose**: write the current `MAP_OBJ_*` arrays as a Shape A objects-overlay file. Used by editors and by procedural-spawn programs that want to capture a generated wave.
+- **Parameters**: `path$` — destination file.
+- **Returns**: nothing. Errors if the path is unwritable.
+- **Limitation**: `props` are **not** preserved in this build — overlay output is regenerated from the live arrays only. Hand-edit the JSON if you need props round-trip; a future revision will read `MAP_OBJ_PROPS$()`.
+- **Shape detection**: when both `MAP_OBJ_W(i) = 0` and `MAP_OBJ_H(i) = 0`, the entry is emitted as `"shape": "point"` (no w/h fields). Otherwise `"shape": "rect"` with w/h.
+- **Example**:
+  ```basic
+  OBJSAVE "level1.hard.objects.json"
+  IF FILEEXISTS("level1.hard.objects.json") THEN DOWNLOAD "level1.hard.objects.json"
+  ```
+
+### Map I/O — companion to `MAPLOAD`
+
+#### `MAPSAVE path$ [, layer$]`
+
+- **Purpose**: rewrite the named tile layer's `data` array in the JSON last opened by `MAPLOAD` and write the patched JSON to `path$`. Use to round-trip live edits (a built-in level editor that mutates `MAP_BG()` then saves).
+- **Parameters**:
+  - `path$` — destination file. Browser WASM persists via the host's MEMFS — pair with `DOWNLOAD` to deliver as a real file.
+  - `layer$` — optional, default `"bg"`. Use `"fg"` to save the foreground layer; the loader reads `MAP_FG()` for that case.
+- **Returns**: nothing. Errors if no prior `MAPLOAD`, if the layer / `data` array is missing, or if `MAP_W * MAP_H` doesn't match the array DIM.
+- **Example**:
+  ```basic
+  MAPLOAD "level1.json"
+  MAP_BG(0) = 17                 : REM water at top-left
+  MAPSAVE "level1.json"
+  IF FILEEXISTS("level1.json") THEN DOWNLOAD "level1.json"
+  ```
+
+### HUD overlay (raylib `basic-gfx` and canvas WASM)
+
+#### `OVERLAY ON | OVERLAY OFF | OVERLAY CLS`
+
+- **Purpose**: redirect bitmap-plane primitives (`PSET`, `LINE`, `FILLRECT`, `RECT`, `DRAWTEXT`, `CLS`) to a second RGBA plane composited **above** the cell list (`TILEMAP DRAW` + `SPRITE STAMP`), so HUD text and dialog boxes always sit above world tiles. The raylib backend composites bitmap → cells → overlay; canvas WASM (frozen) currently flattens the overlay onto the bitmap plane (works for static HUDs but not for above-tile sorting).
+- **Screen-mode requirement**: redirection is honoured **only in `SCREEN 2` and `SCREEN 4`** (the RGBA modes). The compositor renders the overlay on top in every mode, but in `SCREEN 0` (text), `SCREEN 1` (1bpp), and `SCREEN 3` (indexed) the primitives keep writing to their own planes (`text RAM`, `bitmap[]`, `bitmap_color[]`) — `OVERLAY ON` is accepted, the buffer auto-allocates, but stays empty so nothing visible composites on top. If you need a HUD over an indexed-mode world, paint it directly to the indexed plane last (after world tiles), or switch to `SCREEN 2` / `SCREEN 4`.
+- **Parameters**:
+  - `ON` — start redirecting bitmap-plane writes to the overlay (lazy-allocates the buffer).
+  - `OFF` — back to the main bitmap (default).
+  - `CLS` — clear the overlay to fully transparent (alpha 0).
+- **Returns**: nothing.
+- **Example**:
+  ```basic
+  DO
+    CLS                                       : REM clear world bitmap
+    TILEMAP DRAW 0, 0, 0, COLS, ROWS, MAP()
+    SPRITE STAMP 1, PX, PY, 0, 50
+    OVERLAY ON
+      CLS                                     : REM clear overlay
+      COLORRGB 0,0,0,255 : FILLRECT 0,0 TO 319,23
+      COLORRGB 255,240,80,255 : DRAWTEXT 4,4,"LIFE 3"
+    OVERLAY OFF
+    VSYNC
+  LOOP
+  ```
+
+### `LOADSCREEN path$ [, x [, y]]`
+
+- **Purpose**: load a PNG / BMP / JPG / TGA / GIF into the **current** screen plane. Behaviour dispatches on the active `SCREEN` mode:
+  - `SCREEN 0` (text) — cell-quantises to one fg + one bg hardware colour per cell + a PETSCII block glyph.
+  - `SCREEN 1` (1bpp) — Floyd-Steinberg dithers to the 16 hardware colours; per-pixel index stored in `bitmap_color[]`.
+  - `SCREEN 2` (RGBA 320×200) — full RGBA copy.
+  - `SCREEN 3` (256-colour indexed) — nearest-RGB match into the 256-entry palette; alpha < 128 maps to current `BACKGROUND`.
+  - `SCREEN 4` (RGBA 640×400) — same as `SCREEN 2` with 4× pixels.
+- **Parameters**:
+  - `path$` — image file. **Must be a literal quoted string** in browser WASM so the IDE's asset pre-load regex sees the filename and stages it into MEMFS before run.
+  - `x`, `y` — optional offset. Character cells in `SCREEN 0`; pixels otherwise. Clipped to plane bounds.
+- **Returns**: nothing. Errors if file unreadable / wrong format / out-of-mode.
+- **Example**:
+  ```basic
+  SCREEN 2
+  LOADSCREEN "sky.png"
+  ```
+
+### Palette file I/O
+
+#### `PALETTELOAD path$`
+
+- **Purpose**: read a plain-text `.pal` file into the live 256-entry palette. Tolerates JASC-PAL headers, `#` comments, blank lines. Missing entries beyond the file's count stay untouched. Pairs with `PALETTEROTATE` for retro palette-cycling on a hand-tuned palette.
+- **Parameters**: `path$` — source file. Format: 256 lines of `R G B [A]` decimal 0..255.
+- **Returns**: nothing. Errors if file missing / unreadable.
+- **Example**:
+  ```basic
+  PALETTELOAD "sunset.pal"
+  PALETTEROTATE 16, 255             : REM cycle bands 16..255
+  ```
+
+#### `PALETTESAVE path$`
+
+- **Purpose**: write the live palette to a plain-text `.pal` file (256 entries, `R G B A` decimal). Round-trips through `PALETTELOAD`.
+- **Parameters**: `path$` — destination file.
+- **Returns**: nothing.
+- **Example**:
+  ```basic
+  PALETTESAVE "my-tuned.pal"
+  IF FILEEXISTS("my-tuned.pal") THEN DOWNLOAD "my-tuned.pal"
+  ```
+
+### RGBA blitter — `IMAGE CREATE` / `IMAGE BLEND` / `IMAGE DRAW`
+
+The `IMAGE NEW` / `IMAGE COPY` / `IMAGE GRAB` / `IMAGE LOAD` / `IMAGE SAVE` family is documented under [Graphics — blitter surfaces](graphics-raylib.md#blitter-surfaces-image-new-copy-grab-save). The three commands below are the **RGBA** companions for full alpha-composited work in `SCREEN 2` / `SCREEN 4`.
+
+#### `IMAGE CREATE slot, w, h`
+
+- **Purpose**: allocate an **RGBA** off-screen surface (vs `IMAGE NEW` which is 1bpp). Must be RGBA before `IMAGE LOAD` if the source PNG has alpha that you want preserved through `IMAGE BLEND` — otherwise the legacy 1bpp path takes over and alpha is lost.
+- **Parameters**:
+  - `slot` — 1..31 (slot 0 is the live framebuffer).
+  - `w`, `h` — pixel dimensions, both > 0. Any size; subsequent `IMAGE LOAD` resizes to match the PNG.
+- **Returns**: nothing. Errors on bad slot / size / out of memory.
+- **Example**:
+  ```basic
+  IMAGE CREATE 1, 64, 64
+  IMAGE LOAD   1, "chick.png"
+  ```
+
+#### `IMAGE BLEND src, sx, sy, sw, sh TO dst, dx, dy`
+
+- **Purpose**: alpha-composited blit (Porter-Duff "source over") between two RGBA slots. Semi-transparent source pixels smooth-blend against destination pixels.
+- **Parameters**:
+  - `src` — RGBA source slot (1..31).
+  - `sx, sy, sw, sh` — rectangle inside `src`.
+  - `dst` — RGBA destination slot. Use **0** to route to the live `SCREEN 2` / `SCREEN 4` framebuffer.
+  - `dx, dy` — top-left in `dst`.
+- **Returns**: nothing. Errors if either slot is non-RGBA, or `dst = 0` outside `SCREEN 2` / `SCREEN 4`.
+- **Example**:
+  ```basic
+  SCREEN 2
+  LOADSCREEN "sky.png"
+  IMAGE CREATE 1, 32, 32 : IMAGE LOAD 1, "chick.png"
+  IMAGE BLEND 1, 0, 0, 32, 32 TO 0, X, Y
+  ```
+
+#### `IMAGE DRAW slot`
+
+- **Purpose**: retarget every RGBA primitive (`LINE`, `FILLRECT`, `CIRCLE`, `DRAWTEXT`, `PSET`, `POLYGON`, …) to an off-screen `IMAGE CREATE` surface instead of the live framebuffer. Mirrors `SCREEN DRAW n` but routed into the IMAGE pool, so canvas size is arbitrary (not tied to 320×200 / 640×400). Used to pre-bake wide scroller strips, world maps, HUD layers, reusable sprite atlases — then blit back with `IMAGE BLEND`.
+- **Parameters**: `slot` — `0` to restore the live screen, or `1..31` for an `IMAGE CREATE`-allocated RGBA surface. Non-RGBA modes raise a runtime error.
+- **Returns**: nothing.
+- **Example**:
+  ```basic
+  SCREEN 2
+  IMAGE CREATE 1, 1280, 200          : REM 4-screen-wide strip
+  IMAGE DRAW 1                       : REM redirect drawing
+  FOR I = 0 TO 1279 STEP 8 : LINE I,0 TO I,199 : NEXT I
+  IMAGE DRAW 0                       : REM back to live
+  IMAGE BLEND 1, SX, 0, 320, 200 TO 0, 0, 0
+  ```
+
+### Charset variants
+
+`#OPTION charset` and the `-charset` CLI flag accept more than the original `upper` / `lower`:
+
+| Token | Effect |
+|-------|--------|
+| `upper` | C64 default — uppercase + graphics |
+| `lower` | C64 default — lower + uppercase mixed |
+| `c64-upper`, `c64-lower` | Same as above, explicit family |
+| `pet-upper`, `pet-lower` | PET-style alternate ROM (`pet_*.64c`). Aliases: `pet-graphics` (= upper), `pet-text` (= lower) |
+
+- **Purpose**: pick which character ROM family + letter set is loaded into the chargen.
+- **Returns**: load-time only; no runtime feedback. Unknown values print to stderr.
+- **Example**:
+  ```basic
+  #OPTION charset pet-lower
+  PRINT "PET-style lowercase"
+  ```
 
 ---
 
@@ -312,7 +658,10 @@ Authoritative list: **`reserved_words[]`** in **[basic.c](https://github.com/omi
 
 ## Further reading
 
+- [Getting started](getting-started.md) — first-program tour for new users
 - [Terminal & PETSCII](terminal-petscii.md) — **`CHR$`** tables, CLI flags, PETSCII-plain
-- [Graphics (Raylib)](graphics-raylib.md) — sprites, bitmap, examples
+- [Graphics (Raylib)](graphics-raylib.md) — sprites, bitmap, screen modes, sound, examples
 - [Web IDE](web-ide.md) — WASM, **`HTTP$`**, focus / keyboard
+- [Network & buffers](network-and-buffers.md) — `HTTP$` / `HTTPFETCH` / `BUFFER*`, binary I/O
+- [Level authoring](level-authoring.md) — `MAPLOAD` / `MAPSAVE` JSON tilemaps
 - [github.com/omiq/rgc-basic](https://github.com/omiq/rgc-basic) — source, **`examples/`**, tests (many examples also open in the [Web IDE](web-ide.md) via `?file=<name>.bas&platform=rgc-basic` when bundled in the IDE preset)

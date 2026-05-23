@@ -82,7 +82,9 @@ Use **`PLATFORM$()`** in a program to see the host string (**`browser`** in WASM
 ## See also
 
 - [Overview](../rgc-basic.md) — what RGC BASIC is
+- [Getting started](getting-started.md) — first program after install
 - [Language reference](language.md) — full API
 - [Terminal & PETSCII](terminal-petscii.md) — CLI flags
 - [Graphics (Raylib)](graphics-raylib.md) — **`basic-gfx`**
 - [Web IDE](web-ide.md) — browser build
+- [Network & buffers](network-and-buffers.md) — HTTP, file-backed slots

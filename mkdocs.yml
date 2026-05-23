@@ -107,12 +107,15 @@ nav:
       - "Color BASIC": basic/color-basic.md
       - "RGC BASIC":
           - "Overview": basic/rgc-basic.md
+          - "Getting started": basic/rgc-basic/getting-started.md
           - "Install & platforms": basic/rgc-basic/install.md
           - "Web IDE (WASM)": basic/rgc-basic/web-ide.md
           - "Language reference": basic/rgc-basic/language.md
           - "Terminal & PETSCII": basic/rgc-basic/terminal-petscii.md
           - "Graphics (Raylib)": basic/rgc-basic/graphics-raylib.md
+          - "Network & buffers": basic/rgc-basic/network-and-buffers.md
           - "Level authoring (MAPLOAD vs builder)": basic/rgc-basic/level-authoring.md
+          - "RPG tutorial (objects, loot, enemies, AI)": basic/rgc-basic/rpg-tutorial.md
   - TRSE:
       - trse/index.md
       - "The TRSE language": trse/language.md

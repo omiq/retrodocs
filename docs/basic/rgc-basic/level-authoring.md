@@ -212,6 +212,7 @@ data, anything you'd hand to an external editor someday —
 
 ## See also
 
+- [RPG tutorial](rpg-tutorial.md) — gameplay vocabulary that goes inside the `obj` layer: spawns, doors, NPCs, loot, weapons, spells, traps, power-ups, McGuffins, enemies, AI presets, attack patterns, boss phases.
 - [`map-format.md`](https://github.com/omiq/rgc-basic/blob/main/docs/map-format.md) —
   the v1 schema spec, decision log, and v1.1+ deferral list.
 - [`overlay-plane.md`](https://github.com/omiq/rgc-basic/blob/main/docs/overlay-plane.md) —

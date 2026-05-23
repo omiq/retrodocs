@@ -112,7 +112,9 @@ Serve **`web/`** over HTTP and open **`canvas.html`** or **`tutorial.html`** as 
 ## See also
 
 - [Overview](../rgc-basic.md)
+- [Getting started](getting-started.md) — language tour for new users
 - [Install & platforms](install.md) — native binaries
 - [Language reference](language.md) — **`HTTP$`**, **`PLATFORM$`**
 - [Graphics (Raylib)](graphics-raylib.md) — desktop gfx; canvas parity notes
+- [Network & buffers](network-and-buffers.md) — `BUFFER*`, `HTTPFETCH`, large response patterns
 - [IDE getting started](../../ide/getting-started.md)

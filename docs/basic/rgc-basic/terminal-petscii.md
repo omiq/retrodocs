@@ -16,7 +16,7 @@ With **no** filename, the interpreter prints **usage** to stderr.
 **Usage line (terminal build):**
 
 ```text
-basic [-petscii] [-petscii-plain] [-charset upper|lower] [-palette ansi|c64] [-maxstr N] [-columns N] [-nowrap] <program.bas>
+basic [-v|--version] [-petscii] [-petscii-plain] [-charset upper|lower] [-palette ansi|c64] [-maxstr N] [-columns N] [-nowrap] [-wrap] <program.bas>
 ```
 
 ---
@@ -25,15 +25,32 @@ basic [-petscii] [-petscii-plain] [-charset upper|lower] [-palette ansi|c64] [-m
 
 | Flag | Effect |
 |------|--------|
+| **`-v`** / **`-V`** / **`--version`** | Print the build's version tag, release date, and variant (`basic` / `basic-gfx` / `basic-wasm-raylib`) to stdout, then exit 0. Version comes from `git describe --tags --dirty --always` at build time — a tagged release reports exactly `v2.0.0`, a dev build reports `v2.0.0-3-gABCDEF[-dirty]`. Include this in bug reports. |
 | **`-petscii`** / **`--petscii`** | Map **`CHR$`** control and colour codes to **ANSI** escapes; map printable PETSCII to Unicode (block graphics, symbols, pound sign, etc.). |
 | **`-petscii-plain`** / **`--petscii-plain`** | PETSCII **without** ANSI: control/colour bytes produce **no** visible output (alignment for **`.seq`** dumps); printable/graphics bytes still map to Unicode. **`CHR$(13)`** may still emit newline; see upstream for edge cases. |
 | **`-charset upper`** / **`-charset lower`** | **Upper/graphics** vs **lower/upper** letter set when rendering PETSCII text. |
 | **`-palette ansi`** / **`-palette c64`** | How PETSCII colours map: classic **16-colour ANSI** vs **256-colour** (`38;5;n`) C64-like indices. |
 | **`-maxstr N`** | Maximum string length (**1–4096**); default is large. Use **`255`** for C64-like limits. |
-| **`-columns N`** | **`PRINT`** width (**1–255**); default **40**. Comma zones scale (e.g. 10 columns per zone at 40-wide). |
+| **`-columns N`** | **`PRINT`** width (**1–255**); default **40**. Comma zones scale (e.g. 10 columns per zone at 40-wide). Implicitly enables wrap (clears any prior **`-nowrap`**), since opting into a column count is opting into wrap-at-that-width. |
 | **`-nowrap`** | Do not insert line breaks at column width; let the terminal wrap. |
+| **`-wrap`** | Insert line breaks at column width (the inverse of **`-nowrap`**). Use to opt back into wrap when the build default is nowrap. |
 
-The same switches can be set in source with **`#OPTION`** (see [Language reference](language.md#meta-directives--prefix)).
+**Wrap default by build variant** (2.1.2+):
+
+| Variant | Default |
+|---------|---------|
+| `basic` (native terminal), `basic-wasm` (headless browser bundle) | **nowrap** — the host terminal / browser pane handles its own line wrapping; injecting newlines at column 40 corrupts output in any window wider than 40 chars. |
+| `basic-gfx`, `basic-wasm-canvas`, `basic-wasm-raylib` | **wrap** at `print_width` — the fixed 40 / 80 column canvas grid expects it. |
+
+**Precedence (highest wins):**
+
+```
+built-in default (per variant)  <  -flag CLI / launch args  <  #OPTION in source
+```
+
+So a script with `#OPTION COLUMNS 40` wraps at 40 even if the host passed `-nowrap` (per-script intent wins). A script with `#OPTION NOWRAP` runs nowrap even if the host passed `-columns 40`. This applies to both `-columns N` / `#OPTION COLUMNS N` and `-nowrap` / `#OPTION NOWRAP` / `-wrap` / `#OPTION WRAP`.
+
+The same switches can be set in source with **`#OPTION`** (see [Language reference](language.md#meta-directives-prefix)).
 
 ---
 
@@ -132,7 +149,9 @@ Use **`basic-gfx`** for **virtual** screen RAM and real **`POKE`/`PEEK`** (see [
 
 ## See also
 
+- [Getting started](getting-started.md) — first program in the terminal or gfx build
 - [Language reference](language.md) — all statements and functions
 - [Install & platforms](install.md) — binaries and builds
 - [Graphics (Raylib)](graphics-raylib.md) — Raylib window, **`INKEY$`**, **`TI`**
 - [Web IDE](web-ide.md) — WASM, **`HTTP$`**
+- [Network & buffers](network-and-buffers.md) — HTTP, file-backed slots, binary I/O
