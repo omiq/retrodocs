@@ -84,6 +84,7 @@ Processed at **load time**. **`#OPTION`** values in the file **override** the sa
 | `#OPTION columns N` | Print width (**1–255**; default **40**). Implicitly clears `nowrap` so the directive does what its name suggests. |
 | `#OPTION nowrap` | Do not wrap at column width. Default for non-gfx variants (`basic`, `basic-wasm`); the host terminal / browser pane handles its own wrapping. |
 | `#OPTION wrap` | Insert line breaks at column width (inverse of `#OPTION nowrap`). Default for gfx variants. Use to opt into wrap on a non-gfx build, or to override a host-applied `-nowrap`. |
+| `#OPTION diagnostics` *(2.1.2)* | Same as **`-diagnostics`**. Default off. When set, fail-soft `HTTP$` / `HTTPFETCH` / `BUFFERFETCH` failures (status 0 or ≥ 400) emit a non-halting **`Warning`** with line context instead of failing silently, and populate **`LASTERROR$()`**. Use during development / tests to locate silent network failures. |
 | `#OPTION memory c64` / `pet` / `default` | **basic-gfx / canvas WASM only** — virtual memory layout for **`POKE`/`PEEK`**. |
 | `#OPTION screen $addr`, `#OPTION colorram …`, `#OPTION charmem …`, `#OPTION keymatrix …`, `#OPTION bitmap …` | Override individual regions (decimal or hex). |
 | `#OPTION gfx_title "text"` | **basic-gfx** — window title (see also **`-gfx-title`**). |
@@ -283,6 +284,7 @@ Parentheses are required where shown. String functions use a trailing **`$`** in
 | **`TICKUS()`**, **`TICKMS()`** | Monotonic microsecond / millisecond counters. Origin is implementation-defined — differences are meaningful. Native: `clock_gettime(CLOCK_MONOTONIC)`. Browser WASM: `emscripten_get_now()`. |
 | **`PLATFORM$()`** | Host string — see [Web IDE](web-ide.md#platform-and-capabilities) for **browser** vs native. |
 | **`RGCVERSION$()`** *(2.1.2)* | Build's version + date + variant, e.g. `"v2.1.1-23-gabc1234 (2026-05-23) basic-wasm"`. Same format as the `-v` / `--version` flag's first line. Tools and tests can branch on minimum version (`IF RGCVERSION$() < "2.1.3-" THEN PRINT "needs 2.1.3+"`). Also exposed as a host-side ccall export `basic_get_version() → string` for JS hosts. |
+| **`LASTERROR$()`** *(2.1.2)* | Formatted text of the last runtime diagnostic, e.g. `"Warning on line 20: OPEN: cannot open …"` or `"Error at lib.bas:110: …"`, or `""` if none yet. Pull-mode companion to `JSONSTATUS()` / `HTTPSTATUS()`. Captures hard errors and the soft `Warning` diagnostics; silent HTTP/JSON status failures are captured only under `#OPTION DIAGNOSTICS` (otherwise read `HTTPSTATUS()` / `JSONSTATUS()`). Host-side ccall export: `basic_get_lasterror() → string`. |
 
 ### Evaluation and conversion
 

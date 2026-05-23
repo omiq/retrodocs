@@ -16,7 +16,7 @@ With **no** filename, the interpreter prints **usage** to stderr.
 **Usage line (terminal build):**
 
 ```text
-basic [-v|--version] [-petscii] [-petscii-plain] [-charset upper|lower] [-palette ansi|c64] [-maxstr N] [-columns N] [-nowrap] [-wrap] <program.bas>
+basic [-v|--version] [-petscii] [-petscii-plain] [-charset upper|lower] [-palette ansi|c64] [-maxstr N] [-columns N] [-nowrap] [-wrap] [-diagnostics] <program.bas>
 ```
 
 ---
@@ -34,6 +34,7 @@ basic [-v|--version] [-petscii] [-petscii-plain] [-charset upper|lower] [-palett
 | **`-columns N`** | **`PRINT`** width (**1–255**); default **40**. Comma zones scale (e.g. 10 columns per zone at 40-wide). Implicitly enables wrap (clears any prior **`-nowrap`**), since opting into a column count is opting into wrap-at-that-width. |
 | **`-nowrap`** | Do not insert line breaks at column width; let the terminal wrap. |
 | **`-wrap`** | Insert line breaks at column width (the inverse of **`-nowrap`**). Use to opt back into wrap when the build default is nowrap. |
+| **`-diagnostics`** *(2.1.2)* | Emit non-halting **`Warning`** breadcrumbs for fail-soft `HTTP$` / `HTTPFETCH` / `BUFFERFETCH` failures (status 0 or ≥ 400) that otherwise only set `HTTPSTATUS()`. Also populates **`LASTERROR$()`**. Same as **`#OPTION diagnostics`**. Default off. |
 
 **Wrap default by build variant** (2.1.2+):
 
@@ -132,7 +133,7 @@ Full token tables: **[c64-color-codes.md](https://github.com/omiq/rgc-basic/blob
 | **Stderr** | Errors and usage go to **stderr**; **`PRINT`** stays on **stdout** when redirected. |
 | **Arguments** | `./basic script.bas a b` → **`ARG$(0)`** = script path, **`ARG$(1)`**…**`ARG$(ARGC())`** = args. |
 | **`SYSTEM` / `EXEC$`** | Full shell access on native OS (see [Language reference](language.md#scripting-and-shell-native-os)). |
-| **Errors** | Runtime diagnostics include the **source line number**, the **line text**, a **`^`** caret near the offending column, and often a **`Hint:`** line. Two severities: **`Error on line N`** halts the program; **`Warning on line N`** reports a soft failure (e.g. `OPEN` of a missing file sets `ST = 1`) and **execution continues**. Load-time errors (bad **`#INCLUDE`**, duplicate lines, etc.) print before execution. |
+| **Errors** | Runtime diagnostics include the **source line number**, the **line text**, a **`^`** caret near the offending column, and often a **`Hint:`** line. Two severities: **`Error on line N`** halts the program; **`Warning on line N`** reports a soft failure (e.g. `OPEN` of a missing file sets `ST = 1`) and **execution continues**. Lines from an **`#INCLUDE`**d file report **`at <file>:N`** instead of **`on line N`**, so multi-file programs localise correctly. **`LASTERROR$()`** returns the last diagnostic's text; **`-diagnostics`** / **`#OPTION diagnostics`** adds breadcrumbs for otherwise-silent `HTTP$` failures. Load-time errors (bad **`#INCLUDE`**, duplicate lines, etc.) print before execution. |
 
 Examples in the repo (also in the IDE preset): **`examples/scripting.bas`** — [Web IDE](https://ide.retrogamecoders.com/?file=scripting.bas&platform=rgc-basic); PETSCII / brace tokens — [petscii-data.bas](https://ide.retrogamecoders.com/?file=petscii-data.bas&platform=rgc-basic), [c64_control_codes_demo.bas](https://ide.retrogamecoders.com/?file=c64_control_codes_demo.bas&platform=rgc-basic).
 
