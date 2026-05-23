@@ -132,7 +132,7 @@ Full token tables: **[c64-color-codes.md](https://github.com/omiq/rgc-basic/blob
 | **Stderr** | Errors and usage go to **stderr**; **`PRINT`** stays on **stdout** when redirected. |
 | **Arguments** | `./basic script.bas a b` → **`ARG$(0)`** = script path, **`ARG$(1)`**…**`ARG$(ARGC())`** = args. |
 | **`SYSTEM` / `EXEC$`** | Full shell access on native OS (see [Language reference](language.md#scripting-and-shell-native-os)). |
-| **Errors** | Runtime errors include **line number** and often a **`Hint:`** line. Load-time errors (bad **`#INCLUDE`**, duplicate lines, etc.) print before execution. |
+| **Errors** | Runtime diagnostics include the **source line number**, the **line text**, a **`^`** caret near the offending column, and often a **`Hint:`** line. Two severities: **`Error on line N`** halts the program; **`Warning on line N`** reports a soft failure (e.g. `OPEN` of a missing file sets `ST = 1`) and **execution continues**. Load-time errors (bad **`#INCLUDE`**, duplicate lines, etc.) print before execution. |
 
 Examples in the repo (also in the IDE preset): **`examples/scripting.bas`** — [Web IDE](https://ide.retrogamecoders.com/?file=scripting.bas&platform=rgc-basic); PETSCII / brace tokens — [petscii-data.bas](https://ide.retrogamecoders.com/?file=petscii-data.bas&platform=rgc-basic), [c64_control_codes_demo.bas](https://ide.retrogamecoders.com/?file=c64_control_codes_demo.bas&platform=rgc-basic).
 
