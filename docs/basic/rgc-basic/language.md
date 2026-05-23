@@ -25,9 +25,36 @@ This page documents **statements, functions, directives, and system variables** 
 | **Relational** | `<`, `>`, `=`, `<=`, `>=`, `<>` |
 | **Arithmetic** | `+`, `-`, `*`, `/`, **`\`** (integer divide, truncate-toward-zero, classic BASIC / QBasic-style), `^` (power), `MOD` (floored modulo). `\` pairs with `MOD`: `(a \ b) * b + (a MOD b) == a`. |
 | **Bitwise** | `<<`, `>>`, `AND`, `OR`, `XOR` (integer parts of operands) |
-| **Strings** | Concatenation with `+`; string/numeric comparisons where applicable. Backslash escapes inside double-quoted literals: **`\n`** (LF, CHR$(10)), **`\r`** (CR, CHR$(13)), **`\t`** (TAB, CHR$(9)), **`\0`** (NUL), **`\\`** (literal backslash), **`\"`** (literal quote). Unknown `\x` passes through as `\x`. Expanded at load time. Works in ASCII + PETSCII modes, terminal + gfx builds, SCREEN 0/1/2. |
+| **Strings** | Concatenation with `+`; string/numeric comparisons where applicable. Backslash escapes inside double-quoted literals — **stable public API**, see "String escapes" below. |
 
 **`RND(x)`** — Returns a value in **0..1** (uniform via `rand()`). If **`x < 0`**, the generator is **reseeded** (C64-style negative seed); the implementation uses `time` so runs differ, similar in spirit to **`RND(-TI)`** on a C64.
+
+### String escapes
+
+Inside double-quoted string literals, the parser expands these backslash escapes at **load time** (before the program runs). Stable public API — relied on by external tools.
+
+| Escape | Produces | Equivalent |
+|--------|----------|------------|
+| **`\n`** | line feed | `CHR$(10)` |
+| **`\r`** | carriage return | `CHR$(13)` |
+| **`\t`** | tab | `CHR$(9)` |
+| **`\0`** | NUL byte | `CHR$(0)` |
+| **`\\`** | literal backslash | `CHR$(92)` |
+| **`\"`** | literal double-quote | `CHR$(34)` |
+| **`\x`** *(unknown)* | passes through as literal `\x` | — |
+
+Verified shape:
+
+| Source | Length | Value |
+|--------|-------:|-------|
+| `"a\"b"` | 3 | `a"b` |
+| `"x\ny"` | 3 | `x` + LF + `y` |
+| `"\\"` | 1 | `\` |
+| `"line1\nline2\t!"` | 13 | `line1` + LF + `line2` + TAB + `!` |
+
+**SQL-style `""` doubling is NOT supported** — `"a""b"` parses as `"a"` adjacent to `"b"`, which is two string literals with no operator between them (a parse error in most positions, or empty-string in expression context). Use `\"` for an embedded double-quote.
+
+Works in ASCII + PETSCII modes, terminal + gfx builds, SCREEN 0/1/2. Embedded NULs round-trip through concat / `MID$` / file I/O since the 2.1.1 big-strings refactor.
 
 ---
 
@@ -255,6 +282,7 @@ Parentheses are required where shown. String functions use a trailing **`$`** in
 | **`DIR path$ INTO arr$ [, count]`** | Statement form: populate a 1-D string array (must be DIMmed) with filenames and optionally assign the count. Mirrors `SPLIT … INTO arr$ [, count]`. |
 | **`TICKUS()`**, **`TICKMS()`** | Monotonic microsecond / millisecond counters. Origin is implementation-defined — differences are meaningful. Native: `clock_gettime(CLOCK_MONOTONIC)`. Browser WASM: `emscripten_get_now()`. |
 | **`PLATFORM$()`** | Host string — see [Web IDE](web-ide.md#platform-and-capabilities) for **browser** vs native. |
+| **`RGCVERSION$()`** *(2.1.2)* | Build's version + date + variant, e.g. `"v2.1.1-23-gabc1234 (2026-05-23) basic-wasm"`. Same format as the `-v` / `--version` flag's first line. Tools and tests can branch on minimum version (`IF RGCVERSION$() < "2.1.3-" THEN PRINT "needs 2.1.3+"`). Also exposed as a host-side ccall export `basic_get_version() → string` for JS hosts. |
 
 ### Evaluation and conversion
 
