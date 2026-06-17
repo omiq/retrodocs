@@ -25,7 +25,7 @@ jobs:
           git clone --depth 1 https://github.com/omiq/trse.git "${{ runner.temp }}/trse"
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
