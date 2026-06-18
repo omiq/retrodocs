@@ -261,7 +261,7 @@ Parentheses are required where shown. String functions use a trailing **`$`** in
 | **`REPLACE(s$, find$, repl$)`** | Replace all occurrences. |
 | **`TRIM$(s$)`**, **`LTRIM$(s$)`**, **`RTRIM$(s$)`** | Whitespace trim. |
 | **`FIELD$(s$, delim$, n)`** | **n**th field (**1-based**), awk-like. |
-| **`UCASE$(s$)`**, **`LCASE$(s$)`** | ASCII case. |
+| **`UCASE$(s$)`**, **`LCASE$(s$)`** | ASCII case (folds `A-Z`/`a-z`). On CBM/PETSCII transpiled targets these are no-ops on screen-letter codes (65-90), so they're safe to call but won't fold PETSCII case; in upper/graphics mode keys already arrive uppercase. |
 | **`MID$(s$, start [, len])`** | **1-based** **`start`**. |
 | **`LEFT$(s$, n)`**, **`RIGHT$(s$, n)`** | Substrings. |
 | **`STRING$(n, c$)`** or **`STRING$(n, code)`** | Repeat character: count **`n`** and one-char string or numeric code. |

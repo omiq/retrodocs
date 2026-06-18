@@ -59,7 +59,7 @@ Example: `examples/gfx_menu_demo.bas` (selection bar + rainbow title via per-fra
 
 ## Keyboard & time
 
-- **`INKEY$`** — Non-blocking; returns one character or `""`. Case may vary; use **`UCASE$(INKEY$())`** for comparisons.
+- **`INKEY$`** — Non-blocking; returns one character or `""`. Case may vary; use **`UCASE$(INKEY$())`** for comparisons. (On CBM/PETSCII targets in upper/graphics mode keys already arrive uppercase, and `UCASE$` is a no-op there — compare against uppercase literals directly.)
 - **`INPUT`** — In gfx, reads from the **window** key queue (not the terminal).
 - **`KEYDOWN(code)`** — 1 while the key is currently held, else 0. Use for **diagonal movement** — `A+D` or `A+W` fire independently, unlike `INKEY$` which only surfaces one key at a time.
 - **`KEYUP(code)`** — Inverse of `KEYDOWN`. 1 when the key is *not* held.
