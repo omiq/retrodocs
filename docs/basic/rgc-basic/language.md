@@ -92,6 +92,7 @@ Processed at **load time**. **`#OPTION`** values in the file **override** the sa
 | `#OPTION screen $addr`, `#OPTION colorram …`, `#OPTION charmem …`, `#OPTION keymatrix …`, `#OPTION bitmap …` | Override individual regions (decimal or hex). |
 | `#OPTION gfx_title "text"` | **basic-gfx** — window title (see also **`-gfx-title`**). |
 | `#OPTION border N` or `#OPTION border N colour` | **basic-gfx** — padding around the drawable area (see [Graphics](graphics-raylib.md)). |
+| `#OPTION real` | **Transpiler (RGC-BASIC → C) only.** Keep floating-point / fixed-point maths. The C backend defaults to **integer** codegen for size on RAM-tight retro targets: fractional literals truncate, `/` is integer division, `^` is integer power, and `SQR` uses an integer square root. `#OPTION real` opts the file back into the fixed-point runtime so decimals, real `/`, and `SQR` behave like the interpreter. No effect on the interpreter (which is always real). For whole-number randomness without `#OPTION real`, use **`RNDINT(n)`** instead of `RND`. |
 
 **Precedence for any setting that can be expressed both ways** (e.g. `columns`, `nowrap` / `wrap`, `palette`, `charset`, `maxstr`): per-script `#OPTION` directives beat CLI / launch flags, which beat the built-in default. So a script with `#OPTION COLUMNS 40` wraps at 40 even if the host passed `-nowrap`. This matches the mental model "`#OPTION` is per-script intent, `-flag` is environment default — intent wins".
 
