@@ -16,7 +16,7 @@ With **no** filename, the interpreter prints **usage** to stderr.
 **Usage line (terminal build):**
 
 ```text
-basic [-v|--version] [-petscii] [-petscii-plain] [-charset upper|lower] [-palette ansi|c64] [-maxstr N] [-columns N] [-nowrap] [-wrap] [-diagnostics] [-json-status] <program.bas>
+basic [-v|--version] [-petscii] [-petscii-plain] [-charset upper|lower] [-palette ansi|c64] [-maxstr N] [-columns N] [-nowrap] [-wrap] [-trace] [-diagnostics] [-json-status] <program.bas>
 ```
 
 ---
@@ -36,6 +36,7 @@ basic [-v|--version] [-petscii] [-petscii-plain] [-charset upper|lower] [-palett
 | **`-wrap`** | Insert line breaks at column width (the inverse of **`-nowrap`**). Use to opt back into wrap when the build default is nowrap. |
 | **`-diagnostics`** *(2.1.2)* | Emit non-halting **`Warning`** breadcrumbs for fail-soft `HTTP$` / `HTTPFETCH` / `BUFFERFETCH` failures (status 0 or ≥ 400) that otherwise only set `HTTPSTATUS()`. Also populates **`LASTERROR$()`**. Same as **`#OPTION diagnostics`**. Default off. |
 | **`-json-status`** *(2.1.2)* | Print one final stdout line as JSON: `{"exit":N,"reason":"...","line":N}`. Exit code **0** = normal (`END`/`STOP`/end of program), **1** = runtime error, **2** = **`ASSERT`** failure. With this flag the **process exit status** also equals N, so `basic -json-status t.bas; echo $?` is a CI gate (without the flag the process exits 0 regardless). Drives the `conformance/` corpus. |
+| **`-trace`** / **`--trace`** | Post-mortem trace for debugging logic bugs. On a halting runtime error **and** on **Ctrl-C**, print where execution was — the line (number + text), the enclosing function, and the **`FUNCTION`** call stack (innermost first, with the line each was called from). Ctrl-C is cooperative: the first press halts cleanly so the trace prints and the terminal is restored; a second press force-kills a wedged loop. Off by default. |
 
 **Wrap default by build variant** (2.1.2+):
 
