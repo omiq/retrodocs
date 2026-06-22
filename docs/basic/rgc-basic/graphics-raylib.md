@@ -44,6 +44,11 @@ Tutorial-style demos (also listed under [Examples](#example-programs-in-the-repo
 - **`LOAD "file" INTO addr`** / **`LOAD @label INTO addr`** — load raw bytes into virtual memory (**gfx**; terminal build errors).
 - **`MEMSET` / `MEMCPY`** — fill/copy bytes in virtual memory (**gfx**).
 
+### `PRINT`, newlines, and the 40-column grid
+
+- The gfx text grid is **40×25**. A `PRINT` line that fills column 40 **wraps eagerly** to the next row. The terminal build wraps at 80 (or not at all under `-nowrap`), so a line **> 40 chars** lays out differently between gfx and terminal/compiled targets — keep portable `PRINT` lines **≤ 40 chars**.
+- A newline (`\n`/`\r` in a literal, a bare `PRINT`, or the end-of-statement newline) **always advances a row**, including when it lands on an already-empty column 0 — so a leading `\n`, an embedded `\n\n`, or a bare `PRINT` between two lines produces the blank line you expect. This matches the terminal interpreter and the compiled (transpiler) runtimes, so the same source spaces identically across gfx, terminal, and native-C / 8-bit targets. (The one exception is invisible: a `\n` immediately following a line that exactly filled column 40 is absorbed into that wrap rather than double-spacing.)
+
 ## Per-cell colour with `PAPER`
 
 - **`BACKGROUND n`** sets the **global** background register (0–15) — used when `CLS` clears or when a `PRINT` writes into a cell with no explicit paper.
