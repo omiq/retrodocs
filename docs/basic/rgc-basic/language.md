@@ -341,8 +341,12 @@ Details: [Web IDE — `HTTP$`](web-ide.md#http-and-httpstatus); [Network & buffe
 | **`ST`** | Set by **`INPUT#`** / **`GET#`** (see [File I/O](#file-io-cbm-style)). |
 | **`TI`** | **basic-gfx / canvas:** **60 Hz** jiffy counter (wraps per README). **Native terminal:** **not** jiffies — implementation uses **Unix time** (seconds) as a fallback so **`RND(-TI)`** still reseeds. **Canvas WASM (gfx):** derived from monotonic clock when per-frame ticks are not used. |
 | **`TI$`** | **Gfx:** string **`HHMMSS`** from jiffy clock. **Terminal:** **wall-clock** **`HHMMSS`** from local time. |
+| **`SCREEN_COLS`** | Text columns of the current machine / screen mode (no parens). Honours **`#OPTION columns N`**; **gfx** uses the active grid width, terminal uses the print width. |
+| **`SCREEN_ROWS`** | Text rows the hardware offers **before a newline scrolls** (no parens). C64-class machine is **25** (so a C64 build is **40 × 25**). Use with **`SCREEN_COLS`** to lay out for narrow targets instead of hard-coding sizes. |
 
 Identifiers starting with **`TI`** are resolved with CBM-style rules ( **`TI`** vs **`TI$`** ).
+
+When transpiled to C (emit-c), **`SCREEN_COLS`** / **`SCREEN_ROWS`** map to the target adapter's `rgc_screen_w()` / `rgc_screen_h()`, so the same source adapts to each machine's real text grid (e.g. a 32-column target hides a wide legend that a 40-column target shows).
 
 ---
 
