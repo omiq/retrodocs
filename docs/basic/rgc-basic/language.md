@@ -96,6 +96,40 @@ Processed at **load time**. **`#OPTION`** values in the file **override** the sa
 
 **Precedence for any setting that can be expressed both ways** (e.g. `columns`, `nowrap` / `wrap`, `palette`, `charset`, `maxstr`): per-script `#OPTION` directives beat CLI / launch flags, which beat the built-in default. So a script with `#OPTION COLUMNS 40` wraps at 40 even if the host passed `-nowrap`. This matches the mental model "`#OPTION` is per-script intent, `-flag` is environment default — intent wins".
 
+### Conditional compilation (`#IF` blocks)
+
+The RGC-BASIC equivalent of C's `#ifdef`: pick code per platform at **load / transpile time**. The branch that does not match is **removed** before the program runs, so per-machine code costs nothing on the machines that skip it. This is different from a runtime `IF`, which keeps every branch in the binary.
+
+| Directive | Purpose |
+|-------------|---------|
+| `#IF TARGET <id[,id...]>` | Keep this branch when the active build target matches one of the listed machine ids (comma-separated, case-insensitive), e.g. `#IF TARGET c64,c128`. |
+| `#IF MODERN` / `#IF RETRO` / `#IF PORTABLE` | Tier axis. `MODERN` keeps on modern hosts; `RETRO` keeps on the retro/portable tier; `PORTABLE` always keeps. |
+| `#ELSEIF <cond>` | Alternative branch (same condition forms as `#IF`). `#ELSE IF` is accepted as a spelling. |
+| `#ELSE` | Fallback branch when no earlier `#IF` / `#ELSEIF` matched. |
+| `#END IF` | Close the block (`#ENDIF` also accepted). |
+
+The first matching branch wins; every other branch is dropped. Blocks **cannot nest** (v1) — a nested `#IF` is ignored with a warning.
+
+```basic
+#IF TARGET c64,c128
+POKE 53280,0       : REM VIC-II border black
+#ELSEIF TARGET zxspectrum
+BORDER 0           : REM ULA border
+#ELSE
+REM no hardware border on this machine
+#END IF
+```
+
+**Selecting the target/tier.** The transpiler uses its own `--target`. The interpreter is a modern/native host, so by default it keeps `MODERN` + `PORTABLE` blocks and only keeps a `#IF TARGET x` block when you ask for that machine:
+
+```
+basic prog.bas                    # target = native (the default)
+basic --target c64 prog.bas       # keep #IF TARGET c64 branches
+basic --tier portable prog.bas    # resolve MODERN/RETRO as the portable tier
+```
+
+When no target is set, `#IF TARGET …` blocks never match — handy for linting/running the portable `#ELSE` fallback. See **[examples/conditional-target.bas](https://github.com/omiq/rgc-basic/blob/main/examples/conditional-target.bas)**.
+
 Design notes and history: **[meta-directives-plan.md](https://github.com/omiq/rgc-basic/blob/main/docs/meta-directives-plan.md)** in the repo.
 
 ---
